@@ -1,9 +1,9 @@
-import { MessageEmbed, TextBasedChannel } from "discord.js";
+import { Interaction, MessageEmbed, TextBasedChannel } from "discord.js";
 import { Boss } from "../models/boss";
 import { consultarHorarioBoss } from "../utils/db";
 import { formatBoss } from "../utils/format-boss";
 
-const mostrarHorarios = async (textChannel: TextBasedChannel | null) => {
+const mostrarHorarios = async (interaction: Interaction) => {
 
     consultarHorarioBoss().then(async (listaBoss: Boss[]) => {
 
@@ -11,7 +11,9 @@ const mostrarHorarios = async (textChannel: TextBasedChannel | null) => {
             .setColor("RANDOM")
             .setTitle("Tabela de Horários Boss")
             .setDescription("\u200B")
-            .setFooter({ text: "Para listar horários: /list\nPara adicionar novo horário: /add\nInformações atualizadas", iconURL: "https://i.imgur.com/VzgX7yd.jpg" })
+            .setFooter({ text: "Para listar horários: /list\n" + 
+                                "Para adicionar novo horário: /add\n" + 
+                                `Atualização feita por ${interaction.user.tag}`, iconURL: "https://i.imgur.com/VzgX7yd.jpg" })
             .setTimestamp();
 
         listaBoss.forEach((boss: Boss) => {
@@ -24,7 +26,7 @@ const mostrarHorarios = async (textChannel: TextBasedChannel | null) => {
             "-------------------------------------------------------"
         );
 
-        await textChannel?.send({ embeds: [embedTabelaBoss] });
+        await interaction.channel?.send({ embeds: [embedTabelaBoss] });
     });
 }
 

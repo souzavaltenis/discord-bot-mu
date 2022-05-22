@@ -34,6 +34,7 @@ export class AdicionarHorarioModal {
             .setPlaceholder("Ex: 21:45")
             .setMinLength(5)
             .setMaxLength(5)
+            .setRequired(true)
             .setStyle('SHORT');
 
         const inputDataBoss = new TextInputComponent()
@@ -42,6 +43,7 @@ export class AdicionarHorarioModal {
             .setPlaceholder("Ex: 22/05")
             .setMinLength(5)
             .setMaxLength(5)
+            .setRequired(true)
             .setStyle('SHORT');
 
         modalHorarioBoss.addComponents(
@@ -88,21 +90,21 @@ export class AdicionarHorarioModal {
 
         const textInputHorarioBoss: string = interaction.fields.getTextInputValue(Ids.INPUT_HORARIO_BOSS);
 
-        if (textInputHorarioBoss && !(/^(?:[01][0-9]|2[0-3]):[0-5][0-9](?::[0-5][0-9])?$/).test(textInputHorarioBoss)) {
+        if (!(/^(?:[01][0-9]|2[0-3]):[0-5][0-9](?::[0-5][0-9])?$/).test(textInputHorarioBoss)) {
             await interaction.reply(`${interaction.user} Horário ${textInputHorarioBoss} não é reconhecido! Use como exemplo: 15:46`);
             return;
         }
 
         const textInputDataBoss: string = interaction.fields.getTextInputValue(Ids.INPUT_DATA_BOSS);
 
-        if (textInputDataBoss && !(/(3[01]|[12][0-9]|0[1-9])[\/](1[0-2]|0[1-9])/).test(textInputDataBoss)) {
-            await interaction.reply(`${interaction.user} Data ${textInputHorarioBoss} não é reconhecida! Use como exemplo: 22/05`);
+        if (!(/(3[01]|[12][0-9]|0[1-9])[\/](1[0-2]|0[1-9])/).test(textInputDataBoss)) {
+            await interaction.reply(`${interaction.user} Data ${textInputDataBoss} não é reconhecida! Use como exemplo: 22/05`);
             return;
         }
 
         adicionarHorarioBoss(nomeBoss, textInputSalaBoss, textInputHorarioBoss, textInputDataBoss).then(async () => {
             await interaction.reply(`${interaction.user} Horário adicionado com sucesso! (boss: ${nomeBoss} sala: ${textInputSalaBoss} horário: ${textInputHorarioBoss} data: ${textInputDataBoss})`);
-            await mostrarHorarios(interaction.channel);
+            await mostrarHorarios(interaction);
         });
     }
 }
