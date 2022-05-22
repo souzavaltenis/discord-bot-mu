@@ -1,8 +1,10 @@
 import { Boss } from "../models/boss";
+import { isBossAberto } from "./is-boss-aberto";
+import { isBossVencido } from "./is-boss-vencido";
 import { previsaoBoss } from "./previsao-boss";
 
 const formatBoss = (boss: Boss): string => {
-    let infoBoss = '------------------------------------------\n';
+    let infoBoss = '-------------------------------------------------------\n';
 
     Object.keys(boss).forEach((field: string) => {
         if (field.includes("sala")) {
@@ -11,7 +13,9 @@ const formatBoss = (boss: Boss): string => {
             const horario = infos[0];
             const data = infos[1] ? ` (${infos[1]}) ` : ''
             const previsao: string = previsaoBoss(horario);
-            infoBoss += `**Sala ${numeroSala}**: ${horario} ${data} ${previsao}\n`;
+            const bossVencido = isBossVencido(horario, data);
+            const bossAberto = isBossAberto(horario, data);
+            infoBoss += `**Sala ${numeroSala}**: ${horario} ${data} ${previsao} ${bossVencido ? ':x:' : bossAberto ? ':white_check_mark:' : ':zzz:'}\n`;
         }
     })
 

@@ -1,7 +1,7 @@
 import moment from "moment";
 
 const previsaoBoss = (horario: string): string => {
-    if (!horario || !(/^(?:[01][0-9]|2[0-3]):[0-5][0-9](?::[0-5][0-9])?$/).test(horario)) return '';
+    if (!horario) return '';
 
     const maskHorario: string = 'HH:mm';
 
