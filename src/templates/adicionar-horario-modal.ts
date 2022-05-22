@@ -36,10 +36,19 @@ export class AdicionarHorarioModal {
             .setMaxLength(5)
             .setStyle('SHORT');
 
+        const inputDataBoss = new TextInputComponent()
+            .setCustomId(Ids.INPUT_DATA_BOSS)
+            .setLabel("Qual Data?")
+            .setPlaceholder("Ex: 22/05")
+            .setMinLength(5)
+            .setMaxLength(5)
+            .setStyle('SHORT');
+
         modalHorarioBoss.addComponents(
             new MessageActionRow<ModalActionRowComponent>().addComponents(inputNomeBoss),
             new MessageActionRow<ModalActionRowComponent>().addComponents(inputSalaBoss),
-            new MessageActionRow<ModalActionRowComponent>().addComponents(inputHorarioBoss)
+            new MessageActionRow<ModalActionRowComponent>().addComponents(inputHorarioBoss),
+            new MessageActionRow<ModalActionRowComponent>().addComponents(inputDataBoss)
         );
 
         return modalHorarioBoss;
@@ -78,9 +87,10 @@ export class AdicionarHorarioModal {
         }
 
         const textInputHorarioBoss: string = interaction.fields.getTextInputValue(Ids.INPUT_HORARIO_BOSS);
+        const textInputDataBoss: string = interaction.fields.getTextInputValue(Ids.INPUT_DATA_BOSS);
         
-        adicionarHorarioBoss(nomeBoss, textInputSalaBoss, textInputHorarioBoss).then(async () => {
-            await interaction.reply(`${interaction.user} Horário adicionado com sucesso! (boss: ${nomeBoss} sala: ${textInputSalaBoss} horário: ${textInputHorarioBoss})`);
+        adicionarHorarioBoss(nomeBoss, textInputSalaBoss, textInputHorarioBoss, textInputDataBoss).then(async () => {
+            await interaction.reply(`${interaction.user} Horário adicionado com sucesso! (boss: ${nomeBoss} sala: ${textInputSalaBoss} horário: ${textInputHorarioBoss} data: ${textInputDataBoss})`);
             await mostrarHorarios(interaction.channel);
         });
     }

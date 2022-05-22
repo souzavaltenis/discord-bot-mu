@@ -16,10 +16,10 @@ const bossConverter = {
     }
 };
 
-const adicionarHorarioBoss = async function (nome: string, sala: string, horario: string): Promise<void> {
+const adicionarHorarioBoss = async function (nome: string, sala: string, horario: string, data: string): Promise<void> {
     const bossRef = doc(db, "boss", nome);
     return updateDoc(bossRef, {
-        [`sala${sala}`]: horario
+        [`sala${sala}`]: horario + ';' + data
     });
 }
 
