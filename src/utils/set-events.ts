@@ -16,13 +16,13 @@ const setEvents = (client: Client): void => {
     });
 
     client.on('ready', (c: Client) => {
-        adicionarLog(`Logado como: ${c.user?.tag} ás ${dataNow()}`, "onReady");
+        adicionarLog(`Logado como: ${c.user?.tag} as ${dataNow()}`, "onReady");
     });
 
     client.on('interactionCreate', async (interaction: Interaction) => {
 
         if (interaction.isCommand()) {
-            adicionarLog(`/${interaction.commandName} realizado por ${interaction.user.tag} no ${interaction.guild?.name} ás ${dataNow()}`, "onCommand");
+            adicionarLog(`/${interaction.commandName} realizado por ${interaction.user.tag} no ${interaction.guild?.name} as ${dataNow()}`, "onCommand");
             switch (interaction.commandName) {
                 case 'add': await new Add().execute(interaction); break;
                 case 'list': await new List().execute(interaction); break;

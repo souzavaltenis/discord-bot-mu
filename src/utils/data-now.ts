@@ -1,5 +1,7 @@
+import moment from "moment";
+
 const dataNow = (): string => {
-    return new Date().toLocaleDateString("pt-BR", {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit"});
+    return moment().utcOffset('GMT-03:00').format('HH:mm:ss DD/MM/YY');
 }
 
 export { dataNow }
