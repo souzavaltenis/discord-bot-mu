@@ -13,7 +13,7 @@ const mostrarHorarios = async (interaction: Interaction) => {
             .setDescription("\u200B")
             .setFooter({ text: "Para listar horários: /list\n" + 
                                 "Para adicionar novo horário: /add\n" + 
-                                `Atualização feita por ${interaction.user.tag}`, iconURL: "https://i.imgur.com/VzgX7yd.jpg" })
+                                `${interaction.user.tag}`, iconURL: "https://i.imgur.com/VzgX7yd.jpg" })
             .setTimestamp();
 
         listaBoss.forEach((boss: Boss) => {
