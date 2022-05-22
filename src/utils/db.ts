@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { doc, getFirestore, QueryDocumentSnapshot, WithFieldValue, DocumentData, SnapshotOptions, updateDoc, getDocs, collection } from "firebase/firestore";
+import { doc, getFirestore, QueryDocumentSnapshot, WithFieldValue, DocumentData, SnapshotOptions, updateDoc, getDocs, collection, arrayUnion } from "firebase/firestore";
 import { firebaseConfig} from '../../config.json';
 import { Boss } from "../models/boss";
 
@@ -46,4 +46,12 @@ const consultarHorarioBoss = async function(): Promise<Boss[]> {
     });
 }
 
-export { adicionarHorarioBoss, consultarHorarioBoss };
+const adicionarLog = async (log: string, tipo: string): Promise<void> => {
+    const logsRef = doc(db, "logs", "log-discord");
+
+    await updateDoc(logsRef, {
+        [tipo]: arrayUnion(log)
+    });
+}
+
+export { adicionarHorarioBoss, consultarHorarioBoss, adicionarLog };
