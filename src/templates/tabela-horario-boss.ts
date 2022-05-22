@@ -14,10 +14,8 @@ const mostrarHorarios = async (textChannel: TextBasedChannel | null) => {
             .setFooter({ text: "Para listar horários: /list\nPara adicionar novo horário: /add", iconURL: 'https://i.imgur.com/VzgX7yd.jpg' });
 
         listaBoss.forEach((boss: Boss) => {
-            embedTabelaBoss.addField(boss.nome, formatBoss(boss), true);
+            embedTabelaBoss.addField(boss.nome, formatBoss(boss));
         });
-
-        embedTabelaBoss.addField('\u200B', '\u200B');
 
         await textChannel?.send({ embeds: [embedTabelaBoss] });
     });

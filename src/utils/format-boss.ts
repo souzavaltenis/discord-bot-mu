@@ -1,12 +1,19 @@
 import { Boss } from "../models/boss";
+import { previsaoBoss } from "./previsao-boss";
 
 const formatBoss = (boss: Boss): string => {
-    return '----------------------------\n' +
-            `**Sala 2**: ${boss.sala2}\n` + 
-            `**Sala 3**: ${boss.sala3}\n` + 
-            `**Sala 4**: ${boss.sala4}\n` + 
-            `**Sala 5**: ${boss.sala5}\n` + 
-            `**Sala 6**: ${boss.sala6}`;
+    let infoBoss = '------------------------------------------\n';
+
+    Object.keys(boss).forEach((field: string) => {
+        if (field.includes("sala")) {
+            const numeroSala: string = field[field.length-1];
+            const horario: string = boss[field as keyof Boss] as string;
+            const previsao: string = previsaoBoss(horario);
+            infoBoss += `**Sala ${numeroSala}**: ${horario} ${previsao}\n`;
+        }
+    })
+
+    return infoBoss + '\u200B\n';
 };
 
 export { formatBoss }
