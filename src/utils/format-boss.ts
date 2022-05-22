@@ -1,4 +1,4 @@
-import { Boss } from "../entities/boss";
+import { Boss } from "../models/boss";
 
 const formatBoss = (boss: Boss): string => {
     return '----------------------------\n' +

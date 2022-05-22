@@ -1,7 +1,6 @@
 import { ModalActionRowComponent, MessageActionRow, Modal, TextInputComponent, ModalSubmitInteraction } from 'discord.js';
 import { Ids } from '../utils/ids';
 import { adicionarHorarioBoss } from '../utils/db';
-import { BossDAO } from '../entities/boss-dao';
 import { mostrarHorarios } from './tabela-horario-boss';
 
 export class AdicionarHorarioModal {
@@ -15,6 +14,8 @@ export class AdicionarHorarioModal {
             .setCustomId(Ids.INPUT_NOME_BOSS)
             .setLabel("Qual boss?")
             .setPlaceholder("Ex: rei, fenix, relics")
+            .setMinLength(3)
+            .setMaxLength(20)
             .setRequired(true)
             .setStyle('SHORT');
         
@@ -22,14 +23,16 @@ export class AdicionarHorarioModal {
             .setCustomId(Ids.INPUT_SALA_BOSS)
             .setLabel("Qual sala?")
             .setPlaceholder("Ex: 3")
+            .setMinLength(1)
+            .setMaxLength(1)
             .setRequired(true)
             .setStyle('SHORT');
 
         const inputHorarioBoss = new TextInputComponent()
             .setCustomId(Ids.INPUT_HORARIO_BOSS)
             .setLabel("Qual horário?")
-            .setPlaceholder("Ex: 21:45, 02:34")
-            .setRequired(true)
+            .setPlaceholder("Ex: 21:45 ou 02:34 22/05")
+            .setMaxLength(15)
             .setStyle('SHORT');
 
         modalHorarioBoss.addComponents(
@@ -47,8 +50,8 @@ export class AdicionarHorarioModal {
         let nomeBoss = "";
 
         const valoresRei = ['rey', 'rei', 'rei kundun', 'reikundun', 'rey kundun', 'kundun'];
-        const valoresRelics = ['relics', 'illusion', 'relycs', 'illusion of kundun'];
-        const valoresFenix = ['fenix', 'phoenix', 'phoenix of darkness'];
+        const valoresRelics = ['relics', 'illusion', 'relycs', 'relcs', 'relic', 'illusion of kundun'];
+        const valoresFenix = ['fenix', 'phoenix', 'fnix', 'fenx', 'phoenix of darkness'];
 
         switch (true) {
             case valoresRei.includes(textInputNomeBoss): nomeBoss = "rei"; break;
@@ -57,30 +60,24 @@ export class AdicionarHorarioModal {
         }
 
         if (!nomeBoss) {
-            await interaction.reply(`Boss ${textInputNomeBoss} não reconhecido!`);
+            await interaction.reply(`${interaction.user} Boss ${textInputNomeBoss} não é reconhecido!`);
             return;
         }
 
         const textInputSalaBoss: string = interaction.fields.getTextInputValue(Ids.INPUT_SALA_BOSS);
         
         const salaBoss = parseInt(textInputSalaBoss);
+        const salasConhecidas = [2, 3, 4, 5, 6];
 
-        if (salaBoss === NaN || ![2, 3, 4, 5, 6].includes(salaBoss)) {
-            await interaction.reply(`Sala ${textInputSalaBoss} não reconhecida!`);
+        if (salaBoss === NaN || !salasConhecidas.includes(salaBoss)) {
+            await interaction.reply(`${interaction.user} Sala ${textInputSalaBoss} não é reconhecida!`);
             return;
         }
 
         const textInputHorarioBoss: string = interaction.fields.getTextInputValue(Ids.INPUT_HORARIO_BOSS);
-
-        if (!(/^(?:[01][0-9]|2[0-3]):[0-5][0-9](?::[0-5][0-9])?$/).test(textInputHorarioBoss)) {
-            await interaction.reply(`Horário ${textInputHorarioBoss} não reconhecido!`);
-            return;
-        }
         
-        const bossDAO = new BossDAO(nomeBoss, salaBoss+'', textInputHorarioBoss);
-        
-        adicionarHorarioBoss(bossDAO).then(async () => {
-            await interaction.reply(`Horário adicionado com sucesso! (Boss: ${bossDAO.nome} Sala: ${bossDAO.sala} Horário: ${bossDAO.horario})`);
+        adicionarHorarioBoss(nomeBoss, textInputSalaBoss, textInputHorarioBoss).then(async () => {
+            await interaction.reply(`${interaction.user} Horário adicionado com sucesso! (boss: ${nomeBoss} sala: ${textInputSalaBoss} horário: ${textInputHorarioBoss})`);
             await mostrarHorarios(interaction.channel);
         });
     }

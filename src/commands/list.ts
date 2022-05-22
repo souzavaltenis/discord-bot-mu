@@ -6,7 +6,7 @@ export class List {
     data: SlashCommandBuilder = new SlashCommandBuilder().setName('list').setDescription('Lista os horários dos boss!');
 
     async execute(interaction: CommandInteraction): Promise<void> {
-      await interaction.reply('\u200B');
+      await interaction.reply({content: 'eae', fetchReply: true, ephemeral: true})
 		  await mostrarHorarios(interaction.channel);
     }
 }

@@ -1,8 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { doc, getFirestore, QueryDocumentSnapshot, WithFieldValue, DocumentData, SnapshotOptions, updateDoc, getDocs, collection } from "firebase/firestore";
 import { firebaseConfig} from '../../config.json';
-import { BossDAO } from "../entities/boss-dao";
-import { Boss } from "../entities/boss";
+import { Boss } from "../models/boss";
 
 const appFirebase = initializeApp(firebaseConfig);
 const db = getFirestore(appFirebase);
@@ -17,10 +16,10 @@ const bossConverter = {
     }
 };
 
-const adicionarHorarioBoss = async function (bossDAO: BossDAO): Promise<void> {
-    const bossRef = doc(db, "boss", bossDAO.nome);
+const adicionarHorarioBoss = async function (nome: string, sala: string, horario: string): Promise<void> {
+    const bossRef = doc(db, "boss", nome);
     return updateDoc(bossRef, {
-        [`sala${bossDAO.sala}`]: bossDAO.horario
+        [`sala${sala}`]: horario
     });
 }
 

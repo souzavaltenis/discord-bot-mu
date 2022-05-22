@@ -1,5 +1,5 @@
 import { MessageEmbed, TextBasedChannel } from "discord.js";
-import { Boss } from "../entities/boss";
+import { Boss } from "../models/boss";
 import { consultarHorarioBoss } from "../utils/db";
 import { formatBoss } from "../utils/format-boss";
 
