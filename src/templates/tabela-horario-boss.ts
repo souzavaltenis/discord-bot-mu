@@ -1,6 +1,6 @@
-import { Interaction, MessageEmbed, TextBasedChannel } from "discord.js";
+import { Interaction, MessageEmbed } from "discord.js";
 import { Boss } from "../models/boss";
-import { consultarHorarioBoss } from "../utils/db";
+import { consultarHorarioBoss } from "../db/db";
 import { formatBoss } from "../utils/format-boss";
 
 const mostrarHorarios = async (interaction: Interaction) => {
@@ -11,10 +11,10 @@ const mostrarHorarios = async (interaction: Interaction) => {
             .setColor("RANDOM")
             .setTitle("Tabela de Horários Boss")
             .setDescription("\u200B")
+            .setTimestamp()
             .setFooter({ text: "Para listar horários: /list\n" + 
                                 "Para adicionar novo horário: /add\n" + 
-                                `${interaction.user.tag}`, iconURL: "https://i.imgur.com/VzgX7yd.jpg" })
-            .setTimestamp();
+                                `${interaction.user.tag}`, iconURL: "https://i.imgur.com/VzgX7yd.jpg" });
 
         listaBoss.forEach((boss: Boss) => {
             embedTabelaBoss.addField(boss.nome, formatBoss(boss));

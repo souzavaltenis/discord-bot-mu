@@ -1,7 +1,8 @@
 import { initializeApp } from "firebase/app";
 import { doc, getFirestore, QueryDocumentSnapshot, WithFieldValue, DocumentData, SnapshotOptions, updateDoc, getDocs, collection, arrayUnion } from "firebase/firestore";
-import { firebaseConfig} from '../../config.json';
+import { firebaseConfig } from '../../config.json';
 import { Boss } from "../models/boss";
+import { dataNowString, ordernarListaBoss } from "../utils/boss-utils";
 
 const appFirebase = initializeApp(firebaseConfig);
 const db = getFirestore(appFirebase);
@@ -28,29 +29,16 @@ const consultarHorarioBoss = async function(): Promise<Boss[]> {
         const querySnapshot = await getDocs(collection(db, "boss").withConverter(bossConverter));
         const listaBoss = [] as Boss[];
         querySnapshot.forEach(boss => listaBoss.push(boss.data()));
-
-        listaBoss.sort(function(x: Boss, y: Boss) {
-
-            if (x.id < y.id) {
-              return -1;
-            }
-
-            if (x.id > y.id) {
-              return 1;
-            }
-
-            return 0;
-        });
-
+        ordernarListaBoss(listaBoss);
         resolve(listaBoss);
     });
 }
 
-const adicionarLog = async (log: string, tipo: string): Promise<void> => {
+const adicionarLog = async (log: string): Promise<void> => {
+    const field: string = dataNowString("DD-MM-YY");
     const logsRef = doc(db, "logs", "log-discord");
-
     await updateDoc(logsRef, {
-        [tipo]: arrayUnion(log)
+        [field]: arrayUnion(log)
     });
 }
 

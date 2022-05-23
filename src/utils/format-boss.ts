@@ -1,7 +1,5 @@
 import { Boss } from "../models/boss";
-import { isBossAberto } from "./is-boss-aberto";
-import { isBossVencido } from "./is-boss-vencido";
-import { previsaoBoss } from "./previsao-boss";
+import { isBossAberto, isBossVencido, previsaoBoss } from "./boss-utils";
 
 const formatBoss = (boss: Boss): string => {
     let infoBoss = '-------------------------------------------------------\n';

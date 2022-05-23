@@ -1,6 +1,6 @@
 import { ModalActionRowComponent, MessageActionRow, Modal, TextInputComponent, ModalSubmitInteraction } from 'discord.js';
 import { Ids } from '../utils/ids';
-import { adicionarHorarioBoss } from '../utils/db';
+import { adicionarHorarioBoss } from '../db/db';
 import { mostrarHorarios } from './tabela-horario-boss';
 
 export class AdicionarHorarioModal {
@@ -61,10 +61,10 @@ export class AdicionarHorarioModal {
 
         let nomeBoss = "";
 
-        const valoresRei = ['rey', 'rei', 'rei kundun', 'reikundun', 'rey kundun', 'kundun'];
-        const valoresRelics = ['relics', 'illusion', 'relycs', 'relcs', 'relic', 'illusion of kundun'];
-        const valoresFenix = ['fenix', 'phoenix', 'fênix', 'fnix', 'fenx', 'phoenix of darkness'];
-        const valoresDbk = ['dbk', 'death', 'beam,', 'dbl', 'deathbk', 'bk', 'death beam knigth'];
+        const valoresRei: string[] = ['k', 'rk', 'rey', 'rei', 'rei kundun', 'reikundun', 'rey kundun', 'kundun'];
+        const valoresRelics: string[] = ['i', 'rl', 'rel','relics', 'illusion', 'relycs', 'relcs', 'relic', 'illusion of kundun'];
+        const valoresFenix: string[] = ['f','fenix', 'phoenix', 'phoênix', 'fênix', 'fnix', 'fenx', 'phoenix of darkness'];
+        const valoresDbk: string[] = ['d','dbk', 'death', 'beam', 'death beam', 'db', 'dbl', 'deathbk', 'bk', 'death beam knigth'];
 
         switch (true) {
             case valoresRei.includes(textInputNomeBoss): nomeBoss = "rei"; break;
@@ -103,7 +103,7 @@ export class AdicionarHorarioModal {
         }
 
         adicionarHorarioBoss(nomeBoss, textInputSalaBoss, textInputHorarioBoss, textInputDataBoss).then(async () => {
-            await interaction.reply(`${interaction.user} Horário adicionado com sucesso! (boss: ${nomeBoss} sala: ${textInputSalaBoss} horário: ${textInputHorarioBoss} data: ${textInputDataBoss})`);
+            await interaction.reply(`${interaction.user} Horário adicionado com sucesso! (Boss: ${nomeBoss} Sala: ${textInputSalaBoss} Horário: ${textInputHorarioBoss} Data: ${textInputDataBoss})`);
             await mostrarHorarios(interaction);
         });
     }
