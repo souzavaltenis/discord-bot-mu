@@ -4,12 +4,16 @@ import { IdBossSala } from "../models/id-boss-sala";
 import { TimeoutSingleton } from "../models/singleton/timeout-singleton";
 import { vaiAbrirBoss, calcularHorarioRestanteBoss, vaiFecharBoss } from "./boss-utils";
 import { bossFirestoreConfig, channelTextId } from '../../config.json';
-import { Client, TextBasedChannel } from "discord.js";
+import { TextBasedChannel } from "discord.js";
 import { mensagemAvisoAbertura, mensagemAvisoFechamento } from "../utils/mensagens-utils";
 import { adicionarTimeoutsDB } from "../db/db";
+import { client } from "../../index";
 
-const agendarAvisos = (listaBoss: Boss[], client: Client): void => {
+const agendarAvisos = (listaBoss: Boss[]): void => {
     const textChannel = client.channels.cache.get(channelTextId) as TextBasedChannel;
+
+    if (!client || !textChannel) return;
+
     let contadorBossAbertos: number = 0;
 
     listaBoss.forEach((boss: Boss) => {
@@ -40,7 +44,7 @@ const agendarAvisos = (listaBoss: Boss[], client: Client): void => {
 
 const adicionarTimeout = (
     idTimeout: string, 
-    funcaoAviso: (nomeBoss: string, salaBoss: number, textChannel: TextBasedChannel | null) => void, 
+    funcaoAviso: (nomeBoss: string, salaBoss: number, textChannel: TextBasedChannel | null) => Promise<void>, 
     time: number, 
     nomeBoss: string, 
     sala: number, 

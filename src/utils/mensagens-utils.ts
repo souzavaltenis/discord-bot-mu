@@ -1,22 +1,27 @@
 import { TextBasedChannel, MessageEmbed } from "discord.js";
+import { mostrarHorarios } from "../templates/tabela-horario-boss";
 import { numberToEmoji, underbold } from "./geral-utils";
 
-const mensagemAvisoAbertura = (nomeBoss: string, salaBoss: number, textChannel: TextBasedChannel | null): void => {
+const mensagemAvisoAbertura = async (nomeBoss: string, salaBoss: number, textChannel: TextBasedChannel | null): Promise<void> => {
     const emebedAvisoAbertura = new MessageEmbed()
         .setColor("GREEN")
         .setTitle("✅ AVISO")
         .setDescription(`Boss ${underbold(nomeBoss)} sala ${numberToEmoji(salaBoss)} ${underbold('abriu')}  🕗`)
         .setTimestamp();
-    textChannel?.send({ embeds: [emebedAvisoAbertura] });
+
+    await mostrarHorarios(textChannel);
+    await textChannel?.send({ embeds: [emebedAvisoAbertura] });
 }
 
-const mensagemAvisoFechamento = (nomeBoss: string, salaBoss: number, textChannel: TextBasedChannel | null): void => {
+const mensagemAvisoFechamento = async (nomeBoss: string, salaBoss: number, textChannel: TextBasedChannel | null): Promise<void> => {
     const emebedAvisoFechamento = new MessageEmbed()
         .setColor("RED")
         .setTitle("❌ AVISO")
         .setDescription(`Boss ${underbold(nomeBoss)} sala ${numberToEmoji(salaBoss)} ${underbold('fechou')}  🕛`)
         .setTimestamp();
-    textChannel?.send({ embeds: [emebedAvisoFechamento] });
+
+    await mostrarHorarios(textChannel);
+    await textChannel?.send({ embeds: [emebedAvisoFechamento] });
 }
 
 export { mensagemAvisoAbertura, mensagemAvisoFechamento }

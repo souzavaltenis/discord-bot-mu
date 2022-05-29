@@ -47,7 +47,7 @@ const consultarHorarioBoss = async (): Promise<Boss[]> => {
 const adicionarLog = async (log: string): Promise<void> => {
     const logsRef = doc(db, bossFirestoreConfig.collectionLogs, bossFirestoreConfig.documentLogs);
     await updateDoc(logsRef, {
-        [dataNowString("DD-MM-YY")]: arrayUnion(log)
+        [dataNowString("DD-MM-YY")]: arrayUnion(`[${dataNowString('HH:mm:ss')}] ${log}`)
     });
 }
 

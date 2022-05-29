@@ -115,7 +115,7 @@ export class AdicionarHorarioModal {
         adicionarHorarioBoss(nomeDocBoss, salaBoss, momentToString(horarioInformado)).then(async () => {
             const infosInputs: string = formatInfosInputs(nomeDocBoss, salaBoss, horarioInformado);
             await interaction.reply(`${interaction.user} Horário adicionado com sucesso! (${infosInputs})`);
-            await mostrarHorarios(interaction);
+            await mostrarHorarios(interaction.channel);
         });
     }
 }

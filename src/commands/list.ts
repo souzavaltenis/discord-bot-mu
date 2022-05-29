@@ -8,6 +8,6 @@ export class List {
     async execute(interaction: CommandInteraction): Promise<void> {
         await interaction.deferReply()
         await interaction.deleteReply()
-		await mostrarHorarios(interaction);
+		await mostrarHorarios(interaction.channel);
     }
 }
