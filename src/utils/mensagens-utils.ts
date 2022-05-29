@@ -1,12 +1,11 @@
-import { underscore, bold } from "@discordjs/builders";
 import { TextBasedChannel, MessageEmbed } from "discord.js";
-import { numberToEmoji } from "./geral-utils";
+import { numberToEmoji, underbold } from "./geral-utils";
 
 const mensagemAvisoAbertura = (nomeBoss: string, salaBoss: number, textChannel: TextBasedChannel | null): void => {
     const emebedAvisoAbertura = new MessageEmbed()
         .setColor("GREEN")
         .setTitle("✅ AVISO")
-        .setDescription(`Boss ${underscore(bold(nomeBoss))} sala ${numberToEmoji(salaBoss)} abriu  🕗`)
+        .setDescription(`Boss ${underbold(nomeBoss)} sala ${numberToEmoji(salaBoss)} ${underbold('abriu')}  🕗`)
         .setTimestamp();
     textChannel?.send({ embeds: [emebedAvisoAbertura] });
 }
@@ -15,7 +14,7 @@ const mensagemAvisoFechamento = (nomeBoss: string, salaBoss: number, textChannel
     const emebedAvisoFechamento = new MessageEmbed()
         .setColor("RED")
         .setTitle("❌ AVISO")
-        .setDescription(`Boss ${underscore(bold(nomeBoss))} sala ${numberToEmoji(salaBoss)} fechou  🕛`)
+        .setDescription(`Boss ${underbold(nomeBoss)} sala ${numberToEmoji(salaBoss)} ${underbold('fechou')}  🕛`)
         .setTimestamp();
     textChannel?.send({ embeds: [emebedAvisoFechamento] });
 }

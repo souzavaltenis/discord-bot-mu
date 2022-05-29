@@ -12,7 +12,7 @@ const mostrarHorarios = async (interaction: Interaction) => {
         agendarAvisos(listaBoss, interaction.client);
 
         const embedTabelaBoss = new MessageEmbed()
-            .setColor("RANDOM")
+            .setColor("DARK_BLUE")
             .setTitle("Tabela de Horários Boss")
             .setDescription("\u200B")
             .setTimestamp()

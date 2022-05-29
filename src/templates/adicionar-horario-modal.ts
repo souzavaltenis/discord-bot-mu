@@ -6,7 +6,7 @@ import { bossFirestoreConfig } from '../../config.json';
 import { dataNowMoment, dataNowString, distanceDatasInMinutes, momentToString, stringToMoment } from '../utils/data-utils';
 import { bold } from '@discordjs/builders';
 import { Moment } from 'moment';
-import { numberToEmoji } from '../utils/geral-utils';
+import { formatInfosInputs } from '../utils/geral-utils';
 
 export class AdicionarHorarioModal {
 
@@ -70,10 +70,10 @@ export class AdicionarHorarioModal {
         const valoresDbk: string[] = ['d','dbk', 'death', 'beam', 'death beam', 'db', 'dbl', 'deathbk', 'bk', 'death beam knigth'];
 
         switch (true) {
-            case valoresRei.includes(textInputNomeBoss): nomeDocBoss = bossFirestoreConfig.docs.docRei; break;
-            case valoresRelics.includes(textInputNomeBoss): nomeDocBoss = bossFirestoreConfig.docs.docRelics; break;
-            case valoresFenix.includes(textInputNomeBoss): nomeDocBoss = bossFirestoreConfig.docs.docFenix; break;
-            case valoresDbk.includes(textInputNomeBoss): nomeDocBoss = bossFirestoreConfig.docs.docDeathBeam; break;
+            case valoresRei.includes(textInputNomeBoss):    nomeDocBoss = bossFirestoreConfig.docs.docRei;       break;
+            case valoresRelics.includes(textInputNomeBoss): nomeDocBoss = bossFirestoreConfig.docs.docRelics;    break;
+            case valoresFenix.includes(textInputNomeBoss):  nomeDocBoss = bossFirestoreConfig.docs.docFenix;     break;
+            case valoresDbk.includes(textInputNomeBoss):    nomeDocBoss = bossFirestoreConfig.docs.docDeathBeam; break;
         }
 
         if (!nomeDocBoss) {
@@ -113,7 +113,8 @@ export class AdicionarHorarioModal {
         }
 
         adicionarHorarioBoss(nomeDocBoss, salaBoss, momentToString(horarioInformado)).then(async () => {
-            await interaction.reply(`${interaction.user} Horário adicionado com sucesso! (${nomeDocBoss} sala ${numberToEmoji(salaBoss)} 🕗 ${textInputHorarioBoss})`);
+            const infosInputs: string = formatInfosInputs(nomeDocBoss, salaBoss, horarioInformado);
+            await interaction.reply(`${interaction.user} Horário adicionado com sucesso! (${infosInputs})`);
             await mostrarHorarios(interaction);
         });
     }

@@ -9,7 +9,8 @@ import { mensagemAvisoAbertura, mensagemAvisoFechamento } from "../utils/mensage
 import { adicionarTimeoutsDB } from "../db/db";
 
 const agendarAvisos = (listaBoss: Boss[], client: Client): void => {
-    const textChannel = client.channels.cache.get(channelTextId) as TextBasedChannel; 
+    const textChannel = client.channels.cache.get(channelTextId) as TextBasedChannel;
+    let contadorBossAbertos: number = 0;
 
     listaBoss.forEach((boss: Boss) => {
         boss.salas.forEach((horarioBoss: Moment, sala: number) => {
@@ -26,12 +27,14 @@ const agendarAvisos = (listaBoss: Boss[], client: Client): void => {
             } 
             
             if (vaiFecharBoss(horarioBoss)) {
+                contadorBossAbertos++;
                 const horarioAteFechar: number = calcularHorarioRestanteBoss(horarioBoss, bossFirestoreConfig.horaBossFinal).valueOf();
                 adicionarTimeout(idBossSala.fechado, mensagemAvisoFechamento, horarioAteFechar, boss.nome, sala, textChannel);
             }
         });
     });
 
+    client.user?.setPresence({ activities: [{ name: `Boss Abertos :: ${contadorBossAbertos}`, type: 'PLAYING' }], status: 'idle' });
     adicionarTimeoutsDB();
 }
 
