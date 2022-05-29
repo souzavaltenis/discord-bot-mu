@@ -5,8 +5,10 @@ import { AdicionarHorarioModal } from '../templates/adicionar-horario-modal';
 import { deployCommands } from './deploy-commands';
 import { Ids } from './ids';
 import { clientId } from '../../config.json';
-import { adicionarLog } from '../db/db';
-import { dataNowString } from './boss-utils';
+import { adicionarLog, consultarHorarioBoss } from '../db/db';
+import { dataNowString } from './data-utils';
+import { Boss } from '../models/boss';
+import { agendarAvisos } from './avisos-utils';
 
 const setEvents = (client: Client): void => {
 
@@ -15,8 +17,13 @@ const setEvents = (client: Client): void => {
         deployCommands(clientId, guild.id);
     });
 
-    client.on('ready', (c: Client) => {
-        adicionarLog(`[${dataNowString('HH:mm:ss')}] OnReady: Logado como: ${c.user?.tag}`);
+    client.on('ready', (client: Client) => {
+        console.log(`Logado como: ${client.user?.tag}`);
+        adicionarLog(`[${dataNowString('HH:mm:ss')}] OnReady: Logado como: ${client.user?.tag}`);
+        
+        consultarHorarioBoss().then(async (listaBoss: Boss[]) => {
+            agendarAvisos(listaBoss, client);
+        });
     });
 
     client.on('interactionCreate', async (interaction: Interaction) => {

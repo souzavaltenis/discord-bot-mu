@@ -3,5 +3,5 @@ export class Ids {
     static INPUT_NOME_BOSS: string = "nome-bosss";
     static INPUT_SALA_BOSS: string = "sala-boss";
     static INPUT_HORARIO_BOSS: string = "horario-boss";
-    static INPUT_DATA_BOSS: string = "data-boss";
+    static INPUT_PERGUNTA_ONTEM: string = "is-ontem";
 }

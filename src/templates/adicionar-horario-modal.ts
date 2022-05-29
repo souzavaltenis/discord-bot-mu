@@ -2,6 +2,11 @@ import { ModalActionRowComponent, MessageActionRow, Modal, TextInputComponent, M
 import { Ids } from '../utils/ids';
 import { adicionarHorarioBoss } from '../db/db';
 import { mostrarHorarios } from './tabela-horario-boss';
+import { bossFirestoreConfig } from '../../config.json';
+import { dataNowMoment, dataNowString, distanceDatasInMinutes, momentToString, stringToMoment } from '../utils/data-utils';
+import { bold } from '@discordjs/builders';
+import { Moment } from 'moment';
+import { numberToEmoji } from '../utils/geral-utils';
 
 export class AdicionarHorarioModal {
 
@@ -37,20 +42,18 @@ export class AdicionarHorarioModal {
             .setRequired(true)
             .setStyle('SHORT');
 
-        const inputDataBoss = new TextInputComponent()
-            .setCustomId(Ids.INPUT_DATA_BOSS)
-            .setLabel("Qual Data?")
-            .setPlaceholder("Ex: 22/05")
-            .setMinLength(5)
-            .setMaxLength(5)
-            .setRequired(true)
+        const inputPerguntaOntem = new TextInputComponent()
+            .setCustomId(Ids.INPUT_PERGUNTA_ONTEM)
+            .setLabel("Foi ontem? Se não foi, pode deixar vazio.")
+            .setPlaceholder("Ex: sim")
+            .setMaxLength(3)
             .setStyle('SHORT');
 
         modalHorarioBoss.addComponents(
             new MessageActionRow<ModalActionRowComponent>().addComponents(inputNomeBoss),
             new MessageActionRow<ModalActionRowComponent>().addComponents(inputSalaBoss),
             new MessageActionRow<ModalActionRowComponent>().addComponents(inputHorarioBoss),
-            new MessageActionRow<ModalActionRowComponent>().addComponents(inputDataBoss)
+            new MessageActionRow<ModalActionRowComponent>().addComponents(inputPerguntaOntem)
         );
 
         return modalHorarioBoss;
@@ -59,7 +62,7 @@ export class AdicionarHorarioModal {
     async action(interaction: ModalSubmitInteraction) {
         const textInputNomeBoss: string = interaction.fields.getTextInputValue(Ids.INPUT_NOME_BOSS).toLocaleLowerCase();
 
-        let nomeBoss = "";
+        let nomeDocBoss = "";
 
         const valoresRei: string[] = ['k', 'rk', 'rey', 'rei', 'rei kundun', 'reikundun', 'rey kundun', 'kundun'];
         const valoresRelics: string[] = ['i', 'rl', 'rel','relics', 'illusion', 'relycs', 'relcs', 'relic', 'illusion of kundun'];
@@ -67,13 +70,13 @@ export class AdicionarHorarioModal {
         const valoresDbk: string[] = ['d','dbk', 'death', 'beam', 'death beam', 'db', 'dbl', 'deathbk', 'bk', 'death beam knigth'];
 
         switch (true) {
-            case valoresRei.includes(textInputNomeBoss): nomeBoss = "rei"; break;
-            case valoresRelics.includes(textInputNomeBoss): nomeBoss = "relics"; break;
-            case valoresFenix.includes(textInputNomeBoss): nomeBoss = "fenix"; break;
-            case valoresDbk.includes(textInputNomeBoss): nomeBoss = "dbk"; break;
+            case valoresRei.includes(textInputNomeBoss): nomeDocBoss = bossFirestoreConfig.docs.docRei; break;
+            case valoresRelics.includes(textInputNomeBoss): nomeDocBoss = bossFirestoreConfig.docs.docRelics; break;
+            case valoresFenix.includes(textInputNomeBoss): nomeDocBoss = bossFirestoreConfig.docs.docFenix; break;
+            case valoresDbk.includes(textInputNomeBoss): nomeDocBoss = bossFirestoreConfig.docs.docDeathBeam; break;
         }
 
-        if (!nomeBoss) {
+        if (!nomeDocBoss) {
             await interaction.reply(`${interaction.user} Boss ${textInputNomeBoss} não é reconhecido!`);
             return;
         }
@@ -81,29 +84,36 @@ export class AdicionarHorarioModal {
         const textInputSalaBoss: string = interaction.fields.getTextInputValue(Ids.INPUT_SALA_BOSS);
         
         const salaBoss = parseInt(textInputSalaBoss);
-        const salasConhecidas = [2, 3, 4, 5, 6];
+        const salasConhecidas = bossFirestoreConfig.salasPermitidas;
 
         if (salaBoss === NaN || !salasConhecidas.includes(salaBoss)) {
-            await interaction.reply(`${interaction.user} Sala ${textInputSalaBoss} não é reconhecida! Use a sala 2, 3, 4, 5 ou 6.`);
+            await interaction.reply(`${interaction.user} Sala ${textInputSalaBoss} não é reconhecida! Use as salas ${salasConhecidas}.`);
             return;
         }
 
         const textInputHorarioBoss: string = interaction.fields.getTextInputValue(Ids.INPUT_HORARIO_BOSS);
 
         if (!(/^(?:[01][0-9]|2[0-3]):[0-5][0-9](?::[0-5][0-9])?$/).test(textInputHorarioBoss)) {
-            await interaction.reply(`${interaction.user} Horário ${textInputHorarioBoss} não é reconhecido! Use como exemplo: 15:46`);
+            await interaction.reply(`${interaction.user} Horário ${bold(textInputHorarioBoss)} não é reconhecido! Use como exemplo: 15:46`);
             return;
         }
 
-        const textInputDataBoss: string = interaction.fields.getTextInputValue(Ids.INPUT_DATA_BOSS);
+        const horarioInformado: Moment = stringToMoment(`${dataNowString('DD/MM/YYYY')} ${textInputHorarioBoss} -0300`)
 
-        if (!(/(3[01]|[12][0-9]|0[1-9])[\/](1[0-2]|0[1-9])/).test(textInputDataBoss)) {
-            await interaction.reply(`${interaction.user} Data ${textInputDataBoss} não é reconhecida! Use como exemplo: 22/05`);
+        const inputPerguntaOntem: string = interaction.fields.getTextInputValue(Ids.INPUT_PERGUNTA_ONTEM);
+        const foiOntem: boolean = inputPerguntaOntem.length > 0 && ['s', 'si', 'sim'].includes(inputPerguntaOntem.toLocaleLowerCase());
+
+        if (!foiOntem && distanceDatasInMinutes(horarioInformado, dataNowMoment()) >= 40) {
+            await interaction.reply(`${interaction.user} Horário ${bold(textInputHorarioBoss)} é muito distante! Se foi de ontem, preencha o último campo com ${bold('sim')}.`);
             return;
         }
 
-        adicionarHorarioBoss(nomeBoss, textInputSalaBoss, textInputHorarioBoss, textInputDataBoss).then(async () => {
-            await interaction.reply(`${interaction.user} Horário adicionado com sucesso! (Boss: ${nomeBoss} Sala: ${textInputSalaBoss} Horário: ${textInputHorarioBoss} Data: ${textInputDataBoss})`);
+        if (foiOntem) {
+            horarioInformado.subtract(1, 'day');
+        }
+
+        adicionarHorarioBoss(nomeDocBoss, salaBoss, momentToString(horarioInformado)).then(async () => {
+            await interaction.reply(`${interaction.user} Horário adicionado com sucesso! (${nomeDocBoss} sala ${numberToEmoji(salaBoss)} 🕗 ${textInputHorarioBoss})`);
             await mostrarHorarios(interaction);
         });
     }

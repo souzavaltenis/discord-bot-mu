@@ -1,45 +1,62 @@
 import { initializeApp } from "firebase/app";
-import { doc, getFirestore, QueryDocumentSnapshot, WithFieldValue, DocumentData, SnapshotOptions, updateDoc, getDocs, collection, arrayUnion } from "firebase/firestore";
-import { firebaseConfig } from '../../config.json';
+import { doc, getFirestore, QueryDocumentSnapshot, WithFieldValue, DocumentData, SnapshotOptions, updateDoc, getDocs, collection, arrayUnion, orderBy, query, setDoc } from "firebase/firestore";
+import { Moment } from "moment";
+import { firebaseConfig, bossFirestoreConfig } from '../../config.json';
 import { Boss } from "../models/boss";
-import { dataNowString, ordernarListaBoss } from "../utils/boss-utils";
+import { TimeoutSingleton } from "../models/singleton/timeout-singleton";
+import { dataNowString, momentToString, stringToMoment } from "../utils/data-utils";
 
 const appFirebase = initializeApp(firebaseConfig);
 const db = getFirestore(appFirebase);
 
 const bossConverter = {
     toFirestore(boss: WithFieldValue<Boss>): DocumentData {
-      return {id: boss.id, nome: boss.nome, sala2: boss.sala2, sala3: boss.sala3, sala4: boss.sala4, sala5: boss.sala5, sala6: boss.sala6};
+        const salasMoment = boss.salas as Map<number, Moment>;
+        const salasString = new Map<number, string>();
+        salasMoment.forEach((value, key) => {
+            salasString.set(key, momentToString(value));
+        });
+        return { id: boss.id, nome: boss.nome, salas: Object.fromEntries(salasString) };
     },
     fromFirestore(snapshot: QueryDocumentSnapshot, options: SnapshotOptions): Boss {
-      const data = snapshot.data(options);
-      return new Boss(data.id, data.nome, data.sala2, data.sala3, data.sala4, data.sala5, data.sala6);
+        const data = snapshot.data(options);
+        const salas = new Map<number, Moment>();
+        Object.keys(data.salas).forEach(key => {
+            salas.set(parseInt(key), stringToMoment(data.salas[key]))
+        });
+        return new Boss(data.id, data.nome, salas);
     }
 };
 
-const adicionarHorarioBoss = async function (nome: string, sala: string, horario: string, data: string): Promise<void> {
-    const bossRef = doc(db, "boss", nome);
+const adicionarHorarioBoss = async (nomeDoc: string, sala: number, horario: string): Promise<void> => {
+    const bossRef = doc(db, bossFirestoreConfig.collectionBoss, nomeDoc);
     return updateDoc(bossRef, {
-        [`sala${sala}`]: horario + ';' + data
+        [`salas.${sala}`]: horario
     });
 }
 
-const consultarHorarioBoss = async function(): Promise<Boss[]> {
+const consultarHorarioBoss = async (): Promise<Boss[]> => {
     return new Promise<Boss[]>(async (resolve) => {
-        const querySnapshot = await getDocs(collection(db, "boss").withConverter(bossConverter));
+        const querySnapshot = await getDocs(query(collection(db, bossFirestoreConfig.collectionBoss), orderBy("id")).withConverter(bossConverter));
         const listaBoss = [] as Boss[];
         querySnapshot.forEach(boss => listaBoss.push(boss.data()));
-        ordernarListaBoss(listaBoss);
         resolve(listaBoss);
     });
 }
 
 const adicionarLog = async (log: string): Promise<void> => {
-    const field: string = dataNowString("DD-MM-YY");
-    const logsRef = doc(db, "logs", "log-discord");
+    const logsRef = doc(db, bossFirestoreConfig.collectionLogs, bossFirestoreConfig.documentLogs);
     await updateDoc(logsRef, {
-        [field]: arrayUnion(log)
+        [dataNowString("DD-MM-YY")]: arrayUnion(log)
     });
 }
 
-export { adicionarHorarioBoss, consultarHorarioBoss, adicionarLog };
+const adicionarTimeoutsDB = async(): Promise<void> => {
+    const timeouts: Map<string, NodeJS.Timeout> = TimeoutSingleton.getInstance().timeouts;
+    const logsRef = doc(db, bossFirestoreConfig.collectionLogs, bossFirestoreConfig.documentTimeouts);
+    await setDoc(logsRef, {
+        _0: Array.from(timeouts.keys())
+    });
+}
+
+export { adicionarHorarioBoss, consultarHorarioBoss, adicionarLog, adicionarTimeoutsDB};
