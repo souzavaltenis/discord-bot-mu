@@ -3,8 +3,8 @@ import { Add } from '../commands/add';
 import { List } from '../commands/list';
 import { AdicionarHorarioModal } from '../templates/adicionar-horario-modal';
 import { deployCommands } from './deploy-commands';
-import { Ids } from './ids';
-import { clientId } from '../../config.json';
+import { Ids } from '../models/ids';
+import { config } from '../config/get-configs';
 import { adicionarLog, consultarHorarioBoss } from '../db/db';
 import { Boss } from '../models/boss';
 import { agendarAvisos } from './avisos-utils';
@@ -13,7 +13,7 @@ const setEvents = (client: Client): void => {
 
     client.on("guildCreate", (guild: Guild) => {
         adicionarLog(`OnGuildCreate: Adicionado ao servidor: ${guild.name}`);
-        deployCommands(clientId, guild.id);
+        deployCommands(config.clientId, guild.id);
     });
 
     client.on('ready', (client: Client) => {

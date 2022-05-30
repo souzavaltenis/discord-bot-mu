@@ -1,6 +1,6 @@
 import { REST } from '@discordjs/rest';
 import { RESTPostAPIApplicationCommandsJSONBody, Routes } from 'discord-api-types/v9';
-import { token } from '../../config.json';
+import { config } from '../config/get-configs';
 import { Add } from '../commands/add';
 import { List } from '../commands/list';
 
@@ -10,7 +10,7 @@ const deployCommands = (clientId: string, guildId: string): void => {
 		new List().data.toJSON()
 	];
 	
-	const rest = new REST({ version: '9' }).setToken(token);
+	const rest = new REST({ version: '9' }).setToken(config.token);
 	
 	rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands })
 		.then(() => console.log('Comandos registrados com sucesso.'))

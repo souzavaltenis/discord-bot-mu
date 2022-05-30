@@ -1,11 +1,11 @@
 import { Client, Intents } from 'discord.js';
-import { token } from './config.json';
+import { config } from './src/config/get-configs';
 import { setEvents } from './src/utils/set-events';
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 
 setEvents(client);
 
-client.login(token);
+client.login(config.token);
 
 export { client }

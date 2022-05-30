@@ -1,12 +1,12 @@
 import { initializeApp } from "firebase/app";
 import { doc, getFirestore, QueryDocumentSnapshot, WithFieldValue, DocumentData, SnapshotOptions, updateDoc, getDocs, collection, arrayUnion, orderBy, query, setDoc } from "firebase/firestore";
 import { Moment } from "moment";
-import { firebaseConfig, bossFirestoreConfig } from '../../config.json';
+import { config } from '../config/get-configs';
 import { Boss } from "../models/boss";
 import { TimeoutSingleton } from "../models/singleton/timeout-singleton";
 import { dataNowString, momentToString, stringToMoment } from "../utils/data-utils";
 
-const appFirebase = initializeApp(firebaseConfig);
+const appFirebase = initializeApp(config.firebaseConfig);
 const db = getFirestore(appFirebase);
 
 const bossConverter = {
@@ -29,7 +29,7 @@ const bossConverter = {
 };
 
 const adicionarHorarioBoss = async (nomeDoc: string, sala: number, horario: string): Promise<void> => {
-    const bossRef = doc(db, bossFirestoreConfig.collectionBoss, nomeDoc);
+    const bossRef = doc(db, config.bossFirestoreConfig.collectionBoss, nomeDoc);
     return updateDoc(bossRef, {
         [`salas.${sala}`]: horario
     });
@@ -37,7 +37,7 @@ const adicionarHorarioBoss = async (nomeDoc: string, sala: number, horario: stri
 
 const consultarHorarioBoss = async (): Promise<Boss[]> => {
     return new Promise<Boss[]>(async (resolve) => {
-        const querySnapshot = await getDocs(query(collection(db, bossFirestoreConfig.collectionBoss), orderBy("id")).withConverter(bossConverter));
+        const querySnapshot = await getDocs(query(collection(db, config.bossFirestoreConfig.collectionBoss), orderBy("id")).withConverter(bossConverter));
         const listaBoss = [] as Boss[];
         querySnapshot.forEach(boss => listaBoss.push(boss.data()));
         resolve(listaBoss);
@@ -45,7 +45,7 @@ const consultarHorarioBoss = async (): Promise<Boss[]> => {
 }
 
 const adicionarLog = async (log: string): Promise<void> => {
-    const logsRef = doc(db, bossFirestoreConfig.collectionLogs, bossFirestoreConfig.documentLogs);
+    const logsRef = doc(db, config.bossFirestoreConfig.collectionLogs, config.bossFirestoreConfig.documentLogs);
     await updateDoc(logsRef, {
         [dataNowString("DD-MM-YY")]: arrayUnion(`[${dataNowString('HH:mm:ss')}] ${log}`)
     });
@@ -53,9 +53,9 @@ const adicionarLog = async (log: string): Promise<void> => {
 
 const adicionarTimeoutsDB = async(): Promise<void> => {
     const timeouts: Map<string, NodeJS.Timeout> = TimeoutSingleton.getInstance().timeouts;
-    const logsRef = doc(db, bossFirestoreConfig.collectionLogs, bossFirestoreConfig.documentTimeouts);
+    const logsRef = doc(db, config.bossFirestoreConfig.collectionLogs, config.bossFirestoreConfig.documentTimeouts);
     await setDoc(logsRef, {
-        _0: Array.from(timeouts.keys())
+        mapTimeouts: Array.from(timeouts.keys())
     });
 }
 

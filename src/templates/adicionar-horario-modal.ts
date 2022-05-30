@@ -1,8 +1,8 @@
 import { ModalActionRowComponent, MessageActionRow, Modal, TextInputComponent, ModalSubmitInteraction } from 'discord.js';
-import { Ids } from '../utils/ids';
+import { Ids } from '../models/ids';
 import { adicionarHorarioBoss } from '../db/db';
 import { mostrarHorarios } from './tabela-horario-boss';
-import { bossFirestoreConfig } from '../../config.json';
+import { config } from '../config/get-configs';
 import { dataNowMoment, dataNowString, distanceDatasInMinutes, momentToString, stringToMoment } from '../utils/data-utils';
 import { bold } from '@discordjs/builders';
 import { Moment } from 'moment';
@@ -70,10 +70,10 @@ export class AdicionarHorarioModal {
         const valoresDbk: string[] = ['d','dbk', 'death', 'beam', 'death beam', 'db', 'dbl', 'deathbk', 'bk', 'death beam knigth'];
 
         switch (true) {
-            case valoresRei.includes(textInputNomeBoss):    nomeDocBoss = bossFirestoreConfig.docs.docRei;       break;
-            case valoresRelics.includes(textInputNomeBoss): nomeDocBoss = bossFirestoreConfig.docs.docRelics;    break;
-            case valoresFenix.includes(textInputNomeBoss):  nomeDocBoss = bossFirestoreConfig.docs.docFenix;     break;
-            case valoresDbk.includes(textInputNomeBoss):    nomeDocBoss = bossFirestoreConfig.docs.docDeathBeam; break;
+            case valoresRei.includes(textInputNomeBoss):    nomeDocBoss = config.bossFirestoreConfig.docs.docRei;       break;
+            case valoresRelics.includes(textInputNomeBoss): nomeDocBoss = config.bossFirestoreConfig.docs.docRelics;    break;
+            case valoresFenix.includes(textInputNomeBoss):  nomeDocBoss = config.bossFirestoreConfig.docs.docFenix;     break;
+            case valoresDbk.includes(textInputNomeBoss):    nomeDocBoss = config.bossFirestoreConfig.docs.docDeathBeam; break;
         }
 
         if (!nomeDocBoss) {
@@ -84,7 +84,7 @@ export class AdicionarHorarioModal {
         const textInputSalaBoss: string = interaction.fields.getTextInputValue(Ids.INPUT_SALA_BOSS);
         
         const salaBoss = parseInt(textInputSalaBoss);
-        const salasConhecidas = bossFirestoreConfig.salasPermitidas;
+        const salasConhecidas = config.bossFirestoreConfig.salasPermitidas;
 
         if (salaBoss === NaN || !salasConhecidas.includes(salaBoss)) {
             await interaction.reply(`${interaction.user} Sala ${textInputSalaBoss} não é reconhecida! Use as salas ${salasConhecidas}.`);

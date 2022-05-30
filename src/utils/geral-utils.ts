@@ -1,6 +1,6 @@
 import { bold, underscore } from "@discordjs/builders";
 import { Moment } from "moment";
-import { bossFirestoreConfig } from '../../config.json';
+import { config } from '../config/get-configs';
 
 const tracos = (quantidade: number): string => {
     let str: string = '';
@@ -40,10 +40,10 @@ const formatInfosInputs = (nomeDocBoss: string, salaBoss: number, horarioInforma
     let nomeBoss = '';
 
     switch(nomeDocBoss) {
-        case bossFirestoreConfig.docs.docRei:       nomeBoss = "Rei Kundun"; break; 
-        case bossFirestoreConfig.docs.docRelics:    nomeBoss = "Relics";     break; 
-        case bossFirestoreConfig.docs.docFenix:     nomeBoss = "Fenix";      break; 
-        case bossFirestoreConfig.docs.docDeathBeam: nomeBoss = "Death Beam"; break;
+        case config.bossFirestoreConfig.docs.docRei:       nomeBoss = "Rei Kundun"; break; 
+        case config.bossFirestoreConfig.docs.docRelics:    nomeBoss = "Relics";     break; 
+        case config.bossFirestoreConfig.docs.docFenix:     nomeBoss = "Fenix";      break; 
+        case config.bossFirestoreConfig.docs.docDeathBeam: nomeBoss = "Death Beam"; break;
     }
 
     const infoHorario: string = horarioInformado.format('HH:mm');

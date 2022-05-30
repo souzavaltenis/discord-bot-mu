@@ -1,0 +1,29 @@
+{
+    "clientId": "",
+    "token": "",
+    "channelTextId": "",
+    "bossFirestoreConfig": {
+        "collectionBoss": "",
+        "docs": {
+            "docRei": "",
+            "docRelics": "",
+            "docFenix": "",
+            "docDeathBeam": ""
+        },
+        "salasPermitidas": [0],
+        "horaBossInicial": 0,
+        "horaBossFinal": 0,
+        "collectionLogs": "",
+        "documentLogs": "",
+        "documentTimeouts": ""
+    },
+    "firebaseConfig": {
+        "apiKey": "",
+        "authDomain": "",
+        "projectId": "",
+        "storageBucket": "",
+        "messagingSenderId": "",
+        "appId": "",
+        "measurementId": ""
+    }
+}

@@ -3,14 +3,14 @@ import { Boss } from "../models/boss";
 import { IdBossSala } from "../models/id-boss-sala";
 import { TimeoutSingleton } from "../models/singleton/timeout-singleton";
 import { vaiAbrirBoss, calcularHorarioRestanteBoss, vaiFecharBoss } from "./boss-utils";
-import { bossFirestoreConfig, channelTextId } from '../../config.json';
+import { config } from '../config/get-configs';
 import { TextBasedChannel } from "discord.js";
 import { mensagemAvisoAbertura, mensagemAvisoFechamento } from "../utils/mensagens-utils";
 import { adicionarTimeoutsDB } from "../db/db";
 import { client } from "../../index";
 
 const agendarAvisos = (listaBoss: Boss[]): void => {
-    const textChannel = client.channels.cache.get(channelTextId) as TextBasedChannel;
+    const textChannel = client.channels.cache.get(config.channelTextId) as TextBasedChannel;
 
     if (!client || !textChannel) return;
 
@@ -23,8 +23,8 @@ const agendarAvisos = (listaBoss: Boss[]): void => {
             limparTimeoutsBoss(idBossSala);
 
             if (vaiAbrirBoss(horarioBoss)) {
-                const horarioAteAbrir: number = calcularHorarioRestanteBoss(horarioBoss, bossFirestoreConfig.horaBossInicial).valueOf();
-                const horarioAteFechar: number = calcularHorarioRestanteBoss(horarioBoss, bossFirestoreConfig.horaBossFinal).valueOf();
+                const horarioAteAbrir: number = calcularHorarioRestanteBoss(horarioBoss, config.bossFirestoreConfig.horaBossInicial).valueOf();
+                const horarioAteFechar: number = calcularHorarioRestanteBoss(horarioBoss, config.bossFirestoreConfig.horaBossFinal).valueOf();
 
                 adicionarTimeout(idBossSala.aberto, mensagemAvisoAbertura, horarioAteAbrir, boss.nome, sala, textChannel);
                 adicionarTimeout(idBossSala.fechado, mensagemAvisoFechamento, horarioAteFechar, boss.nome, sala, textChannel);
@@ -32,7 +32,7 @@ const agendarAvisos = (listaBoss: Boss[]): void => {
             
             if (vaiFecharBoss(horarioBoss)) {
                 contadorBossAbertos++;
-                const horarioAteFechar: number = calcularHorarioRestanteBoss(horarioBoss, bossFirestoreConfig.horaBossFinal).valueOf();
+                const horarioAteFechar: number = calcularHorarioRestanteBoss(horarioBoss, config.bossFirestoreConfig.horaBossFinal).valueOf();
                 adicionarTimeout(idBossSala.fechado, mensagemAvisoFechamento, horarioAteFechar, boss.nome, sala, textChannel);
             }
         });

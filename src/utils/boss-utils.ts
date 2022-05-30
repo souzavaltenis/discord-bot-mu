@@ -1,7 +1,7 @@
 import moment, { Moment } from "moment";
 import { Boss } from "../models/boss";
 import { tracos } from "./geral-utils";
-import { bossFirestoreConfig } from '../../config.json';
+import { config } from '../config/get-configs';
 import { bold, spoiler, strikethrough } from "@discordjs/builders";
 import { dataNowMoment, diffDatas } from "./data-utils";
 
@@ -23,7 +23,7 @@ const isBossAberto = (horario: Moment): boolean => {
     if (!horario || !horario.isValid()) return false;
     
     const dataAtual = moment().utcOffset('GMT-03:00');
-    const dataNascimentoBossInicio = moment(horario).add(bossFirestoreConfig.horaBossInicial, 'hours');
+    const dataNascimentoBossInicio = moment(horario).add(config.bossFirestoreConfig.horaBossInicial, 'hours');
 
     return dataAtual.isAfter(dataNascimentoBossInicio);
 }
@@ -32,7 +32,7 @@ const isBossVencido = (horario: Moment): boolean => {
     if (!horario || !horario.isValid()) return false;
 
     const dataAtual = moment().utcOffset('GMT-03:00');
-    const dataNascimentoBossFim = moment(horario).add(bossFirestoreConfig.horaBossFinal, 'hours');
+    const dataNascimentoBossFim = moment(horario).add(config.bossFirestoreConfig.horaBossFinal, 'hours');
 
     return dataAtual.isAfter(dataNascimentoBossFim);
 }
@@ -40,8 +40,8 @@ const isBossVencido = (horario: Moment): boolean => {
 const previsaoBoss = (horario: Moment): string => {
     if (!horario || !horario.isValid()) return '';
 
-    const horarioNascimentoBossInicio = moment(horario).add(bossFirestoreConfig.horaBossInicial, 'hours').format('HH:mm');
-    const horarioNascimentoBossFim = moment(horario).add(bossFirestoreConfig.horaBossFinal, 'hours').format('HH:mm');
+    const horarioNascimentoBossInicio = moment(horario).add(config.bossFirestoreConfig.horaBossInicial, 'hours').format('HH:mm');
+    const horarioNascimentoBossFim = moment(horario).add(config.bossFirestoreConfig.horaBossFinal, 'hours').format('HH:mm');
 
     return bold(`[de ${horarioNascimentoBossInicio} até ${horarioNascimentoBossFim}]`);
 }
