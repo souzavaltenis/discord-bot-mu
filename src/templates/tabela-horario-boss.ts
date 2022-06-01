@@ -14,7 +14,7 @@ const mostrarHorarios = async (textChannel: TextBasedChannel | null) => {
 
         const embedTabelaBoss = new MessageEmbed()
             .setColor("DARK_BLUE")
-            .setTitle("Tabela de Horários Boss")
+            .setTitle("Tabela de Horários por Boss")
             .setDescription("\u200B")
             .setFooter({ text: "Listar horários por sala: /list\nAdicionar horário: /add", iconURL: 'https://i.imgur.com/VzgX7yd.jpg' })
             .setTimestamp();
@@ -35,7 +35,7 @@ const mostrarSalas = async (textChannel: TextBasedChannel | null) => {
 
         const embedTabelaSalas = new MessageEmbed()
             .setColor("DARK_BLUE")
-            .setTitle("Tabela de Horários Sala")
+            .setTitle("Tabela de Horários por Sala")
             .setDescription("\u200B")
             .setFooter({ text: "Listar horários por sala: /list\nAdicionar horário: /add", iconURL: 'https://i.imgur.com/VzgX7yd.jpg' })
             .setTimestamp();
