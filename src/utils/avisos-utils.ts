@@ -7,7 +7,7 @@ import { config } from '../config/get-configs';
 import { TextBasedChannel } from "discord.js";
 import { mensagemAvisoAbertura, mensagemAvisoFechamento } from "../utils/mensagens-utils";
 import { adicionarTimeoutsDB } from "../db/db";
-import { client } from "../../index";
+import { client } from "../index";
 
 const agendarAvisos = (listaBoss: Boss[]): void => {
     const textChannel = client.channels.cache.get(config.channelTextId) as TextBasedChannel;

@@ -1,6 +1,6 @@
 import { Client, Intents } from 'discord.js';
-import { config } from './src/config/get-configs';
-import { setEvents } from './src/utils/set-events';
+import { config } from './config/get-configs';
+import { setEvents } from './utils/set-events';
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 
