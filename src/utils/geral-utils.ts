@@ -1,6 +1,8 @@
 import { bold, underscore } from "@discordjs/builders";
 import { Moment } from "moment";
 import { config } from '../config/get-configs';
+import { Boss } from "../models/boss";
+import { SalaBoss } from "../models/sala-boss";
 
 const tracos = (quantidade: number): string => {
     let str: string = '';
@@ -53,4 +55,22 @@ const formatInfosInputs = (nomeDocBoss: string, salaBoss: number, horarioInforma
     return infosInputs;
 }
 
-export { tracos, numberToEmoji, numbersToEmoji, underbold, formatInfosInputs }
+const gerarTabelaSalas = (listaBoss: Boss[]): Map<number, SalaBoss[]> => {
+    const mapSalasHorarios = new Map<number, SalaBoss[]>();
+
+    config.bossFirestoreConfig.salasPermitidas.forEach((sala: number) => {
+        mapSalasHorarios.set(sala, [] as SalaBoss[]);
+    });
+
+    listaBoss.forEach((boss: Boss) => {
+        boss.salas.forEach((horario: Moment, sala: number) => {
+            mapSalasHorarios.get(sala)?.push(new SalaBoss(sala, boss.nome, horario));
+        });
+    });
+
+    return mapSalasHorarios;
+}
+
+
+
+export { tracos, numberToEmoji, numbersToEmoji, underbold, formatInfosInputs, gerarTabelaSalas }
