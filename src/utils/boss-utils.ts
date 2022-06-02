@@ -7,12 +7,19 @@ import { bold, spoiler, strikethrough } from "@discordjs/builders";
 import { dataNowMoment, diffDatas } from "./data-utils";
 import { SalaBoss } from "../models/sala-boss";
 
-const formatBoss = (boss: Boss): string => {
+const formatBoss = (boss: Boss, somenteAbertos?: boolean): string => {
     let infoBoss: string = tracos(55) + '\n';
+    let haBossAbertos: boolean = false;
 
     boss.salas.forEach((horario: Moment, sala: number) => {
+        if (somenteAbertos && (!isBossAberto(horario) || isBossVencido(horario))) return;
+        haBossAbertos = true;
         infoBoss += `${bold(`Sala ${sala}`)}: ${formatLinhaInfo(horario)}\n`;
     });
+
+    if (somenteAbertos && !haBossAbertos) {
+        infoBoss += 'Nenhum aberto\n';
+    }
 
     return infoBoss + '\u200B\n';
 };

@@ -3,6 +3,7 @@ import { Moment } from "moment";
 import { config } from '../config/get-configs';
 import { Boss } from "../models/boss";
 import { SalaBoss } from "../models/sala-boss";
+import { vaiAbrirBoss } from "./boss-utils";
 
 const tracos = (quantidade: number): string => {
     let str: string = '';
@@ -24,6 +25,7 @@ const numberToEmoji = (n: number): string => {
         case 7: return ':seven:';
         case 8: return ':eight:';
         case 9: return ':nine:';
+        case 10: return ':keycap_ten:';
         default: return '';
     }
 }
@@ -71,6 +73,32 @@ const gerarTabelaSalas = (listaBoss: Boss[]): Map<number, SalaBoss[]> => {
     return mapSalasHorarios;
 }
 
+const gerarListaSalaBoss = (listaBoss: Boss[]): SalaBoss[] => {
+    let listaSalaBoss = [] as SalaBoss[];
+
+    listaBoss.forEach((boss: Boss) => {
+        boss.salas.forEach((horario: Moment, sala: number) => {
+            listaSalaBoss.push(new SalaBoss(sala, boss.nome, horario));
+        });
+    });
+    
+    listaSalaBoss = listaSalaBoss.filter((salaBoss: SalaBoss) => vaiAbrirBoss(salaBoss.horario));
+
+    listaSalaBoss.sort((a: SalaBoss, b: SalaBoss) => {
+        if (a.horario.isAfter(b.horario)) {
+            return 1;
+        }
+
+        if (a.horario.isBefore(b.horario)) {
+            return -1;
+        }
+
+        return 0;
+    });
+
+    return listaSalaBoss;
+}
 
 
-export { tracos, numberToEmoji, numbersToEmoji, underbold, formatInfosInputs, gerarTabelaSalas }
+
+export { tracos, numberToEmoji, numbersToEmoji, underbold, formatInfosInputs, gerarTabelaSalas, gerarListaSalaBoss }
