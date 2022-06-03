@@ -8,9 +8,9 @@ const getButtonsTabela = (): MessageButton[] => {
         .setLabel('Todos')
         .setStyle('SECONDARY');
 
-    const buttonTableAbertos = new MessageButton()
-        .setCustomId(Ids.BUTTON_TABLE_ABERTOS)
-        .setLabel('Abertos')
+    const buttonTableSala = new MessageButton()
+        .setCustomId(Ids.BUTTON_TABLE_SALA)
+        .setLabel('Salas')
         .setStyle('SECONDARY');
 
     const buttonTableProximos = new MessageButton()
@@ -18,12 +18,7 @@ const getButtonsTabela = (): MessageButton[] => {
         .setLabel('Próximos')
         .setStyle('SECONDARY');
 
-    const buttonTableSala = new MessageButton()
-        .setCustomId(Ids.BUTTON_TABLE_SALA)
-        .setLabel('Salas')
-        .setStyle('SECONDARY');
-
-    return [buttonTableBoss, buttonTableAbertos, buttonTableProximos, buttonTableSala];
+    return [buttonTableBoss, buttonTableSala, buttonTableProximos];
 }
 
 export { getButtonsTabela }

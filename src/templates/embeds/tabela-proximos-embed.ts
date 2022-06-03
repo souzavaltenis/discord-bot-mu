@@ -24,7 +24,7 @@ const getEmbedTabelaProximos = (listaBoss: Boss[]): MessageEmbed => {
         infosProximos += `${index+1}. ${underbold(salaBoss.nomeBoss)} sala ${numberToEmoji(salaBoss.sala)} abrirá em ${underbold(previsaoString)}\n` + tracos(55) + '\n';
     });
 
-    embedTabelaProximos.addField("\u200B", infosProximos || "\u200B");
+    embedTabelaProximos.addField("\u200B", infosProximos || "Não foi encontrado nenhum horário próximo\n\u200B");
 
     return embedTabelaProximos;
 }
