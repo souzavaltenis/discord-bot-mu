@@ -22,7 +22,7 @@ const mostrarHorarios = async (textChannel: TextBasedChannel | null) => {
         await textChannel?.send({ embeds: [getEmbedTabelaBoss(listaBoss)], components: [rowButtons] })
             .then((message: Message) => {
 
-                const collector = message.createMessageComponentCollector({ filter: (i: Interaction) => i.isButton(), time: 1000 * 60 * 30 });
+                const collector = message.createMessageComponentCollector({ filter: (i: Interaction) => i.isButton(), time: 1000 * 60 * 60 * 8 });
 
                 collector.on("collect", async (interactionMessage: MessageComponentInteraction) => {
 
