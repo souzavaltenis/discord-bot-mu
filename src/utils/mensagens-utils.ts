@@ -1,5 +1,5 @@
 import { TextBasedChannel, MessageEmbed } from "discord.js";
-import { mostrarHorarios } from "../templates/tabela-horario-boss";
+import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
 import { numberToEmoji, underbold } from "./geral-utils";
 
 const mensagemAvisoAbertura = async (nomeBoss: string, salaBoss: number, textChannel: TextBasedChannel | null): Promise<void> => {

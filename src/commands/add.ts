@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { CommandInteraction } from 'discord.js';
-import { AdicionarHorarioModal } from '../templates/adicionar-horario-modal';
+import { AdicionarHorarioModal } from '../templates/modals/adicionar-horario-modal';
 
 export class Add {
     data: SlashCommandBuilder = new SlashCommandBuilder().setName('add').setDescription('Adicione Horário de Boss!');

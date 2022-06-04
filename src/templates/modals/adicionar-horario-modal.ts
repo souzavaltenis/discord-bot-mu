@@ -1,12 +1,12 @@
 import { ModalActionRowComponent, MessageActionRow, Modal, TextInputComponent, ModalSubmitInteraction } from 'discord.js';
-import { Ids } from '../models/ids';
-import { adicionarHorarioBoss } from '../db/db';
-import { mostrarHorarios } from './tabela-horario-boss';
-import { config } from '../config/get-configs';
-import { dataNowMoment, dataNowString, distanceDatasInMinutes, momentToString, stringToMoment } from '../utils/data-utils';
+import { Ids } from '../../models/ids';
+import { adicionarHorarioBoss } from '../../db/db';
+import { mostrarHorarios } from '../messages/tabela-horario-boss';
+import { config } from '../../config/get-configs';
+import { dataNowMoment, dataNowString, distanceDatasInMinutes, momentToString, stringToMoment } from '../../utils/data-utils';
 import { bold } from '@discordjs/builders';
 import { Moment } from 'moment';
-import { formatInfosInputs } from '../utils/geral-utils';
+import { formatInfosInputs } from '../../utils/geral-utils';
 
 export class AdicionarHorarioModal {
 

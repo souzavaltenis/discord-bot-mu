@@ -82,4 +82,37 @@ const vaiFecharBoss = (horarioBoss: Moment): boolean => {
     return horarioBoss.isValid() && !isBossVencido(horarioBoss) && isBossAberto(horarioBoss);
 }
 
-export { formatBoss, formatSalaBoss, isBossAberto, isBossVencido, previsaoBoss, calcularHorarioRestanteBoss, vaiAbrirBoss, vaiFecharBoss }
+const previsaoParaAbrir = (horario: Moment): Moment => {
+    const horarioAbertura = moment(horario).add(config.bossFirestoreConfig.horaBossInicial, 'hours');
+    return diffDatas(horarioAbertura, dataNowMoment());
+}
+
+const sortBossAbertosByHorario = (salas: Map<number, Moment>): Map<number, Moment> => {
+    return new Map<number, Moment>(
+        [...salas.entries()]
+        .filter((x: [number, Moment]) => vaiAbrirBoss(x[1]))
+        .sort((a: [number, Moment], b: [number, Moment]) =>{
+            if (a[1].isAfter(b[1])) {
+                return 1;
+            }
+            if (a[1].isBefore(b[1])) {
+                return -1;
+            }
+            return 0;
+        })
+    );
+}
+
+export { 
+    formatBoss, 
+    formatSalaBoss, 
+    formatLinhaInfo, 
+    isBossAberto, 
+    isBossVencido, 
+    previsaoBoss, 
+    calcularHorarioRestanteBoss, 
+    vaiAbrirBoss, 
+    vaiFecharBoss, 
+    previsaoParaAbrir,
+    sortBossAbertosByHorario 
+}

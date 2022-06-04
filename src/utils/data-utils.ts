@@ -26,11 +26,17 @@ const distanceDatasInMinutes = (x: Moment, y: Moment): number => {
     return moment.duration(diff).asMinutes();
 }
 
+const distanceDatasInHours = (x: Moment, y: Moment): number => {
+    const diff = x.diff(y);
+    return moment.duration(diff).asHours();
+}
+
 export { 
     dataNowString,
     dataNowMoment,
     momentToString,
     stringToMoment,
     diffDatas,
-    distanceDatasInMinutes
+    distanceDatasInMinutes,
+    distanceDatasInHours
 }

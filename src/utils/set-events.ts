@@ -1,7 +1,7 @@
 import { Client, Guild, Interaction } from 'discord.js';
 import { Add } from '../commands/add';
 import { List } from '../commands/list';
-import { AdicionarHorarioModal } from '../templates/adicionar-horario-modal';
+import { AdicionarHorarioModal } from '../templates/modals/adicionar-horario-modal';
 import { deployCommands } from './deploy-commands';
 import { Ids } from '../models/ids';
 import { config } from '../config/get-configs';
