@@ -40,21 +40,21 @@ const underbold = (str: string): string => {
     return underscore(bold(str));
 }
 
-const formatInfosInputs = (nomeDocBoss: string, salaBoss: number, horarioInformado: Moment): string => {
-    let nomeBoss = '';
-
+const getNomeBossByDoc = (nomeDocBoss: string): string => {
     switch(nomeDocBoss) {
-        case config.bossFirestoreConfig.docs.docRei:       nomeBoss = "Rei Kundun"; break; 
-        case config.bossFirestoreConfig.docs.docRelics:    nomeBoss = "Relics";     break; 
-        case config.bossFirestoreConfig.docs.docFenix:     nomeBoss = "Fenix";      break; 
-        case config.bossFirestoreConfig.docs.docDeathBeam: nomeBoss = "Death Beam"; break;
+        case config.bossFirestoreConfig.docs.docRei:       return "Rei Kundun";
+        case config.bossFirestoreConfig.docs.docRelics:    return "Relics";
+        case config.bossFirestoreConfig.docs.docFenix:     return "Fenix";
+        case config.bossFirestoreConfig.docs.docDeathBeam: return "Death Beam";
+        default: return '';
     }
+}
 
+const formatInfosInputs = (nomeDocBoss: string, salaBoss: number, horarioInformado: Moment): string => {
+    const nomeBoss: string = getNomeBossByDoc(nomeDocBoss);
     const infoHorario: string = horarioInformado.format('HH:mm');
     const infoData: string = horarioInformado.format('DD/MM');
-    const infosInputs: string = `${underbold(nomeBoss)} sala ${underbold(salaBoss+'')} às ${underbold(infoHorario)} dia ${underbold(infoData)}`;
-
-    return infosInputs;
+    return `${underbold(nomeBoss)} sala ${underbold(salaBoss+'')} às ${underbold(infoHorario)} dia ${underbold(infoData)}`;
 }
 
 const gerarTabelaSalas = (listaBoss: Boss[]): Map<number, SalaBoss[]> => {
@@ -88,17 +88,22 @@ const gerarListaSalaBoss = (listaBoss: Boss[]): SalaBoss[] => {
         if (a.horario.isAfter(b.horario)) {
             return 1;
         }
-
         if (a.horario.isBefore(b.horario)) {
             return -1;
         }
-
         return 0;
     });
 
     return listaSalaBoss;
 }
 
-
-
-export { tracos, numberToEmoji, numbersToEmoji, underbold, formatInfosInputs, gerarTabelaSalas, gerarListaSalaBoss }
+export { 
+    tracos, 
+    numberToEmoji, 
+    numbersToEmoji, 
+    underbold, 
+    getNomeBossByDoc, 
+    formatInfosInputs, 
+    gerarTabelaSalas, 
+    gerarListaSalaBoss 
+}

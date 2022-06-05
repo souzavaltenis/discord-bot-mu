@@ -7,6 +7,7 @@ import { dataNowMoment, dataNowString, distanceDatasInMinutes, momentToString, s
 import { bold } from '@discordjs/builders';
 import { Moment } from 'moment';
 import { formatInfosInputs } from '../../utils/geral-utils';
+import { IBossInfoAdd } from '../../models/interface/boss-info-add';
 
 export class AdicionarHorarioModal {
 
@@ -120,10 +121,17 @@ export class AdicionarHorarioModal {
             horarioInformado.subtract(1, 'day');
         }
 
-        adicionarHorarioBoss(nomeDocBoss, salaBoss, momentToString(horarioInformado)).then(async () => {
+        const bossInfo = {
+            nomeDocBoss: nomeDocBoss,
+            salaBoss: textInputSalaBoss,
+            horarioInformado: momentToString(horarioInformado),
+            timestampAcao: dataNowMoment().valueOf()
+        } as IBossInfoAdd;
+
+        adicionarHorarioBoss(bossInfo).then(async () => {
             const infosInputs: string = formatInfosInputs(nomeDocBoss, salaBoss, horarioInformado);
             await interaction.reply(`${interaction.user} Horário adicionado com sucesso! (${infosInputs})`);
-            await adicionarAnotacaoHorario(interaction.user);
+            await adicionarAnotacaoHorario(interaction.user, bossInfo);
             await mostrarHorarios(interaction.channel);
         });
     }

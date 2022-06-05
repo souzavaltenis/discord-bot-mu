@@ -4,6 +4,7 @@ import { doc, getFirestore, QueryDocumentSnapshot, WithFieldValue, DocumentData,
 import { Moment } from "moment";
 import { config } from '../config/get-configs';
 import { Boss } from "../models/boss";
+import { IBossInfoAdd } from "../models/interface/boss-info-add";
 import { TimeoutSingleton } from "../models/singleton/timeout-singleton";
 import { dataNowString, momentToString, stringToMoment } from "../utils/data-utils";
 
@@ -29,10 +30,10 @@ const bossConverter = {
     }
 };
 
-const adicionarHorarioBoss = async (nomeDoc: string, sala: number, horario: string): Promise<void> => {
-    const bossRef = doc(db, config.bossFirestoreConfig.collectionBoss, nomeDoc);
+const adicionarHorarioBoss = async (bossInfo: IBossInfoAdd): Promise<void> => {
+    const bossRef = doc(db, config.bossFirestoreConfig.collectionBoss, bossInfo.nomeDocBoss);
     return updateDoc(bossRef, {
-        [`salas.${sala}`]: horario
+        [`salas.${bossInfo.salaBoss}`]: bossInfo.horarioInformado
     });
 }
 
@@ -67,8 +68,8 @@ const adicionarErroInput = async (erro: string): Promise<void> => {
     }, { merge: true });
 }
 
-const adicionarAnotacaoHorario = async (user: User): Promise<void> => {
-    if (!user) return;
+const adicionarAnotacaoHorario = async (user: User, bossInfo: IBossInfoAdd): Promise<void> => {
+    if (!user || !bossInfo) return;
 
     const userRef = doc(db, config.bossFirestoreConfig.collectionLogs, config.bossFirestoreConfig.documentContadorAnotacao);
 
@@ -76,7 +77,7 @@ const adicionarAnotacaoHorario = async (user: User): Promise<void> => {
         [user.id]: {
             id: user.id,
             name: user.tag,
-            anotacoes: increment(1)
+            anotacoes: arrayUnion(bossInfo)
         }
     }, { merge: true });
 }
