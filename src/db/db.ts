@@ -59,4 +59,11 @@ const adicionarTimeoutsDB = async(): Promise<void> => {
     });
 }
 
-export { adicionarHorarioBoss, consultarHorarioBoss, adicionarLog, adicionarTimeoutsDB};
+const adicionarErroInput = async(erro: string): Promise<void> => {
+    const logsRef = doc(db, config.bossFirestoreConfig.collectionLogs, config.bossFirestoreConfig.documentErrosInput);
+    await setDoc(logsRef, {
+        erros: arrayUnion(`[${dataNowString('HH:mm:ss')}] ${erro}`)
+    }, {merge: true});
+}
+
+export { adicionarHorarioBoss, consultarHorarioBoss, adicionarLog, adicionarTimeoutsDB, adicionarErroInput };

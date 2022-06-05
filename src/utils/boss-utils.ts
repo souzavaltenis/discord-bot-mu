@@ -91,7 +91,7 @@ const sortBossAbertosByHorario = (salas: Map<number, Moment>): Map<number, Momen
     return new Map<number, Moment>(
         [...salas.entries()]
         .filter((x: [number, Moment]) => vaiAbrirBoss(x[1]))
-        .sort((a: [number, Moment], b: [number, Moment]) =>{
+        .sort((a: [number, Moment], b: [number, Moment]) => {
             if (a[1].isAfter(b[1])) {
                 return 1;
             }

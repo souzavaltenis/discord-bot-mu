@@ -1,6 +1,6 @@
 import { ModalActionRowComponent, MessageActionRow, Modal, TextInputComponent, ModalSubmitInteraction } from 'discord.js';
 import { Ids } from '../../models/ids';
-import { adicionarHorarioBoss } from '../../db/db';
+import { adicionarErroInput, adicionarHorarioBoss } from '../../db/db';
 import { mostrarHorarios } from '../messages/tabela-horario-boss';
 import { config } from '../../config/get-configs';
 import { dataNowMoment, dataNowString, distanceDatasInMinutes, momentToString, stringToMoment } from '../../utils/data-utils';
@@ -60,7 +60,7 @@ export class AdicionarHorarioModal {
     }
 
     async action(interaction: ModalSubmitInteraction) {
-        const textInputNomeBoss: string = interaction.fields.getTextInputValue(Ids.INPUT_NOME_BOSS).toLocaleLowerCase();
+        const textInputNomeBoss: string = interaction.fields.getTextInputValue(Ids.INPUT_NOME_BOSS).trim().toLocaleLowerCase();
 
         let nomeDocBoss = "";
 
@@ -77,7 +77,9 @@ export class AdicionarHorarioModal {
         }
 
         if (!nomeDocBoss) {
-            await interaction.reply(`${interaction.user} Boss ${textInputNomeBoss} não é reconhecido!`);
+            const msgErroBoss: string = `${interaction.user} Boss (${bold(textInputNomeBoss)}) não é reconhecido!`;
+            await adicionarErroInput(msgErroBoss);
+            await interaction.reply(msgErroBoss);
             return;
         }
 
@@ -87,14 +89,18 @@ export class AdicionarHorarioModal {
         const salasConhecidas = config.bossFirestoreConfig.salasPermitidas;
 
         if (salaBoss === NaN || !salasConhecidas.includes(salaBoss)) {
-            await interaction.reply(`${interaction.user} Sala ${textInputSalaBoss} não é reconhecida! Use as salas ${salasConhecidas}.`);
+            const msgErroSala: string = `${interaction.user} Sala (${bold(textInputSalaBoss)}) não é reconhecida! Use as salas ${salasConhecidas}.`;
+            await adicionarErroInput(msgErroSala);
+            await interaction.reply(msgErroSala);
             return;
         }
 
         const textInputHorarioBoss: string = interaction.fields.getTextInputValue(Ids.INPUT_HORARIO_BOSS);
 
         if (!(/^(?:[01][0-9]|2[0-3]):[0-5][0-9](?::[0-5][0-9])?$/).test(textInputHorarioBoss)) {
-            await interaction.reply(`${interaction.user} Horário ${bold(textInputHorarioBoss)} não é reconhecido! Use como exemplo: 15:46`);
+            const msgErroHorario: string = `${interaction.user} Horário (${bold(textInputHorarioBoss)}) não é reconhecido! Use como exemplo: 15:46`;
+            await adicionarErroInput(msgErroHorario);
+            await interaction.reply(msgErroHorario);
             return;
         }
 
@@ -104,7 +110,9 @@ export class AdicionarHorarioModal {
         const foiOntem: boolean = inputPerguntaOntem.length > 0 && ['s', 'si', 'sim'].includes(inputPerguntaOntem.toLocaleLowerCase());
 
         if (!foiOntem && distanceDatasInMinutes(horarioInformado, dataNowMoment()) >= 40) {
-            await interaction.reply(`${interaction.user} Horário ${bold(textInputHorarioBoss)} é muito distante! Se foi de ontem, preencha o último campo com ${bold('sim')}.`);
+            const msgErroHorarioData: string = `${interaction.user} Horário (${bold(textInputHorarioBoss)}) é muito distante! Se foi de ontem, preencha o último campo com ${bold('sim')}.`;
+            await adicionarErroInput(msgErroHorarioData);
+            await interaction.reply(msgErroHorarioData);
             return;
         }
 
