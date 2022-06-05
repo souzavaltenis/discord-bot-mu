@@ -15,7 +15,9 @@
         "horaBossFinal": 0,
         "collectionLogs": "",
         "documentLogs": "",
-        "documentTimeouts": ""
+        "documentTimeouts": "",
+        "documentErrosInput": "",
+        "documentContadorAnotacao": ""
     },
     "firebaseConfig": {
         "apiKey": "",

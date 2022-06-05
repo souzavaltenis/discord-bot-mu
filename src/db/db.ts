@@ -1,5 +1,6 @@
+import { User } from "discord.js";
 import { initializeApp } from "firebase/app";
-import { doc, getFirestore, QueryDocumentSnapshot, WithFieldValue, DocumentData, SnapshotOptions, updateDoc, getDocs, collection, arrayUnion, orderBy, query, setDoc } from "firebase/firestore";
+import { doc, getFirestore, QueryDocumentSnapshot, WithFieldValue, DocumentData, SnapshotOptions, updateDoc, getDocs, collection, arrayUnion, orderBy, query, setDoc, increment } from "firebase/firestore";
 import { Moment } from "moment";
 import { config } from '../config/get-configs';
 import { Boss } from "../models/boss";
@@ -51,7 +52,7 @@ const adicionarLog = async (log: string): Promise<void> => {
     });
 }
 
-const adicionarTimeoutsDB = async(): Promise<void> => {
+const adicionarTimeoutsDB = async (): Promise<void> => {
     const timeouts: Map<string, NodeJS.Timeout> = TimeoutSingleton.getInstance().timeouts;
     const logsRef = doc(db, config.bossFirestoreConfig.collectionLogs, config.bossFirestoreConfig.documentTimeouts);
     await setDoc(logsRef, {
@@ -59,11 +60,25 @@ const adicionarTimeoutsDB = async(): Promise<void> => {
     });
 }
 
-const adicionarErroInput = async(erro: string): Promise<void> => {
+const adicionarErroInput = async (erro: string): Promise<void> => {
     const logsRef = doc(db, config.bossFirestoreConfig.collectionLogs, config.bossFirestoreConfig.documentErrosInput);
     await setDoc(logsRef, {
         erros: arrayUnion(`[${dataNowString('HH:mm:ss')}] ${erro}`)
-    }, {merge: true});
+    }, { merge: true });
 }
 
-export { adicionarHorarioBoss, consultarHorarioBoss, adicionarLog, adicionarTimeoutsDB, adicionarErroInput };
+const adicionarAnotacaoHorario = async (user: User): Promise<void> => {
+    if (!user) return;
+
+    const userRef = doc(db, config.bossFirestoreConfig.collectionLogs, config.bossFirestoreConfig.documentContadorAnotacao);
+
+    await setDoc(userRef, {
+        [user.id]: {
+            id: user.id,
+            name: user.tag,
+            anotacoes: increment(1)
+        }
+    }, { merge: true });
+}
+
+export { adicionarHorarioBoss, consultarHorarioBoss, adicionarLog, adicionarTimeoutsDB, adicionarErroInput, adicionarAnotacaoHorario };

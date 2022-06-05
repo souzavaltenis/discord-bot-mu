@@ -1,6 +1,6 @@
 import { ModalActionRowComponent, MessageActionRow, Modal, TextInputComponent, ModalSubmitInteraction } from 'discord.js';
 import { Ids } from '../../models/ids';
-import { adicionarErroInput, adicionarHorarioBoss } from '../../db/db';
+import { adicionarAnotacaoHorario, adicionarErroInput, adicionarHorarioBoss } from '../../db/db';
 import { mostrarHorarios } from '../messages/tabela-horario-boss';
 import { config } from '../../config/get-configs';
 import { dataNowMoment, dataNowString, distanceDatasInMinutes, momentToString, stringToMoment } from '../../utils/data-utils';
@@ -123,6 +123,7 @@ export class AdicionarHorarioModal {
         adicionarHorarioBoss(nomeDocBoss, salaBoss, momentToString(horarioInformado)).then(async () => {
             const infosInputs: string = formatInfosInputs(nomeDocBoss, salaBoss, horarioInformado);
             await interaction.reply(`${interaction.user} Horário adicionado com sucesso! (${infosInputs})`);
+            await adicionarAnotacaoHorario(interaction.user);
             await mostrarHorarios(interaction.channel);
         });
     }
