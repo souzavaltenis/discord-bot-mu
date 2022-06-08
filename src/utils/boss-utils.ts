@@ -3,7 +3,7 @@ import moment, { Moment } from "moment";
 import { Boss } from "../models/boss";
 import { tracos } from "./geral-utils";
 import { config } from '../config/get-configs';
-import { bold, spoiler, strikethrough } from "@discordjs/builders";
+import { bold } from "@discordjs/builders";
 import { dataNowMoment, diffDatas } from "./data-utils";
 import { SalaBoss } from "../models/sala-boss";
 
@@ -39,7 +39,7 @@ const formatLinhaInfo = (horario: Moment): string => {
     const bossVencido: boolean = isBossVencido(horario);
     const bossAberto: boolean = isBossAberto(horario);
     const linhaInfoSala: string = `${horario.isValid() ? horario.format('HH:mm (DD/MM)') : ''} ${previsao}`;
-    return `${bossVencido ? spoiler(strikethrough(linhaInfoSala)) : linhaInfoSala} ${bossVencido ? '❌' : bossAberto ? '✅' : '💤'}`;
+    return `${linhaInfoSala} ${bossVencido ? '❌' : bossAberto ? '✅' : '💤'}`;
 }
 
 const isBossAberto = (horario: Moment): boolean => {

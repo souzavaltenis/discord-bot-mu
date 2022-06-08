@@ -8,6 +8,7 @@ import { config } from '../config/get-configs';
 import { adicionarLog, consultarHorarioBoss } from '../db/db';
 import { Boss } from '../models/boss';
 import { agendarAvisos } from './avisos-utils';
+import { dataNowString } from './data-utils';
 
 const setEvents = (client: Client): void => {
 
@@ -17,7 +18,7 @@ const setEvents = (client: Client): void => {
     });
 
     client.on('ready', (client: Client) => {
-        console.log(`Logado como: ${client.user?.tag}`);
+        console.log(`Logado como: ${client.user?.tag} ás ${dataNowString("HH:mm:ss DD/MM/YYYY")}`);
         adicionarLog(`OnReady: Logado como: ${client.user?.tag}`);
         consultarHorarioBoss().then((listaBoss: Boss[]) => {
             agendarAvisos(listaBoss);
