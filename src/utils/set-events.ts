@@ -5,21 +5,23 @@ import { AdicionarHorarioModal } from '../templates/modals/adicionar-horario-mod
 import { deployCommands } from './deploy-commands';
 import { Ids } from '../models/ids';
 import { config } from '../config/get-configs';
-import { adicionarLog, consultarHorarioBoss } from '../db/db';
+import { consultarHorarioBoss } from '../db/db';
 import { Boss } from '../models/boss';
 import { agendarAvisos } from './avisos-utils';
 import { dataNowString } from './data-utils';
+import { sendMessageProducerKafka } from '../services/kafka/producer-logs';
+import { getLogsGeralString } from './geral-utils';
 
 const setEvents = (client: Client): void => {
 
-    client.on("guildCreate", (guild: Guild) => {
-        adicionarLog(`OnGuildCreate: Adicionado ao servidor: ${guild.name}`);
+    client.on("guildCreate", async (guild: Guild) => {
+        await sendMessageProducerKafka(config.kafkaConfig.topicLogsGeralBot, getLogsGeralString({ guild: guild }));
         deployCommands(config.clientId, guild.id);
     });
 
-    client.on('ready', (client: Client) => {
+    client.on('ready', async (client: Client) => {
         console.log(`Logado como: ${client.user?.tag} ás ${dataNowString("HH:mm:ss DD/MM/YYYY")}`);
-        adicionarLog(`OnReady: Logado como: ${client.user?.tag}`);
+        await sendMessageProducerKafka(config.kafkaConfig.topicLogsGeralBot, getLogsGeralString({ client: client }));
         consultarHorarioBoss().then((listaBoss: Boss[]) => {
             agendarAvisos(listaBoss);
         });
@@ -27,7 +29,7 @@ const setEvents = (client: Client): void => {
 
     client.on('interactionCreate', async (interaction: Interaction) => {
         if (interaction.isCommand()) {
-            adicionarLog(`OnCommand: /${interaction.commandName} por ${interaction.user.tag} em ${interaction.guild?.name}`);
+            await sendMessageProducerKafka(config.kafkaConfig.topicLogsGeralBot, getLogsGeralString({ cmdInteraction: interaction }));
             switch (interaction.commandName) {
                 case 'add': await new Add().execute(interaction); break;
                 case 'list': await new List().execute(interaction); break;

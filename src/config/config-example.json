@@ -27,5 +27,12 @@
         "messagingSenderId": "",
         "appId": "",
         "measurementId": ""
+    },
+    "kafkaConfig": {
+        "brokers": [""],
+        "topicLogsGeralBot": "",
+        "topicLogsErrosInputBot": "",
+        "saslUsername": "",
+        "saslPassword": ""
     }
 }

@@ -1,6 +1,6 @@
 import { User } from "discord.js";
 import { initializeApp } from "firebase/app";
-import { doc, getFirestore, QueryDocumentSnapshot, WithFieldValue, DocumentData, SnapshotOptions, updateDoc, getDocs, collection, arrayUnion, orderBy, query, setDoc, increment } from "firebase/firestore";
+import { doc, getFirestore, QueryDocumentSnapshot, WithFieldValue, DocumentData, SnapshotOptions, updateDoc, getDocs, collection, arrayUnion, orderBy, query, setDoc } from "firebase/firestore";
 import { Moment } from "moment";
 import { config } from '../config/get-configs';
 import { Boss } from "../models/boss";

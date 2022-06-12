@@ -1,6 +1,6 @@
 import { Interaction, Message, MessageButton, MessageComponentInteraction, MessageEmbed, TextBasedChannel } from "discord.js";
 import { Boss } from "../../models/boss";
-import { adicionarLog, consultarHorarioBoss } from "../../db/db";
+import { consultarHorarioBoss } from "../../db/db";
 import { agendarAvisos } from "../../utils/avisos-utils";
 import { Ids } from "../../models/ids";
 import { getEmbedTabelaBoss } from "../embeds/tabela-boss-embed";
@@ -8,6 +8,9 @@ import { getEmbedTabelaSala } from "../embeds/tabela-sala-embed";
 import { getButtonsTabela } from "../buttons/style-tabela-buttons";
 import { disableButton } from "../../utils/buttons-utils";
 import { getEmbedTabelaProximos } from "../embeds/tabela-proximos-embed";
+import { sendMessageProducerKafka } from "../../services/kafka/producer-logs";
+import { config } from "../../config/get-configs";
+import { getLogsGeralString } from "../../utils/geral-utils";
 
 const mostrarHorarios = async (textChannel: TextBasedChannel | null) => {
     
@@ -24,7 +27,7 @@ const mostrarHorarios = async (textChannel: TextBasedChannel | null) => {
 
             collector.on("collect", async (interactionMessage: MessageComponentInteraction) => {
 
-                adicionarLog(`OnButtons: ${interactionMessage.member?.user.username} => ${interactionMessage.customId}`);
+                await sendMessageProducerKafka(config.kafkaConfig.topicLogsGeralBot, getLogsGeralString({ msgInteraction: interactionMessage }));
 
                 let embedSelecionada: MessageEmbed;
 

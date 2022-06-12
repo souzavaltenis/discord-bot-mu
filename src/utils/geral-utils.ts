@@ -1,9 +1,17 @@
 import { bold, underscore } from "@discordjs/builders";
+import { ModalSubmitInteraction } from "discord.js";
+import { RecordMetadata } from "kafkajs";
 import { Moment } from "moment";
 import { config } from '../config/get-configs';
 import { Boss } from "../models/boss";
+import { TypeLog } from "../models/enum/type-log";
+import { ILogsErrosInputKafka } from "../models/interface/kafka/logs-erros-input-kafka";
+import { ILogsGeralKafka } from "../models/interface/kafka/logs-geral-kafka";
+import { IParamsLogsGeral } from "../models/interface/params-logs-geral";
 import { SalaBoss } from "../models/sala-boss";
+import { sendMessageProducerKafka } from "../services/kafka/producer-logs";
 import { vaiAbrirBoss } from "./boss-utils";
+import { dataNowMoment } from "./data-utils";
 
 const tracos = (quantidade: number): string => {
     let str: string = '';
@@ -97,6 +105,82 @@ const gerarListaSalaBoss = (listaBoss: Boss[]): SalaBoss[] => {
     return listaSalaBoss;
 }
 
+const getLogsGeralString = (params?: IParamsLogsGeral): string => {
+
+    if (!params) return '';
+
+    const { cmdInteraction, client, msgInteraction, guild } = params;
+    let log = {} as ILogsGeralKafka;
+
+    // On Command
+    if (cmdInteraction) {
+        log = {
+            type: TypeLog.ON_COMMAND,
+            userId: cmdInteraction.user?.id,
+            userName: cmdInteraction.user?.username,
+            command: `/${cmdInteraction.commandName}`,
+            guildId: cmdInteraction.guild?.id,
+            guildName: cmdInteraction.guild?.name,
+            timestamp: cmdInteraction.createdTimestamp
+        } as ILogsGeralKafka;
+
+    // On Ready
+    } else if (client) {
+        log = {
+            type: TypeLog.ON_READY,
+            userId: client.user?.id,
+            userName: client.user?.tag,
+            command: '',
+            guildId: '',
+            guildName: '',
+            timestamp: dataNowMoment().valueOf()
+        } as ILogsGeralKafka;
+
+    // On Button Click
+    } else if (msgInteraction) {
+        log = {
+            type: TypeLog.ON_BUTTON_CLICK,
+            userId: msgInteraction.member?.user.id,
+            userName: msgInteraction.member?.user.username,
+            command: msgInteraction.customId,
+            guildId: msgInteraction.guild?.id,
+            guildName: msgInteraction.guild?.name,
+            timestamp: msgInteraction.createdTimestamp
+        } as ILogsGeralKafka;
+
+    // On Guild Create
+    } else if (guild) {
+        log = {
+            type: TypeLog.ON_GUILD_CREATE,
+            userId: '',
+            userName: '',
+            command: '',
+            guildId: guild.id,
+            guildName: guild.name,
+            timestamp: dataNowMoment().valueOf()
+        } as ILogsGeralKafka;
+    }
+
+    return JSON.stringify(log);
+}
+
+const getLogsErrosInputString = (interaction: ModalSubmitInteraction, msgErroBoss: string): string => {
+    const logInputErro = {
+        userId: interaction.user.id,
+        userName: interaction.user.username,
+        message: msgErroBoss,
+        guildId: interaction.guild?.id,
+        guildName: interaction.guild?.name,
+        timestamp: interaction.createdTimestamp,
+    } as ILogsErrosInputKafka;
+    
+    return JSON.stringify(logInputErro);
+}
+
+const sendLogErroInput = async(modalInteraction: ModalSubmitInteraction, msgErroBoss: string): Promise<RecordMetadata[]> => {
+    return await sendMessageProducerKafka(config.kafkaConfig.topicLogsErrosInputBot, getLogsErrosInputString(modalInteraction, msgErroBoss));
+}
+
 export { 
     tracos, 
     numberToEmoji, 
@@ -105,5 +189,8 @@ export {
     getNomeBossByDoc, 
     formatInfosInputs, 
     gerarTabelaSalas, 
-    gerarListaSalaBoss 
+    gerarListaSalaBoss,
+    getLogsGeralString,
+    getLogsErrosInputString,
+    sendLogErroInput
 }

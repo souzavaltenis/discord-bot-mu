@@ -1,0 +1,6 @@
+export enum TypeLog {
+    ON_COMMAND = "ON_COMMAND",
+    ON_READY = "ON_READY",
+    ON_BUTTON_CLICK = "ON_BUTTON_CLICK",
+    ON_GUILD_CREATE = "ON_GUILD_CREATE"
+}
