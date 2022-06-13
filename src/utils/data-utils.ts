@@ -31,6 +31,22 @@ const distanceDatasInHours = (x: Moment, y: Moment): number => {
     return moment.duration(diff).asHours();
 }
 
+const timestampToMoment = (timestamp: number): Moment => {
+    return moment.utc(timestamp).utcOffset('GMT-03:00');
+}
+
+const isSameMoment = (timestamp: number, type: string): boolean => {
+    const now = dataNowMoment();
+    const input = timestampToMoment(timestamp);
+
+    switch(type) {
+        case 'day': return now.isSame(input, 'day');
+        case 'week': return now.isoWeek() == input.isoWeek() && now.isSame(input, 'year');
+        case 'month': return now.isSame(input, 'month');
+        default: return false;
+    }
+}
+
 export { 
     dataNowString,
     dataNowMoment,
@@ -38,5 +54,7 @@ export {
     stringToMoment,
     diffDatas,
     distanceDatasInMinutes,
-    distanceDatasInHours
+    distanceDatasInHours,
+    timestampToMoment,
+    isSameMoment
 }

@@ -6,7 +6,7 @@ import { vaiAbrirBoss, calcularHorarioRestanteBoss, vaiFecharBoss } from "./boss
 import { config } from '../config/get-configs';
 import { TextBasedChannel } from "discord.js";
 import { mensagemAvisoAbertura, mensagemAvisoFechamento } from "../utils/mensagens-utils";
-import { adicionarTimeoutsDB } from "../db/db";
+// import { adicionarTimeoutsDB } from "../db/db";
 import { client } from "../index";
 
 const agendarAvisos = (listaBoss: Boss[]): void => {
@@ -39,7 +39,7 @@ const agendarAvisos = (listaBoss: Boss[]): void => {
     });
 
     client.user?.setPresence({ activities: [{ name: `Boss Abertos :: ${contadorBossAbertos}`, type: 'PLAYING' }], status: 'idle' });
-    adicionarTimeoutsDB();
+    // adicionarTimeoutsDB();
 }
 
 const adicionarTimeout = (

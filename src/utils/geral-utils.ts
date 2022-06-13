@@ -9,7 +9,7 @@ import { ILogsErrosInputKafka } from "../models/interface/kafka/logs-erros-input
 import { ILogsGeralKafka } from "../models/interface/kafka/logs-geral-kafka";
 import { IParamsLogsGeral } from "../models/interface/params-logs-geral";
 import { SalaBoss } from "../models/sala-boss";
-import { sendMessageProducerKafka } from "../services/kafka/producer-logs";
+import { sendMessageKafka } from "../services/kafka/kafka-producer";
 import { vaiAbrirBoss } from "./boss-utils";
 import { dataNowMoment } from "./data-utils";
 
@@ -178,7 +178,7 @@ const getLogsErrosInputString = (interaction: ModalSubmitInteraction, msgErroBos
 }
 
 const sendLogErroInput = async(modalInteraction: ModalSubmitInteraction, msgErroBoss: string): Promise<RecordMetadata[]> => {
-    return await sendMessageProducerKafka(config.kafkaConfig.topicLogsErrosInputBot, getLogsErrosInputString(modalInteraction, msgErroBoss));
+    return await sendMessageKafka(config.kafkaConfig.topicLogsErrosInputBot, getLogsErrosInputString(modalInteraction, msgErroBoss));
 }
 
 export { 

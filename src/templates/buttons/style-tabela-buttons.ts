@@ -18,7 +18,12 @@ const getButtonsTabela = (): MessageButton[] => {
         .setLabel('Próximos')
         .setStyle('SECONDARY');
 
-    return [buttonTableBoss, buttonTableSala, buttonTableProximos];
+    const buttonTableRank = new MessageButton()
+        .setCustomId(Ids.BUTTON_TABLE_RANK)
+        .setEmoji('🏆')
+        .setStyle('SECONDARY');
+
+    return [buttonTableBoss, buttonTableSala, buttonTableProximos, buttonTableRank];
 }
 
 export { getButtonsTabela }

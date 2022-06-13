@@ -9,19 +9,19 @@ import { consultarHorarioBoss } from '../db/db';
 import { Boss } from '../models/boss';
 import { agendarAvisos } from './avisos-utils';
 import { dataNowString } from './data-utils';
-import { sendMessageProducerKafka } from '../services/kafka/producer-logs';
+import { sendMessageKafka } from '../services/kafka/kafka-producer';
 import { getLogsGeralString } from './geral-utils';
 
 const setEvents = (client: Client): void => {
 
     client.on("guildCreate", async (guild: Guild) => {
-        await sendMessageProducerKafka(config.kafkaConfig.topicLogsGeralBot, getLogsGeralString({ guild: guild }));
+        await sendMessageKafka(config.kafkaConfig.topicLogsGeralBot, getLogsGeralString({ guild: guild }));
         deployCommands(config.clientId, guild.id);
     });
 
     client.on('ready', async (client: Client) => {
         console.log(`Logado como: ${client.user?.tag} ás ${dataNowString("HH:mm:ss DD/MM/YYYY")}`);
-        await sendMessageProducerKafka(config.kafkaConfig.topicLogsGeralBot, getLogsGeralString({ client: client }));
+        await sendMessageKafka(config.kafkaConfig.topicLogsGeralBot, getLogsGeralString({ client: client }));
         consultarHorarioBoss().then((listaBoss: Boss[]) => {
             agendarAvisos(listaBoss);
         });
@@ -29,7 +29,7 @@ const setEvents = (client: Client): void => {
 
     client.on('interactionCreate', async (interaction: Interaction) => {
         if (interaction.isCommand()) {
-            await sendMessageProducerKafka(config.kafkaConfig.topicLogsGeralBot, getLogsGeralString({ cmdInteraction: interaction }));
+            await sendMessageKafka(config.kafkaConfig.topicLogsGeralBot, getLogsGeralString({ cmdInteraction: interaction }));
             switch (interaction.commandName) {
                 case 'add': await new Add().execute(interaction); break;
                 case 'list': await new List().execute(interaction); break;

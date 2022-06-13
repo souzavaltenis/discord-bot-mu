@@ -8,4 +8,5 @@ export class Ids {
     static BUTTON_TABLE_SALA: string = "style-table-sala";
     static BUTTON_TABLE_ABERTOS: string = "style-table-abertos";
     static BUTTON_TABLE_PROXIMOS: string = "style-table-proximos";
+    static BUTTON_TABLE_RANK: string = "style-table-rank";
 }

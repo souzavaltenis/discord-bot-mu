@@ -8,9 +8,10 @@ import { getEmbedTabelaSala } from "../embeds/tabela-sala-embed";
 import { getButtonsTabela } from "../buttons/style-tabela-buttons";
 import { disableButton } from "../../utils/buttons-utils";
 import { getEmbedTabelaProximos } from "../embeds/tabela-proximos-embed";
-import { sendMessageProducerKafka } from "../../services/kafka/producer-logs";
+import { sendMessageKafka } from "../../services/kafka/kafka-producer";
 import { config } from "../../config/get-configs";
 import { getLogsGeralString } from "../../utils/geral-utils";
+import { getEmbedTabelaRank } from "../embeds/tabela-rank-embed";
 
 const mostrarHorarios = async (textChannel: TextBasedChannel | null) => {
     
@@ -27,13 +28,14 @@ const mostrarHorarios = async (textChannel: TextBasedChannel | null) => {
 
             collector.on("collect", async (interactionMessage: MessageComponentInteraction) => {
 
-                await sendMessageProducerKafka(config.kafkaConfig.topicLogsGeralBot, getLogsGeralString({ msgInteraction: interactionMessage }));
+                await sendMessageKafka(config.kafkaConfig.topicLogsGeralBot, getLogsGeralString({ msgInteraction: interactionMessage }));
 
                 let embedSelecionada: MessageEmbed;
 
                 switch(interactionMessage.customId) {
-                    case Ids.BUTTON_TABLE_PROXIMOS: embedSelecionada = getEmbedTabelaProximos(listaBoss); break;
                     case Ids.BUTTON_TABLE_SALA: embedSelecionada = getEmbedTabelaSala(listaBoss); break;
+                    case Ids.BUTTON_TABLE_PROXIMOS: embedSelecionada = getEmbedTabelaProximos(listaBoss); break;
+                    case Ids.BUTTON_TABLE_RANK: embedSelecionada = await getEmbedTabelaRank(); break;
                     default: embedSelecionada = getEmbedTabelaBoss(listaBoss); break;
                 }
 

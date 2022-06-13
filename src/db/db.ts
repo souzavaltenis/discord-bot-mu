@@ -1,11 +1,12 @@
 import { User } from "discord.js";
 import { initializeApp } from "firebase/app";
-import { doc, getFirestore, QueryDocumentSnapshot, WithFieldValue, DocumentData, SnapshotOptions, updateDoc, getDocs, collection, arrayUnion, orderBy, query, setDoc } from "firebase/firestore";
+import { doc, getFirestore, QueryDocumentSnapshot, WithFieldValue, DocumentData, SnapshotOptions, updateDoc, getDocs, collection, arrayUnion, orderBy, query, setDoc, getDoc, QuerySnapshot } from "firebase/firestore";
 import { Moment } from "moment";
 import { config } from '../config/get-configs';
 import { Boss } from "../models/boss";
 import { IBossInfoAdd } from "../models/interface/boss-info-add";
 import { TimeoutSingleton } from "../models/singleton/timeout-singleton";
+import { Usuario } from "../models/usuario";
 import { dataNowString, momentToString, stringToMoment } from "../utils/data-utils";
 
 const appFirebase = initializeApp(config.firebaseConfig);
@@ -71,15 +72,47 @@ const adicionarErroInput = async (erro: string): Promise<void> => {
 const adicionarAnotacaoHorario = async (user: User, bossInfo: IBossInfoAdd): Promise<void> => {
     if (!user || !bossInfo) return;
 
-    const userRef = doc(db, config.bossFirestoreConfig.collectionLogs, config.bossFirestoreConfig.documentContadorAnotacao);
+    const nameCollectionUsuarios: string = config.bossFirestoreConfig.collectionUsuarios;
+    const nameCollectionAnotacoes: string = config.bossFirestoreConfig.collectionAnotacoes;
 
+    const userRef = doc(db, nameCollectionUsuarios, user.id);
+    
     await setDoc(userRef, {
-        [user.id]: {
-            id: user.id,
-            name: user.tag,
-            anotacoes: arrayUnion(bossInfo)
-        }
+        id: user.id,
+        name: user.tag,
     }, { merge: true });
+    
+    const userAnotacoesRef = doc(db, nameCollectionUsuarios, user.id, nameCollectionAnotacoes, bossInfo.timestampAcao.toString());
+
+    await setDoc(userAnotacoesRef, bossInfo);
 }
 
-export { adicionarHorarioBoss, consultarHorarioBoss, adicionarLog, adicionarTimeoutsDB, adicionarErroInput, adicionarAnotacaoHorario };
+const consultarUsuarios = async(): Promise<Usuario[]> => {
+    const nameCollectionUsuarios: string = config.bossFirestoreConfig.collectionUsuarios;
+    const nameCollectionAnotacoes: string = config.bossFirestoreConfig.collectionAnotacoes;
+    
+    const collectionAnotacoesRef = collection(db, nameCollectionUsuarios);
+
+    const listaUsuarios = await getDocs(collectionAnotacoesRef).then(async (usuarios: QuerySnapshot<DocumentData>) => {
+        const docsUsuarios: DocumentData[] = usuarios.docs.map(u => u.data());
+
+        for(const docUsuario of docsUsuarios) {
+            const anotacoes: QuerySnapshot<DocumentData> = await getDocs(collection(db, nameCollectionUsuarios, docUsuario.id, nameCollectionAnotacoes));
+            docUsuario.anotacoes = anotacoes.docs.map(a => a.data() as IBossInfoAdd);
+        }
+
+        return docsUsuarios;
+    });
+
+    return listaUsuarios.map(user => new Usuario(user.id, user.name, user.anotacoes));
+}
+
+export { 
+    adicionarHorarioBoss,
+    consultarHorarioBoss,
+    adicionarLog,
+    adicionarTimeoutsDB,
+    adicionarErroInput,
+    adicionarAnotacaoHorario,
+    consultarUsuarios
+};
