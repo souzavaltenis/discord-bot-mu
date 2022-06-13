@@ -26,11 +26,11 @@ const getEmbedTabelaRank = async (): Promise<MessageEmbed> => {
 
     // Semanal
     const usuariosSemanal = sortUsuariosPorTempo(usuariosGeral, 'week').slice(0, limitUsers);
-    addFieldsRank('🔰 Semanal', 'week', usuariosSemanal, embedTabelaRank, limitUsers);
+    addFieldsRank('🔰 Semana', 'week', usuariosSemanal, embedTabelaRank, limitUsers);
 
     // Dia
     const usuariosDia = sortUsuariosPorTempo(usuariosGeral, 'day').slice(0, limitUsers);
-    addFieldsRank('📅 Diário', 'day', usuariosDia, embedTabelaRank, limitUsers);
+    addFieldsRank('📅 Hoje', 'day', usuariosDia, embedTabelaRank, limitUsers);
 
     return embedTabelaRank;
 }
