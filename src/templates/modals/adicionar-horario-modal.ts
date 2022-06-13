@@ -19,7 +19,7 @@ export class AdicionarHorarioModal {
         const inputNomeBoss = new TextInputComponent()
             .setCustomId(Ids.INPUT_NOME_BOSS)
             .setLabel("Qual boss?")
-            .setPlaceholder("Ex: rei, fenix, relics, dbk")
+            .setPlaceholder("Ex: rei, fenix, relics, dbk, geno")
             .setMinLength(3)
             .setMaxLength(20)
             .setRequired(true)
@@ -69,12 +69,14 @@ export class AdicionarHorarioModal {
         const valoresRelics: string[] = ['i', 'rl', 'rel','relics', 'illusion', 'relycs', 'relcs', 'relic', 'relicks', 'illusion of kundun'];
         const valoresFenix: string[] = ['f','fenix', 'phoenix', 'phoênix', 'fênix', 'fnix', 'fenx', 'phoenix of darkness'];
         const valoresDbk: string[] = ['d','dbk', 'death', 'beam', 'death beam', 'db', 'dkb', 'dbl', 'deathbk', 'bk', 'death beam knigth'];
+        const valoresGeno: string[] = ['g','geno', 'gen', 'gem', 'genocider', 'gneo', 'gno', 'ge', 'genocid', 'genocider'];
 
         switch (true) {
             case valoresRei.includes(textInputNomeBoss):    nomeDocBoss = config.bossFirestoreConfig.docs.docRei;       break;
             case valoresRelics.includes(textInputNomeBoss): nomeDocBoss = config.bossFirestoreConfig.docs.docRelics;    break;
             case valoresFenix.includes(textInputNomeBoss):  nomeDocBoss = config.bossFirestoreConfig.docs.docFenix;     break;
             case valoresDbk.includes(textInputNomeBoss):    nomeDocBoss = config.bossFirestoreConfig.docs.docDeathBeam; break;
+            case valoresGeno.includes(textInputNomeBoss):    nomeDocBoss = config.bossFirestoreConfig.docs.docGeno;     break;
         }
 
         if (!nomeDocBoss) {

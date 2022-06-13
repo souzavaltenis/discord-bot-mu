@@ -54,6 +54,7 @@ const getNomeBossByDoc = (nomeDocBoss: string): string => {
         case config.bossFirestoreConfig.docs.docRelics:    return "Relics";
         case config.bossFirestoreConfig.docs.docFenix:     return "Fenix";
         case config.bossFirestoreConfig.docs.docDeathBeam: return "Death Beam";
+        case config.bossFirestoreConfig.docs.docGeno:      return "Genocider";
         default: return '';
     }
 }
