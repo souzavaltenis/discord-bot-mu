@@ -43,9 +43,6 @@ const mostrarHorarios = async (textChannel: TextBasedChannel | null) => {
                 await interactionMessage.deferUpdate();
             });
 
-            collector.on("end", async () => {
-                await message.edit({ embeds: [getEmbedTabelaBoss(listaBoss)], components: [] });
-            });
         });
     });
 }
