@@ -1,13 +1,11 @@
-import { IBossInfoAdd } from "./interface/boss-info-add";
-
 export class Usuario {
     id: string;
     name: string;
-    anotacoes: IBossInfoAdd[];
+    timestampsAnotacoes: number[];
 
-    constructor(id: string, name: string, anotacoes: IBossInfoAdd[]) {
+    constructor(id: string, name: string, timestampsAnotacoes: number[]) {
         this.id = id;
         this.name = name;
-        this.anotacoes = anotacoes;
+        this.timestampsAnotacoes = timestampsAnotacoes;
     }
 }

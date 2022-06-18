@@ -11,19 +11,22 @@ import { agendarAvisos } from './avisos-utils';
 import { dataNowString } from './data-utils';
 import { sendMessageKafka } from '../services/kafka/kafka-producer';
 import { getLogsGeralString } from './geral-utils';
+import { Reset } from '../commands/reset';
 
 const setEvents = (client: Client): void => {
 
     client.on("guildCreate", async (guild: Guild) => {
         await sendMessageKafka(config.kafkaConfig.topicLogsGeralBot, getLogsGeralString({ guild: guild }));
-        deployCommands(config.clientId, guild.id);
     });
 
     client.on('ready', async (client: Client) => {
         console.log(`Logado como: ${client.user?.tag} ás ${dataNowString("HH:mm:ss DD/MM/YYYY")}`);
         await sendMessageKafka(config.kafkaConfig.topicLogsGeralBot, getLogsGeralString({ client: client }));
-        consultarHorarioBoss().then((listaBoss: Boss[]) => {
-            agendarAvisos(listaBoss);
+
+        consultarHorarioBoss().then((listaBoss: Boss[]) => agendarAvisos(listaBoss));
+
+        client.guilds.cache.forEach(async (guild: Guild) => {
+            deployCommands(client, guild);
         });
     });
 
@@ -33,6 +36,7 @@ const setEvents = (client: Client): void => {
             switch (interaction.commandName) {
                 case 'add': await new Add().execute(interaction); break;
                 case 'list': await new List().execute(interaction); break;
+                case 'reset': await new Reset().execute(interaction); break;
             }
         }
 
@@ -42,6 +46,7 @@ const setEvents = (client: Client): void => {
             }
         }
     });
+
 }
 
 export { setEvents }

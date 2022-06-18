@@ -1,5 +1,5 @@
 import { bold, underscore } from "@discordjs/builders";
-import { ModalSubmitInteraction } from "discord.js";
+import { Interaction } from "discord.js";
 import { RecordMetadata } from "kafkajs";
 import { Moment } from "moment";
 import { config } from '../config/get-configs';
@@ -165,7 +165,7 @@ const getLogsGeralString = (params?: IParamsLogsGeral): string => {
     return JSON.stringify(log);
 }
 
-const getLogsErrosInputString = (interaction: ModalSubmitInteraction, msgErroBoss: string): string => {
+const getLogsErrosInputString = (interaction: Interaction, msgErroBoss: string): string => {
     const logInputErro = {
         userId: interaction.user.id,
         userName: interaction.user.username,
@@ -178,8 +178,8 @@ const getLogsErrosInputString = (interaction: ModalSubmitInteraction, msgErroBos
     return JSON.stringify(logInputErro);
 }
 
-const sendLogErroInput = async(modalInteraction: ModalSubmitInteraction, msgErroBoss: string): Promise<RecordMetadata[]> => {
-    return await sendMessageKafka(config.kafkaConfig.topicLogsErrosInputBot, getLogsErrosInputString(modalInteraction, msgErroBoss));
+const sendLogErroInput = async(interaction: Interaction, msgErroBoss: string): Promise<RecordMetadata[]> => {
+    return await sendMessageKafka(config.kafkaConfig.topicLogsErrosInputBot, getLogsErrosInputString(interaction, msgErroBoss));
 }
 
 export { 

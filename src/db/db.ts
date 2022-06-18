@@ -72,39 +72,23 @@ const adicionarErroInput = async (erro: string): Promise<void> => {
 const adicionarAnotacaoHorario = async (user: User, bossInfo: IBossInfoAdd): Promise<void> => {
     if (!user || !bossInfo) return;
 
-    const nameCollectionUsuarios: string = config.bossFirestoreConfig.collectionUsuarios;
-    const nameCollectionAnotacoes: string = config.bossFirestoreConfig.collectionAnotacoes;
-
-    const userRef = doc(db, nameCollectionUsuarios, user.id);
+    const userRef = doc(db, config.bossFirestoreConfig.collectionUsuarios, user.id);
     
     await setDoc(userRef, {
         id: user.id,
         name: user.tag,
+        timestampsAnotacoes: arrayUnion(bossInfo.timestampAcao)
     }, { merge: true });
-    
-    const userAnotacoesRef = doc(db, nameCollectionUsuarios, user.id, nameCollectionAnotacoes, bossInfo.timestampAcao.toString());
-
-    await setDoc(userAnotacoesRef, bossInfo);
 }
 
 const consultarUsuarios = async(): Promise<Usuario[]> => {
-    const nameCollectionUsuarios: string = config.bossFirestoreConfig.collectionUsuarios;
-    const nameCollectionAnotacoes: string = config.bossFirestoreConfig.collectionAnotacoes;
+    const collectionUsuariosRef = collection(db, config.bossFirestoreConfig.collectionUsuarios);
+
+    const listaUsuariosSnap: QuerySnapshot<DocumentData> = await getDocs(collectionUsuariosRef);
     
-    const collectionAnotacoesRef = collection(db, nameCollectionUsuarios);
-
-    const listaUsuarios = await getDocs(collectionAnotacoesRef).then(async (usuarios: QuerySnapshot<DocumentData>) => {
-        const docsUsuarios: DocumentData[] = usuarios.docs.map(u => u.data());
-
-        for(const docUsuario of docsUsuarios) {
-            const anotacoes: QuerySnapshot<DocumentData> = await getDocs(collection(db, nameCollectionUsuarios, docUsuario.id, nameCollectionAnotacoes));
-            docUsuario.anotacoes = anotacoes.docs.map(a => a.data() as IBossInfoAdd);
-        }
-
-        return docsUsuarios;
-    });
-
-    return listaUsuarios.map(user => new Usuario(user.id, user.name, user.anotacoes));
+    return listaUsuariosSnap.docs
+        .map(docUser => docUser.data())
+        .map(user => new Usuario(user.id || 0, user.name || '', user.timestampsAnotacoes || []));
 }
 
 export { 
