@@ -28,7 +28,9 @@ const mostrarHorarios = async (textChannel: TextBasedChannel | null) => {
 
         await textChannel?.send({ embeds: [getEmbedTabelaBoss(listaBoss)], components: [rowButtons] }).then((message: Message) => {
 
-            LastMessageSingleton.getInstance().lastMessage = message;
+            if (message.channelId === config.channelTextId) {
+                LastMessageSingleton.getInstance().lastMessage = message;
+            }
 
             const collector = message.createMessageComponentCollector({ filter: (i: Interaction) => i.isButton(), time: 1000 * 60 * 60 * 8 });
 
