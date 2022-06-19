@@ -32,10 +32,10 @@ const verificarAtualizacaoMessage = async (textChannel: TextBasedChannel | null)
     const listaBoss: Boss[] = ListBossSingleton.getInstance().boss;
     if (listaBoss.length === 0) return;
 
-    try {
-        await textChannel?.messages.fetch(lastMessage?.id+'');
-        await lastMessage.edit({ embeds: [getEmbedTabelaBoss(listaBoss)] });
-    } catch(e) { console.log(e); } 
+    await textChannel?.messages.fetch(lastMessage?.id+'')
+        .then(async (message: Message) => {
+            await message.edit({ embeds: [getEmbedTabelaBoss(listaBoss)] });
+        }).catch(e => console.log(e));
 }
 
 export { mensagemAvisoAbertura, mensagemAvisoFechamento }
