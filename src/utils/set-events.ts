@@ -12,6 +12,9 @@ import { dataNowString } from './data-utils';
 import { sendMessageKafka } from '../services/kafka/kafka-producer';
 import { getLogsGeralString } from './geral-utils';
 import { Reset } from '../commands/reset';
+import { Anotar } from '../commands/anotar';
+import { Help } from '../commands/help';
+import { Say } from '../commands/say';
 
 const setEvents = (client: Client): void => {
 
@@ -35,8 +38,11 @@ const setEvents = (client: Client): void => {
             await sendMessageKafka(config.kafkaConfig.topicLogsGeralBot, getLogsGeralString({ cmdInteraction: interaction }));
             switch (interaction.commandName) {
                 case 'add': await new Add().execute(interaction); break;
+                case 'anotar': await new Anotar().execute(interaction); break;
                 case 'list': await new List().execute(interaction); break;
                 case 'reset': await new Reset().execute(interaction); break;
+                case 'help': await new Help().execute(interaction); break;
+                case 'say': await new Say().execute(interaction); break;
             }
         }
 

@@ -118,7 +118,7 @@ const getLogsGeralString = (params?: IParamsLogsGeral): string => {
         log = {
             type: TypeLog.ON_COMMAND,
             userId: cmdInteraction.user?.id,
-            userName: cmdInteraction.user?.username,
+            userName: cmdInteraction.user?.tag,
             command: `/${cmdInteraction.commandName}`,
             guildId: cmdInteraction.guild?.id,
             guildName: cmdInteraction.guild?.name,
@@ -168,7 +168,7 @@ const getLogsGeralString = (params?: IParamsLogsGeral): string => {
 const getLogsErrosInputString = (interaction: Interaction, msgErroBoss: string): string => {
     const logInputErro = {
         userId: interaction.user.id,
-        userName: interaction.user.username,
+        userName: interaction.user.tag,
         message: msgErroBoss,
         guildId: interaction.guild?.id,
         guildName: interaction.guild?.name,

@@ -2,6 +2,7 @@
     "clientId": "",
     "token": "",
     "channelTextId": "",
+    "ownerID": "",
     "bossFirestoreConfig": {
         "collectionBoss": "",
         "docs": {
@@ -18,7 +19,9 @@
         "documentLogs": "",
         "documentTimeouts": "",
         "documentErrosInput": "",
-        "documentContadorAnotacao": ""
+        "documentContadorAnotacao": "",
+        "collectionUsuarios": "",
+        "collectionBackups": ""
     },
     "firebaseConfig": {
         "apiKey": "",

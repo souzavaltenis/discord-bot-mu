@@ -69,15 +69,15 @@ const adicionarErroInput = async (erro: string): Promise<void> => {
     }, { merge: true });
 }
 
-const adicionarAnotacaoHorario = async (user: User, bossInfo: IBossInfoAdd): Promise<void> => {
-    if (!user || !bossInfo) return;
+const adicionarAnotacaoHorario = async (user: User, timestampAcao: number): Promise<void> => {
+    if (!user || !timestampAcao) return;
 
     const userRef = doc(db, config.bossFirestoreConfig.collectionUsuarios, user.id);
     
     await setDoc(userRef, {
         id: user.id,
         name: user.tag,
-        timestampsAnotacoes: arrayUnion(bossInfo.timestampAcao)
+        timestampsAnotacoes: arrayUnion(timestampAcao)
     }, { merge: true });
 }
 
@@ -91,6 +91,22 @@ const consultarUsuarios = async(): Promise<Usuario[]> => {
         .map(user => new Usuario(user.id || 0, user.name || '', user.timestampsAnotacoes || []));
 }
 
+const realizarBackupHorarios = async(momento: Moment, autor: string, tipoReset: string): Promise<void> => {
+    const momentoAcao: string = momento.format("DD-MM-YY HH:mm:ss");
+
+    const querySnapshot = await getDocs(query(collection(db, config.bossFirestoreConfig.collectionBoss), orderBy("id")));
+    const refDocBackup = doc(db, config.bossFirestoreConfig.collectionBackups, momentoAcao);
+
+    const horariosBackup = querySnapshot.docs.map(d => d.data()).reduce((a, v) => ({...a, [v.id]: v}), {});
+
+    await setDoc(refDocBackup, {
+        _momentoAcao: momentoAcao,
+        _tipoReset: tipoReset,
+        autor: autor,
+        horariosBackup: horariosBackup
+    });
+}
+
 export { 
     adicionarHorarioBoss,
     consultarHorarioBoss,
@@ -98,5 +114,6 @@ export {
     adicionarTimeoutsDB,
     adicionarErroInput,
     adicionarAnotacaoHorario,
-    consultarUsuarios
+    consultarUsuarios,
+    realizarBackupHorarios
 };

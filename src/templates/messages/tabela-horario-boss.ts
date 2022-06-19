@@ -12,10 +12,14 @@ import { sendMessageKafka } from "../../services/kafka/kafka-producer";
 import { config } from "../../config/get-configs";
 import { getLogsGeralString } from "../../utils/geral-utils";
 import { getEmbedTabelaRank } from "../embeds/tabela-rank-embed";
+import { LastMessageSingleton } from "../../models/singleton/last-message-singleton";
+import { ListBossSingleton } from "../../models/singleton/list-boss-singleton";
 
 const mostrarHorarios = async (textChannel: TextBasedChannel | null) => {
     
     await consultarHorarioBoss().then(async (listaBoss: Boss[]) => {
+
+        ListBossSingleton.getInstance().boss = listaBoss;
 
         agendarAvisos(listaBoss);
 
@@ -23,6 +27,8 @@ const mostrarHorarios = async (textChannel: TextBasedChannel | null) => {
         const rowButtons = disableButton(buttons, Ids.BUTTON_TABLE_BOSS);
 
         await textChannel?.send({ embeds: [getEmbedTabelaBoss(listaBoss)], components: [rowButtons] }).then((message: Message) => {
+
+            LastMessageSingleton.getInstance().lastMessage = message;
 
             const collector = message.createMessageComponentCollector({ filter: (i: Interaction) => i.isButton(), time: 1000 * 60 * 60 * 8 });
 
@@ -39,7 +45,7 @@ const mostrarHorarios = async (textChannel: TextBasedChannel | null) => {
                     default: embedSelecionada = getEmbedTabelaBoss(listaBoss); break;
                 }
 
-                message.edit({embeds: [embedSelecionada], components: [disableButton(buttons, interactionMessage.customId)] });
+                message.edit({ embeds: [embedSelecionada], components: [disableButton(buttons, interactionMessage.customId)] });
                 await interactionMessage.deferUpdate();
             });
 

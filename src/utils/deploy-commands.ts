@@ -5,6 +5,9 @@ import { Add } from '../commands/add';
 import { List } from '../commands/list';
 import { Reset } from '../commands/reset';
 import { Client, Guild } from 'discord.js';
+import { Anotar } from '../commands/anotar';
+import { Help } from '../commands/help';
+import { Say } from '../commands/say';
 
 const deployCommands = async (client: Client, guild: Guild): Promise<unknown> => {
  
@@ -12,8 +15,11 @@ const deployCommands = async (client: Client, guild: Guild): Promise<unknown> =>
 
 	const commands: RESTPostAPIApplicationCommandsJSONBody[] = [
 		new Add().data.toJSON(),
+		new Anotar().data.toJSON(),
 		new List().data.toJSON(),
 		new Reset().data.toJSON(),
+		new Help().data.toJSON(),
+		new Say().data.toJSON()
 	];
 	
 	const rest = new REST({ version: '9' }).setToken(config.token);
