@@ -12,6 +12,7 @@ import { Boss } from "../models/boss";
 import { IBossInfoAdd } from "../models/interface/boss-info-add";
 import { agendarAvisos } from "../utils/avisos-utils";
 import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
+import { GeralSingleton } from "../models/singleton/geral-singleton";
 
 export class Reset {
     data = new SlashCommandBuilder()
@@ -92,7 +93,7 @@ export class Reset {
             )
             .setTimestamp();
 
-        interaction.reply({ embeds: [embedReset] });
+        await interaction.reply({ embeds: [embedReset] });
 
         let msgComando: string = opcaoSubCommand === 'sala' ? `sala ${sala}` : opcaoSubCommand;
         msgComando = bold(msgComando);
@@ -161,6 +162,7 @@ export class Reset {
             await mostrarHorarios(interaction.channel);
             await interaction.channel?.send({ content: `✅ Reset ${msgComando} para ${bold(horarioReset.format('HH:mm (DD/MM)'))} confirmado por ${interaction.user} foi concluído com sucesso!` });
             agendarAvisos(listaBoss);
+            GeralSingleton.getInstance().isReset = opcaoSubCommand === 'geral';
         });
 
     }

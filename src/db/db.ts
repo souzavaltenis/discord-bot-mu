@@ -5,6 +5,7 @@ import { Moment } from "moment";
 import { config } from '../config/get-configs';
 import { Boss } from "../models/boss";
 import { IBossInfoAdd } from "../models/interface/boss-info-add";
+import { GeralSingleton } from "../models/singleton/geral-singleton";
 import { TimeoutSingleton } from "../models/singleton/timeout-singleton";
 import { Usuario } from "../models/usuario";
 import { dataNowString, momentToString, stringToMoment } from "../utils/data-utils";
@@ -71,6 +72,9 @@ const adicionarErroInput = async (erro: string): Promise<void> => {
 
 const adicionarAnotacaoHorario = async (user: User, timestampAcao: number): Promise<void> => {
     if (!user || !timestampAcao) return;
+
+    GeralSingleton.getInstance().isReset = false;
+    GeralSingleton.getInstance().isAvisoReset = false;
 
     const userRef = doc(db, config.bossFirestoreConfig.collectionUsuarios, user.id);
     

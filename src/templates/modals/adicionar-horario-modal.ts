@@ -82,7 +82,10 @@ export class AdicionarHorarioModal {
         if (!nomeDocBoss) {
             const msgErroBoss: string = `${interaction.user} Boss (${bold(textInputNomeBoss)}) não é reconhecido!`;
             await sendLogErroInput(interaction, msgErroBoss);
-            await interaction.reply(msgErroBoss);
+            await interaction.reply({
+                content: msgErroBoss,
+                ephemeral: true
+            });
             return;
         }
 
@@ -94,7 +97,10 @@ export class AdicionarHorarioModal {
         if (salaBoss === NaN || !salasConhecidas.includes(salaBoss)) {
             const msgErroSala: string = `${interaction.user} Sala (${bold(textInputSalaBoss)}) não é reconhecida! Use as salas ${salasConhecidas}.`;
             await sendLogErroInput(interaction, msgErroSala);
-            await interaction.reply(msgErroSala);
+            await interaction.reply({
+                content: msgErroSala,
+                ephemeral: true
+            });
             return;
         }
 
@@ -103,7 +109,10 @@ export class AdicionarHorarioModal {
         if (!(/^(?:[01][0-9]|2[0-3]):[0-5][0-9](?::[0-5][0-9])?$/).test(textInputHorarioBoss)) {
             const msgErroHorario: string = `${interaction.user} Horário (${bold(textInputHorarioBoss)}) não é reconhecido! Use como exemplo: 15:46`;
             await sendLogErroInput(interaction, msgErroHorario);
-            await interaction.reply(msgErroHorario);
+            await interaction.reply({
+                content: msgErroHorario,
+                ephemeral: true
+            });
             return;
         }
 
@@ -115,7 +124,10 @@ export class AdicionarHorarioModal {
         if (!foiOntem && distanceDatasInMinutes(horarioInformado, dataNowMoment()) >= 40) {
             const msgErroHorarioData: string = `${interaction.user} Horário (${bold(textInputHorarioBoss)}) é muito distante! Se foi de ontem, preencha o último campo com ${bold('sim')}.`;
             await sendLogErroInput(interaction, msgErroHorarioData);
-            await interaction.reply(msgErroHorarioData);
+            await interaction.reply({
+                content: msgErroHorarioData,
+                ephemeral: true
+            });
             return;
         }
 

@@ -4,15 +4,11 @@ import { IdBossSala } from "../models/id-boss-sala";
 import { TimeoutSingleton } from "../models/singleton/timeout-singleton";
 import { vaiAbrirBoss, calcularHorarioRestanteBoss, vaiFecharBoss } from "./boss-utils";
 import { config } from '../config/get-configs';
-import { TextBasedChannel } from "discord.js";
 import { mensagemAvisoAbertura, mensagemAvisoFechamento } from "../utils/mensagens-utils";
 // import { adicionarTimeoutsDB } from "../db/db";
 import { client } from "../index";
 
 const agendarAvisos = (listaBoss: Boss[]): void => {
-    const textChannel = client.channels.cache.get(config.channelTextId) as TextBasedChannel;
-
-    if (!client || !textChannel) return;
 
     let contadorBossAbertos: number = 0;
 
@@ -26,14 +22,14 @@ const agendarAvisos = (listaBoss: Boss[]): void => {
                 const horarioAteAbrir: number = calcularHorarioRestanteBoss(horarioBoss, config.bossFirestoreConfig.horaBossInicial).valueOf();
                 const horarioAteFechar: number = calcularHorarioRestanteBoss(horarioBoss, config.bossFirestoreConfig.horaBossFinal).valueOf();
 
-                adicionarTimeout(idBossSala.aberto, mensagemAvisoAbertura, horarioAteAbrir, boss.nome, sala, textChannel);
-                adicionarTimeout(idBossSala.fechado, mensagemAvisoFechamento, horarioAteFechar, boss.nome, sala, textChannel);
+                adicionarTimeout(idBossSala.aberto, mensagemAvisoAbertura, horarioAteAbrir, boss.nome, sala);
+                adicionarTimeout(idBossSala.fechado, mensagemAvisoFechamento, horarioAteFechar, boss.nome, sala);
             } 
             
             if (vaiFecharBoss(horarioBoss)) {
                 contadorBossAbertos++;
                 const horarioAteFechar: number = calcularHorarioRestanteBoss(horarioBoss, config.bossFirestoreConfig.horaBossFinal).valueOf();
-                adicionarTimeout(idBossSala.fechado, mensagemAvisoFechamento, horarioAteFechar, boss.nome, sala, textChannel);
+                adicionarTimeout(idBossSala.fechado, mensagemAvisoFechamento, horarioAteFechar, boss.nome, sala);
             }
         });
     });
@@ -44,14 +40,13 @@ const agendarAvisos = (listaBoss: Boss[]): void => {
 
 const adicionarTimeout = (
     idTimeout: string, 
-    funcaoAviso: (nomeBoss: string, salaBoss: number, textChannel: TextBasedChannel | null) => Promise<void>, 
+    funcaoAviso: (nomeBoss: string, salaBoss: number) => Promise<void>, 
     time: number, 
     nomeBoss: string, 
-    sala: number, 
-    textChannel: TextBasedChannel | null
+    sala: number
 ): void => {
     const timeouts: Map<string, NodeJS.Timeout> = TimeoutSingleton.getInstance().timeouts;
-    const refTimeout = setTimeout(funcaoAviso, time, nomeBoss, sala, textChannel);
+    const refTimeout = setTimeout(funcaoAviso, time, nomeBoss, sala);
     timeouts.set(idTimeout, refTimeout);
 }
 

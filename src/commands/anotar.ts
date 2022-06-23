@@ -49,7 +49,10 @@ export class Anotar {
         if (!(/^(?:[01][0-9]|2[0-3]):[0-5][0-9](?::[0-5][0-9])?$/).test(horario)) {
             const msgErroHorario: string = `${interaction.user} Horário (${bold(horario)}) não é reconhecido! Use como exemplo: 15:46`;
             await sendLogErroInput(interaction, msgErroHorario);
-            await interaction.reply(msgErroHorario);
+            await interaction.reply({
+                content: msgErroHorario,
+                ephemeral: true
+            });
             return;
         }
 
@@ -58,7 +61,10 @@ export class Anotar {
         if (foiontem === 'N' && distanceDatasInMinutes(horarioMoment, dataNowMoment()) >= 40) {
             const msgErroHorarioData: string = `${interaction.user} Horário (${bold(horario)}) é muito distante! Se foi de ontem, preencha o último campo com ${bold('Sim')}`;
             await sendLogErroInput(interaction, msgErroHorarioData);
-            await interaction.reply(msgErroHorarioData);
+            await interaction.reply({
+                content: msgErroHorarioData,
+                ephemeral: true
+            });
             return;
         }
 
