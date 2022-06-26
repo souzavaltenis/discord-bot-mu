@@ -2,16 +2,12 @@ import { Moment } from "moment";
 import { Boss } from "../models/boss";
 import { IdBossSala } from "../models/id-boss-sala";
 import { TimeoutSingleton } from "../models/singleton/timeout-singleton";
-import { vaiAbrirBoss, calcularHorarioRestanteBoss, vaiFecharBoss } from "./boss-utils";
+import { vaiAbrirBoss, calcularHorarioRestanteBoss, vaiFecharBoss, atualizarStatusBot } from "./boss-utils";
 import { config } from '../config/get-configs';
 import { mensagemAvisoAbertura, mensagemAvisoFechamento } from "../utils/mensagens-utils";
 // import { adicionarTimeoutsDB } from "../db/db";
-import { client } from "../index";
 
 const agendarAvisos = (listaBoss: Boss[]): void => {
-
-    let contadorBossAbertos: number = 0;
-
     listaBoss.forEach((boss: Boss) => {
         boss.salas.forEach((horarioBoss: Moment, sala: number) => {
             const idBossSala = new IdBossSala(boss.id, sala);
@@ -27,14 +23,13 @@ const agendarAvisos = (listaBoss: Boss[]): void => {
             } 
             
             if (vaiFecharBoss(horarioBoss)) {
-                contadorBossAbertos++;
                 const horarioAteFechar: number = calcularHorarioRestanteBoss(horarioBoss, config.bossFirestoreConfig.horaBossFinal).valueOf();
                 adicionarTimeout(idBossSala.fechado, mensagemAvisoFechamento, horarioAteFechar, boss.nome, sala);
             }
         });
     });
 
-    client.user?.setPresence({ activities: [{ name: `Boss Abertos :: ${contadorBossAbertos}`, type: 'PLAYING' }], status: 'idle' });
+    atualizarStatusBot();
     // adicionarTimeoutsDB();
 }
 

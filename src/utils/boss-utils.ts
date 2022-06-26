@@ -6,6 +6,8 @@ import { config } from '../config/get-configs';
 import { bold } from "@discordjs/builders";
 import { dataNowMoment, diffDatas } from "./data-utils";
 import { SalaBoss } from "../models/sala-boss";
+import { ListBossSingleton } from "../models/singleton/list-boss-singleton";
+import { client } from "../index";
 
 const formatBoss = (boss: Boss, somenteAbertos?: boolean): string => {
     let infoBoss: string = tracos(55) + '\n';
@@ -103,6 +105,16 @@ const sortBossAbertosByHorario = (salas: Map<number, Moment>): Map<number, Momen
     );
 }
 
+const atualizarStatusBot = async (): Promise<void> => {
+    const listaBoss: Boss[] = ListBossSingleton.getInstance().boss;
+
+    const contadorBossAbertos: number = listaBoss.reduce((acumulador: number, value: Boss) => {
+        return acumulador + Array.from(value.salas.values()).filter((horario: Moment) => vaiFecharBoss(horario)).length;
+    }, 0);
+
+    client.user?.setPresence({ activities: [{ name: `${contadorBossAbertos} Boss Abertos`, type: 'PLAYING' }], status: 'idle' });
+}  
+
 export { 
     formatBoss, 
     formatSalaBoss, 
@@ -114,5 +126,6 @@ export {
     vaiAbrirBoss, 
     vaiFecharBoss, 
     previsaoParaAbrir,
-    sortBossAbertosByHorario 
+    sortBossAbertosByHorario,
+    atualizarStatusBot
 }

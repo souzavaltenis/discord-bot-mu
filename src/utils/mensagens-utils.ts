@@ -1,12 +1,16 @@
 import { bold } from "@discordjs/builders";
-import { MessageEmbed, Message, TextChannel } from "discord.js";
+import { MessageEmbed, Message, TextChannel, MessageButton } from "discord.js";
 import { config } from "../config/get-configs";
 import { client } from "../index";
 import { Boss } from "../models/boss";
+import { Ids } from "../models/ids";
 import { GeralSingleton } from "../models/singleton/geral-singleton";
 import { LastMessageSingleton } from "../models/singleton/last-message-singleton";
 import { ListBossSingleton } from "../models/singleton/list-boss-singleton";
+import { getButtonsTabela } from "../templates/buttons/style-tabela-buttons";
 import { getEmbedTabelaBoss } from "../templates/embeds/tabela-boss-embed";
+import { atualizarStatusBot } from "./boss-utils";
+import { disableButton } from "./buttons-utils";
 import { dataNowString } from "./data-utils";
 import { numberToEmoji, underbold } from "./geral-utils";
 
@@ -49,9 +53,13 @@ const verificarAtualizacaoMessage = async (): Promise<void> => {
     const listaBoss: Boss[] = ListBossSingleton.getInstance().boss;
     if (listaBoss.length === 0) return;
 
+    atualizarStatusBot();
+
     await textChannel?.messages.fetch(lastMessage?.id+'')
         .then(async (message: Message) => {
-            await message.edit({ embeds: [getEmbedTabelaBoss(listaBoss)] });
+            const buttons: MessageButton[] = getButtonsTabela();
+            const rowButtons = disableButton(buttons, Ids.BUTTON_TABLE_BOSS);
+            await message.edit({ embeds: [getEmbedTabelaBoss(listaBoss)], components: [rowButtons] });
         }).catch(e => console.log(e));
 }
 
