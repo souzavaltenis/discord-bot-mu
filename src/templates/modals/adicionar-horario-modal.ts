@@ -65,9 +65,9 @@ export class AdicionarHorarioModal {
 
         let nomeDocBoss = "";
 
-        const valoresRei: string[] = ['k', 'rk', 'rey', 'rei', 'rei kundun', 'reikundun', 'rey kundun', 'kundun'];
+        const valoresRei: string[] = ['k', 'rk', 'rey', 'rei', 'reu', 'rei kundun', 'reikundun', 'rey kundun', 'kundun'];
         const valoresRelics: string[] = ['i', 'rl', 'rel','relics', 'illusion', 'relycs', 'relcs', 'relic', 'relicks', 'illusion of kundun'];
-        const valoresFenix: string[] = ['f','fenix', 'fenyx', 'fenux', 'felix', 'phoenix', 'phoênix', 'fênix', 'fnix', 'fenx', 'phoenix of darkness'];
+        const valoresFenix: string[] = ['f','fenix', 'fenyx', 'febux', 'fenux', 'felix', 'phoenix', 'phoênix', 'fênix', 'fnix', 'fenx', 'phoenix of darkness'];
         const valoresDbk: string[] = ['d', 'ebk', 'dbk', 'death', 'beam', 'death beam', 'db', 'dkb', 'dbl', 'deathbk', 'bk', 'death beam knigth'];
         const valoresGeno: string[] = ['g','geno', 'gen', 'gem', 'genocider', 'gneo', 'gno', 'ge', 'genocid', 'genocider'];
 

@@ -16,6 +16,7 @@ import { Anotar } from '../commands/anotar';
 import { Help } from '../commands/help';
 import { Say } from '../commands/say';
 import { ListBossSingleton } from '../models/singleton/list-boss-singleton';
+import { mostrarHorarios } from '../templates/messages/tabela-horario-boss';
 
 const setEvents = (client: Client): void => {
 
@@ -33,8 +34,11 @@ const setEvents = (client: Client): void => {
         });
 
         client.guilds.cache.forEach(async (guild: Guild) => {
-            deployCommands(client, guild);
+            await deployCommands(client, guild);
         });
+
+        const mainTextChannel = client.channels.cache.get(config.channelTextId) as TextChannel;
+        await mostrarHorarios(mainTextChannel);
     });
 
     client.on('interactionCreate', async (interaction: Interaction) => {

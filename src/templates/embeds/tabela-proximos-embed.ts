@@ -9,6 +9,7 @@ const getEmbedTabelaProximos = (listaBoss: Boss[]): MessageEmbed => {
         .setColor("DARK_BLUE")
         .setTitle("Tabela Horários Mais Próximos")
         .setDescription("\u200B")
+        .setFooter({ text: `Alguma dúvida? Use /help`})
         .setTimestamp();
 
     listaBoss.forEach((boss: Boss) => {

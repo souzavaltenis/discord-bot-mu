@@ -7,6 +7,7 @@ const getEmbedTabelaBoss = (listaBoss: Boss[]): MessageEmbed => {
         .setColor("DARK_BLUE")
         .setTitle("Tabela de Horários Boss")
         .setDescription("\u200B")
+        .setTimestamp()
         .setFooter({ text: `Alguma dúvida? Use /help`});
 
     listaBoss.forEach((boss: Boss) => embedTabelaBoss.addField(boss.nome, formatBoss(boss)));
