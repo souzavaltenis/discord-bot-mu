@@ -1,4 +1,4 @@
-import { Client, Guild, Interaction, TextChannel } from 'discord.js';
+import { Client, Guild, Interaction, TextChannel, VoiceState } from 'discord.js';
 import { Add } from '../commands/add';
 import { List } from '../commands/list';
 import { AdicionarHorarioModal } from '../templates/modals/adicionar-horario-modal';
@@ -16,7 +16,7 @@ import { Anotar } from '../commands/anotar';
 import { Help } from '../commands/help';
 import { Say } from '../commands/say';
 import { ListBossSingleton } from '../models/singleton/list-boss-singleton';
-import { mostrarHorarios } from '../templates/messages/tabela-horario-boss';
+import { mandarHorarios } from './boss-utils';
 
 const setEvents = (client: Client): void => {
 
@@ -37,8 +37,7 @@ const setEvents = (client: Client): void => {
             await deployCommands(client, guild);
         });
 
-        const mainTextChannel = client.channels.cache.get(config.channelTextId) as TextChannel;
-        await mostrarHorarios(mainTextChannel);
+        await mandarHorarios();
     });
 
     client.on('interactionCreate', async (interaction: Interaction) => {
@@ -72,6 +71,32 @@ const setEvents = (client: Client): void => {
         }
     });
 
+    client.on('voiceStateUpdate', async (oldState: VoiceState, newState: VoiceState) => {
+        // Connect main channel
+        if(oldState.channelId === null && newState.channelId === config.channelVoiceId) {
+            await oldState.member?.roles.add(config.roleIdHorarios);
+        }
+        // Disconect main channel
+        if (newState.channelId === null && oldState.channelId === config.channelVoiceId) {
+            await newState.member?.roles.remove(config.roleIdHorarios);
+        }
+        // Move from main channel to other channel
+        if(oldState.channelId === config.channelVoiceId && newState.channelId !== config.channelVoiceId) {
+            await newState.member?.roles.remove(config.roleIdHorarios);
+        }
+        // Move from other channel to main channel
+        if(oldState.channelId !== config.channelVoiceId && newState.channelId === config.channelVoiceId) {
+            await oldState.member?.roles.add(config.roleIdHorarios);
+        }
+        // If mute audio on main channel, move to afk channel
+        if (newState.selfDeaf && newState.channelId === config.channelVoiceId) {
+            await newState.member?.voice.setChannel(config.channelVoidAfkId);
+        }
+        // If unmute audio on afk channel, move to main channel
+        if (!newState.selfDeaf && newState.channelId === config.channelVoidAfkId) {
+            await newState.member?.voice.setChannel(config.channelVoiceId);
+        }
+    });
 }
 
 export { setEvents }

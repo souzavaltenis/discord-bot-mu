@@ -8,6 +8,8 @@ import { dataNowMoment, diffDatas } from "./data-utils";
 import { SalaBoss } from "../models/sala-boss";
 import { ListBossSingleton } from "../models/singleton/list-boss-singleton";
 import { client } from "../index";
+import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
+import { TextChannel } from "discord.js";
 
 const formatBoss = (boss: Boss, somenteAbertos?: boolean): string => {
     let infoBoss: string = tracos(55) + '\n';
@@ -113,7 +115,11 @@ const atualizarStatusBot = async (): Promise<void> => {
     }, 0);
 
     client.user?.setPresence({ activities: [{ name: `${contadorBossAbertos} Boss Abertos`, type: 'PLAYING' }], status: 'idle' });
-}  
+}
+const mandarHorarios = async (): Promise<void> => {
+    const mainTextChannel = client.channels.cache.get(config.channelTextId) as TextChannel;
+    await mostrarHorarios(mainTextChannel);
+}
 
 export { 
     formatBoss, 
@@ -127,5 +133,6 @@ export {
     vaiFecharBoss, 
     previsaoParaAbrir,
     sortBossAbertosByHorario,
-    atualizarStatusBot
+    atualizarStatusBot,
+    mandarHorarios
 }

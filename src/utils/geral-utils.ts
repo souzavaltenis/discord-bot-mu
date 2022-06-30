@@ -182,6 +182,10 @@ const sendLogErroInput = async(interaction: Interaction, msgErroBoss: string): P
     return await sendMessageKafka(config.kafkaConfig.topicLogsErrosInputBot, getLogsErrosInputString(interaction, msgErroBoss));
 }
 
+const sleep = async (ms: number): Promise<void> => {
+    return new Promise<void>(resolve => setTimeout(resolve, ms));
+}
+
 export { 
     tracos, 
     numberToEmoji, 
@@ -193,5 +197,6 @@ export {
     gerarListaSalaBoss,
     getLogsGeralString,
     getLogsErrosInputString,
-    sendLogErroInput
+    sendLogErroInput,
+    sleep
 }

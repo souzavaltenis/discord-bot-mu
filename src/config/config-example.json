@@ -3,6 +3,9 @@
     "token": "",
     "channelTextId": "",
     "ownerID": "",
+    "roleIdHorarios": "",
+    "channelVoiceId": "",
+    "channelVoidAfkId": "",
     "bossFirestoreConfig": {
         "collectionBoss": "",
         "docs": {
