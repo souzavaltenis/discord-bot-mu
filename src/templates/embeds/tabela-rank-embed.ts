@@ -1,7 +1,7 @@
 import { MessageEmbed } from "discord.js";
 import { Usuario } from "../../models/usuario";
 import { consultarUsuarios } from "../../db/db";
-import { underscore, userMention } from "@discordjs/builders";
+import { bold, underscore, userMention } from "@discordjs/builders";
 import { isSameMoment } from "../../utils/data-utils";
 
 const getEmbedTabelaRank = async (): Promise<MessageEmbed> => {
@@ -42,8 +42,8 @@ const addFieldsRank = (type: string, usuarios: Usuario[], embed: MessageEmbed, l
     usuarios.slice(0, limitUsers).forEach((usuario, index) => {
         const quantidadeAnotacoes = type ? calcularHorariosPorTempo(usuario.timestampsAnotacoes, type) : usuario.timestampsAnotacoes.length;
         if (quantidadeAnotacoes === 0) return;
-        const mentionUser: string = userMention(usuario.id);
-        msgUsuario += `${getTextPosition(index)} ${index < 3 ? underscore(mentionUser) : mentionUser} [ ${quantidadeAnotacoes} ${quantidadeAnotacoes > 1 ? 'anotações' : 'anotação'} ]\n`;
+        const userName: string = bold(usuario.name);
+        msgUsuario += `${getTextPosition(index)} ${index < 3 ? underscore(userName) : userName} [ ${quantidadeAnotacoes} ${quantidadeAnotacoes > 1 ? 'anotações' : 'anotação'} ]\n`;
     });
 
     embed.addField(getTitleFieldByType(type), msgUsuario + '\u200B' || '\u200B');

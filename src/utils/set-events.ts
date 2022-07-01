@@ -43,7 +43,7 @@ const setEvents = (client: Client): void => {
     client.on('interactionCreate', async (interaction: Interaction) => {
         if (interaction.isCommand()) {
 
-            if (interaction.channelId !== config.channelTextId) {
+            if (interaction.channelId !== config.channelTextId && interaction.user.id !== config.ownerID) {
                 const textChannel = client.channels.cache.get(config.channelTextId) as TextChannel;
                 const msgWrongChannel: string = `${interaction.user} os comandos só podem ser utilizados no canal ${textChannel}`;
                 await sendLogErroInput(interaction, msgWrongChannel);
@@ -54,6 +54,7 @@ const setEvents = (client: Client): void => {
             }
 
             await sendMessageKafka(config.kafkaConfig.topicLogsGeralBot, getLogsGeralString({ cmdInteraction: interaction }));
+            
             switch (interaction.commandName) {
                 case 'add': await new Add().execute(interaction); break;
                 case 'anotar': await new Anotar().execute(interaction); break;
@@ -89,11 +90,11 @@ const setEvents = (client: Client): void => {
             await oldState.member?.roles.add(config.roleIdHorarios);
         }
         // If mute audio on main channel, move to afk channel
-        if (newState.selfDeaf && newState.channelId === config.channelVoiceId) {
+        if (!newState.member?.roles.cache.has(config.roleIdNotMove) && newState.selfDeaf && newState.channelId === config.channelVoiceId) {
             await newState.member?.voice.setChannel(config.channelVoidAfkId);
         }
         // If unmute audio on afk channel, move to main channel
-        if (!newState.selfDeaf && newState.channelId === config.channelVoidAfkId) {
+        if (!newState.member?.roles.cache.has(config.roleIdNotMove) && !newState.selfDeaf && newState.channelId === config.channelVoidAfkId) {
             await newState.member?.voice.setChannel(config.channelVoiceId);
         }
     });
