@@ -1,6 +1,6 @@
 import { MessageEmbed } from "discord.js";
 import { Boss } from "../../models/boss";
-import { numberToEmoji, tracos, underbold } from "../../utils/geral-utils";
+import { numberToEmoji, textoFooterRandom, tracos, underbold } from "../../utils/geral-utils";
 import { previsaoParaAbrir, sortBossAbertosByHorario } from "../../utils/boss-utils";
 import { Moment } from "moment";
 
@@ -9,7 +9,7 @@ const getEmbedTabelaProximos = (listaBoss: Boss[]): MessageEmbed => {
         .setColor("DARK_BLUE")
         .setTitle("Tabela Horários Mais Próximos")
         .setDescription("\u200B")
-        .setFooter({ text: `Alguma dúvida? Use /help`})
+        .setFooter({ text: textoFooterRandom()})
         .setTimestamp();
 
     listaBoss.forEach((boss: Boss) => {

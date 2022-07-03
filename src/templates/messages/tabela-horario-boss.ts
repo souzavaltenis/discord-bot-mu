@@ -32,7 +32,7 @@ const mostrarHorarios = async (textChannel: TextBasedChannel | null) => {
                 LastMessageSingleton.getInstance().lastMessage = message;
             }
 
-            const collector = message.createMessageComponentCollector({ filter: (i: Interaction) => i.isButton(), time: 1000 * 60 * 60 * 8 });
+            const collector = message.createMessageComponentCollector({ filter: (i: Interaction) => i.isButton(), time: 1000 * 60 * 60 * 4 });
 
             collector.on("collect", async (interactionMessage: MessageComponentInteraction) => {
 
@@ -46,7 +46,7 @@ const mostrarHorarios = async (textChannel: TextBasedChannel | null) => {
                     case Ids.BUTTON_TABLE_RANK: embedSelecionada = await getEmbedTabelaRank(); break;
                     default: embedSelecionada = getEmbedTabelaBoss(listaBoss); break;
                 }
-
+                
                 message.edit({ embeds: [embedSelecionada], components: [disableButton(buttons, interactionMessage.customId)] });
                 await interactionMessage.deferUpdate();
             });

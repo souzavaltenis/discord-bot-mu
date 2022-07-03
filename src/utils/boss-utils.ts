@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import moment, { Moment } from "moment";
 import { Boss } from "../models/boss";
-import { tracos } from "./geral-utils";
+import { sleep, tracos } from "./geral-utils";
 import { config } from '../config/get-configs';
 import { bold } from "@discordjs/builders";
 import { dataNowMoment, diffDatas } from "./data-utils";
@@ -108,6 +108,7 @@ const sortBossAbertosByHorario = (salas: Map<number, Moment>): Map<number, Momen
 }
 
 const atualizarStatusBot = async (): Promise<void> => {
+    await sleep(70000);
     const listaBoss: Boss[] = ListBossSingleton.getInstance().boss;
 
     const contadorBossAbertos: number = listaBoss.reduce((acumulador: number, value: Boss) => {

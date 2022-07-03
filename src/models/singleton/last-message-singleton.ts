@@ -4,9 +4,11 @@ export class LastMessageSingleton {
     private static instance: LastMessageSingleton;
 
     lastMessage: Message | undefined;
+    lastMessageAlert: Message | undefined;
 
-    constructor(lastMessage?: Message) {
+    constructor(lastMessage?: Message, lastMessageAlert?: Message) {
         this.lastMessage = lastMessage;
+        this.lastMessageAlert = lastMessageAlert;
     }
 
     static getInstance(): LastMessageSingleton {

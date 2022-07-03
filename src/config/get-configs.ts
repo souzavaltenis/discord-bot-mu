@@ -1,14 +1,14 @@
 import configProd from './config-prod.json';
 import configTeste from './config-teste.json';
 
-const isProd: boolean = true;
+const botIsProd: boolean = true;
 const bdIsProd: boolean = true;
 
-if (!isProd && bdIsProd) {
+if (!botIsProd && bdIsProd) {
     configTeste.firebaseConfig = configProd.firebaseConfig;
     configTeste.bossFirestoreConfig = configProd.bossFirestoreConfig;
 }
 
-const config = isProd ? configProd : configTeste;
+const config = botIsProd ? configProd : configTeste;
 
-export { config }
+export { config, botIsProd }

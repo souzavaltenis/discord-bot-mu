@@ -24,9 +24,9 @@ const mensagemAvisoAbertura = async (nomeBoss: string, salaBoss: number): Promis
         .setColor("GREEN")
         .setDescription(`✅ Boss ${underbold(nomeBoss)} sala ${numberToEmoji(salaBoss)} ${underbold('abriu')}  🕗 [${dataNowString('HH:mm')}]`);
 
+    await textChannel?.send({ embeds: [emebedAvisoAbertura] }).then(async messageAlert => await apagarUltimoAviso(messageAlert));
+    await atualizarStatusBot();
     await verificarAtualizacaoMessage();
-
-    await textChannel?.send({ embeds: [emebedAvisoAbertura] });
 }
 
 const mensagemAvisoFechamento = async (nomeBoss: string, salaBoss: number): Promise<void> => {
@@ -38,10 +38,21 @@ const mensagemAvisoFechamento = async (nomeBoss: string, salaBoss: number): Prom
     const emebedAvisoFechamento = new MessageEmbed()
         .setColor("RED")
         .setDescription(`❌ Boss ${underbold(nomeBoss)} sala ${numberToEmoji(salaBoss)} ${underbold('fechou')}  🕛 [${dataNowString('HH:mm')}]`);
-
+        
+    await textChannel?.send({ embeds: [emebedAvisoFechamento] }).then(async messageAlert => await apagarUltimoAviso(messageAlert));
+    await atualizarStatusBot();
     await verificarAtualizacaoMessage();
-    
-    await textChannel?.send({ embeds: [emebedAvisoFechamento] });
+}
+
+const apagarUltimoAviso = async (message: Message): Promise<void> => {
+    const textChannel = client.channels.cache.get(config.channelTextId) as TextChannel;
+    const lastMessageAlert = LastMessageSingleton.getInstance().lastMessageAlert;
+
+    if (lastMessageAlert) {
+        await textChannel.messages.fetch(lastMessageAlert.id).then(m => m.delete());
+    }
+
+    LastMessageSingleton.getInstance().lastMessageAlert = message;
 }
 
 const verificarAtualizacaoMessage = async (): Promise<void> => {
@@ -52,8 +63,6 @@ const verificarAtualizacaoMessage = async (): Promise<void> => {
 
     const listaBoss: Boss[] = ListBossSingleton.getInstance().boss;
     if (listaBoss.length === 0) return;
-
-    atualizarStatusBot();
 
     await textChannel?.messages.fetch(lastMessage?.id+'')
         .then(async (message: Message) => {
