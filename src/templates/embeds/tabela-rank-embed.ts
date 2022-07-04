@@ -61,7 +61,7 @@ const getTextPosition = (index: number): string => {
 
 const getTitleFieldByType = (type: string): string => {
     switch (type) {
-        case '': return '👑 Total';
+        case '': return '👑 Geral';
         case 'week': return '🔰 Semana';
         case 'day': return '📅 Hoje';
         default: return '';

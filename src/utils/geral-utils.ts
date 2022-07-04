@@ -202,7 +202,7 @@ const textoFooterRandom = (): string => {
         'Botão [🏆]: Rank top 10 anotadores'
     ];
 
-    return textosFooter[Math.floor(Math.random() * textosFooter.length)];
+    return 'Dica: ' + textosFooter[Math.floor(Math.random() * textosFooter.length)];
 }
 export { 
     tracos, 

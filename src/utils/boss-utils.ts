@@ -108,7 +108,7 @@ const sortBossAbertosByHorario = (salas: Map<number, Moment>): Map<number, Momen
 }
 
 const atualizarStatusBot = async (): Promise<void> => {
-    await sleep(70000);
+    await sleep(5000);
     const listaBoss: Boss[] = ListBossSingleton.getInstance().boss;
 
     const contadorBossAbertos: number = listaBoss.reduce((acumulador: number, value: Boss) => {
