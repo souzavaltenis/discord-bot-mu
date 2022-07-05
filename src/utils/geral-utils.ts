@@ -193,13 +193,13 @@ const textoFooterRandom = (): string => {
         'Use /list para listar horários',
         'Servidor reiniciou? Use /reset geral',
         'Sala reiniciou? Use /reset sala',
-        'Ícone ✅ => horário aberto',
-        'Ícone ❌ => horário vencido',
-        'Ícone 💤 => horário que irá abrir',
-        '[Todos] => lista horários por boss',
-        '[Salas] => lista horários por sala',
-        '[Próximos] => mostra boss próximos',
-        '[🏆] => Rank top 10 anotadores'
+        'Ícone ✅ = horário aberto',
+        'Ícone ❌ = horário vencido',
+        'Ícone 💤 = horário que irá abrir',
+        '[Todos] = lista horários por boss',
+        '[Salas] = lista horários por sala',
+        '[Próximos] = mostra boss próximos',
+        '[🏆] = Rank top 10 anotadores'
     ];
 
     return 'Dica: ' + textosFooter[Math.floor(Math.random() * textosFooter.length)];

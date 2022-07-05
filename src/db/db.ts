@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { User } from "discord.js";
 import { initializeApp } from "firebase/app";
 import { doc, getFirestore, QueryDocumentSnapshot, WithFieldValue, DocumentData, SnapshotOptions, updateDoc, getDocs, collection, arrayUnion, orderBy, query, setDoc, QuerySnapshot, getDoc } from "firebase/firestore";
@@ -42,10 +43,18 @@ const configConverter = {
     }
 };
 
-const carregarConfigsBot = async (isProd: boolean): Promise<void> => {
+const carregarConfigsBot = async (isProd: boolean, isBdProd: boolean): Promise<void> => {
     const docConfigRef = doc(db, collectionConfig, isProd ? documentConfigProd : documentConfigTest).withConverter(configConverter);
     const snapDocConfig = await getDoc(docConfigRef);
-    ConfigBotSingleton.getInstance().configBot = snapDocConfig.data();
+    ConfigBotSingleton.getInstance().configBot = snapDocConfig.data()!;
+
+    if (!isProd && isBdProd) {
+        const docConfigProdRef = doc(db, collectionConfig, documentConfigProd).withConverter(configConverter);
+        const snapDocConfigProd = await getDoc(docConfigProdRef);
+        const dataConfigProd = snapDocConfigProd.data()!;
+        ConfigBotSingleton.getInstance().configBot.collections = dataConfigProd?.collections;
+        ConfigBotSingleton.getInstance().configBot.documents = dataConfigProd?.documents;
+    }
 }
 
 const adicionarHorarioBoss = async (bossInfo: IBossInfoAdd): Promise<void> => {
