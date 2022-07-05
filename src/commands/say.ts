@@ -10,13 +10,13 @@ export class Say {
         .addStringOption(option => option.setName('msg').setDescription('.').setRequired(true));
 
     async execute(interaction: CommandInteraction): Promise<void> {
-        if (interaction.user.id !== config.ownerID) {
+        if (interaction.user.id !== config().ownerId) {
             await interaction.reply({ content: 'Você não pode utilizar esse comando', ephemeral: true });
             return;
         }
 
         const msg: string = interaction.options.getString('msg') || '';
-        const textChannel = client.channels.cache.get(config.channelTextId) as TextChannel;
+        const textChannel = client.channels.cache.get(config().channels.textHorarios) as TextChannel;
 
         if (!client || !textChannel) return;
 

@@ -21,12 +21,12 @@ import { mandarHorarios } from './boss-utils';
 const setEvents = (client: Client): void => {
 
     client.on("guildCreate", async (guild: Guild) => {
-        await sendMessageKafka(config.kafkaConfig.topicLogsGeralBot, getLogsGeralString({ guild: guild }));
+        await sendMessageKafka(config().kafka.topicLogsGeralBot, getLogsGeralString({ guild: guild }));
     });
 
     client.on('ready', async (client: Client) => {
         console.log(`Logado como: ${client.user?.tag} ás ${dataNowString("HH:mm:ss DD/MM/YYYY")}`);
-        await sendMessageKafka(config.kafkaConfig.topicLogsGeralBot, getLogsGeralString({ client: client }));
+        await sendMessageKafka(config().kafka.topicLogsGeralBot, getLogsGeralString({ client: client }));
 
         consultarHorarioBoss().then((listaBoss: Boss[]) => {
             ListBossSingleton.getInstance().boss = listaBoss;
@@ -43,8 +43,8 @@ const setEvents = (client: Client): void => {
     client.on('interactionCreate', async (interaction: Interaction) => {
         if (interaction.isCommand()) {
 
-            if (interaction.channelId !== config.channelTextId && interaction.user.id !== config.ownerID) {
-                const textChannel = client.channels.cache.get(config.channelTextId) as TextChannel;
+            if (interaction.channelId !== config().channels.textHorarios && interaction.user.id !== config().ownerId) {
+                const textChannel = client.channels.cache.get(config().channels.textHorarios) as TextChannel;
                 const msgWrongChannel: string = `${interaction.user} os comandos só podem ser utilizados no canal ${textChannel}`;
                 await sendLogErroInput(interaction, msgWrongChannel);
                 return await interaction.reply({
@@ -53,7 +53,7 @@ const setEvents = (client: Client): void => {
                 }).catch(e => console.log(e));
             }
 
-            await sendMessageKafka(config.kafkaConfig.topicLogsGeralBot, getLogsGeralString({ cmdInteraction: interaction }));
+            await sendMessageKafka(config().kafka.topicLogsGeralBot, getLogsGeralString({ cmdInteraction: interaction }));
             
             switch (interaction.commandName) {
                 case 'add': await new Add().execute(interaction); break;
@@ -74,28 +74,28 @@ const setEvents = (client: Client): void => {
 
     client.on('voiceStateUpdate', async (oldState: VoiceState, newState: VoiceState) => {
         // Connect main channel
-        if(oldState.channelId === null && newState.channelId === config.channelVoiceId) {
-            await oldState.member?.roles.add(config.roleIdHorarios);
+        if(oldState.channelId === null && newState.channelId === config().channels.voiceHorarios) {
+            await oldState.member?.roles.add(config().cargos.horarios);
         }
         // Disconect main channel
-        if (newState.channelId === null && oldState.channelId === config.channelVoiceId) {
-            await newState.member?.roles.remove(config.roleIdHorarios);
+        if (newState.channelId === null && oldState.channelId === config().channels.voiceHorarios) {
+            await newState.member?.roles.remove(config().cargos.horarios);
         }
         // Move from main channel to other channel
-        if(oldState.channelId === config.channelVoiceId && newState.channelId !== config.channelVoiceId) {
-            await newState.member?.roles.remove(config.roleIdHorarios);
+        if(oldState.channelId === config().channels.voiceHorarios && newState.channelId !== config().channels.voiceHorarios) {
+            await newState.member?.roles.remove(config().cargos.horarios);
         }
         // Move from other channel to main channel
-        if(oldState.channelId !== config.channelVoiceId && newState.channelId === config.channelVoiceId) {
-            await oldState.member?.roles.add(config.roleIdHorarios);
+        if(oldState.channelId !== config().channels.voiceHorarios && newState.channelId === config().channels.voiceHorarios) {
+            await oldState.member?.roles.add(config().cargos.horarios);
         }
         // If mute audio on main channel, move to afk channel
-        if (!newState.member?.roles.cache.has(config.roleIdNotMove) && newState.selfDeaf && newState.channelId === config.channelVoiceId) {
-            await newState.member?.voice.setChannel(config.channelVoidAfkId);
+        if (!newState.member?.roles.cache.has(config().cargos.headset) && newState.selfDeaf && newState.channelId === config().channels.voiceHorarios) {
+            await newState.member?.voice.setChannel(config().channels.voiceAfk);
         }
         // If unmute audio on afk channel, move to main channel
-        if (!newState.member?.roles.cache.has(config.roleIdNotMove) && !newState.selfDeaf && newState.channelId === config.channelVoidAfkId) {
-            await newState.member?.voice.setChannel(config.channelVoiceId);
+        if (!newState.member?.roles.cache.has(config().cargos.headset) && !newState.selfDeaf && newState.channelId === config().channels.voiceAfk) {
+            await newState.member?.voice.setChannel(config().channels.voiceAfk);
         }
     });
 }

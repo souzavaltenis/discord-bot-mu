@@ -5,7 +5,6 @@ import { TimeoutSingleton } from "../models/singleton/timeout-singleton";
 import { vaiAbrirBoss, calcularHorarioRestanteBoss, vaiFecharBoss, atualizarStatusBot } from "./boss-utils";
 import { config } from '../config/get-configs';
 import { mensagemAvisoAbertura, mensagemAvisoFechamento } from "../utils/mensagens-utils";
-// import { adicionarTimeoutsDB } from "../db/db";
 
 const agendarAvisos = (listaBoss: Boss[]): void => {
     listaBoss.forEach((boss: Boss) => {
@@ -15,22 +14,21 @@ const agendarAvisos = (listaBoss: Boss[]): void => {
             limparTimeoutsBoss(idBossSala);
 
             if (vaiAbrirBoss(horarioBoss)) {
-                const horarioAteAbrir: number = calcularHorarioRestanteBoss(horarioBoss, config.bossFirestoreConfig.horaBossInicial).valueOf();
-                const horarioAteFechar: number = calcularHorarioRestanteBoss(horarioBoss, config.bossFirestoreConfig.horaBossFinal).valueOf();
+                const horarioAteAbrir: number = calcularHorarioRestanteBoss(horarioBoss, config().mu.horaBossInicial).valueOf();
+                const horarioAteFechar: number = calcularHorarioRestanteBoss(horarioBoss, config().mu.horaBossFinal).valueOf();
 
                 adicionarTimeout(idBossSala.aberto, mensagemAvisoAbertura, horarioAteAbrir, boss.nome, sala);
                 adicionarTimeout(idBossSala.fechado, mensagemAvisoFechamento, horarioAteFechar, boss.nome, sala);
             } 
             
             if (vaiFecharBoss(horarioBoss)) {
-                const horarioAteFechar: number = calcularHorarioRestanteBoss(horarioBoss, config.bossFirestoreConfig.horaBossFinal).valueOf();
+                const horarioAteFechar: number = calcularHorarioRestanteBoss(horarioBoss, config().mu.horaBossFinal).valueOf();
                 adicionarTimeout(idBossSala.fechado, mensagemAvisoFechamento, horarioAteFechar, boss.nome, sala);
             }
         });
     });
 
     atualizarStatusBot();
-    // adicionarTimeoutsDB();
 }
 
 const adicionarTimeout = (

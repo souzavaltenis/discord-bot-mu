@@ -35,7 +35,7 @@ export class Reset {
             .addNumberOption(option => {
                 option.setName('sala').setDescription('Qual sala?').setRequired(true);
 
-                config.bossFirestoreConfig.salasPermitidas.forEach((sala: number) => {
+                config().mu.salasPermitidas.forEach((sala: number) => {
                     option.addChoices({ name: `Sala ${sala}`, value: sala});
                 });
 
@@ -104,7 +104,7 @@ export class Reset {
 
         collector?.on("collect", async (interactionMessage: MessageComponentInteraction) => {
 
-            await sendMessageKafka(config.kafkaConfig.topicLogsGeralBot, getLogsGeralString({ msgInteraction: interactionMessage }));
+            await sendMessageKafka(config().kafka.topicLogsGeralBot, getLogsGeralString({ msgInteraction: interactionMessage }));
 
             let msgBotoes: string = '';
 
@@ -128,11 +128,11 @@ export class Reset {
         await realizarBackupHorarios(dataNowMoment(), `${interaction.user.tag} (${interaction.user.id})`, `${opcaoSubCommand}${sala ? sala : ''}`);
 
         const docsBoss: string[] = [
-            config.bossFirestoreConfig.docs.docRei,
-            config.bossFirestoreConfig.docs.docRelics,
-            config.bossFirestoreConfig.docs.docFenix,
-            config.bossFirestoreConfig.docs.docDeathBeam,
-            config.bossFirestoreConfig.docs.docGeno
+            config().documents.rei,
+            config().documents.relics,
+            config().documents.fenix,
+            config().documents.deathBeam,
+            config().documents.geno
         ];
 
         if (opcaoSubCommand === 'sala' && sala) {
@@ -147,7 +147,7 @@ export class Reset {
 
         } else if (opcaoSubCommand === 'geral') {
             for (const doc of docsBoss) {
-                for (const salaPermitida of config.bossFirestoreConfig.salasPermitidas) {
+                for (const salaPermitida of config().mu.salasPermitidas) {
                     await adicionarHorarioBoss({
                         nomeDocBoss: doc,
                         salaBoss: salaPermitida+'',

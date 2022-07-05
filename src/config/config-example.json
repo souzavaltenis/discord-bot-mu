@@ -1,32 +1,7 @@
 {
-    "clientId": "",
-    "token": "",
-    "channelTextId": "",
-    "ownerID": "",
-    "roleIdHorarios": "",
-    "channelVoiceId": "",
-    "channelVoidAfkId": "",
-    "roleIdNotMove": "",
-    "bossFirestoreConfig": {
-        "collectionBoss": "",
-        "docs": {
-            "docRei": "",
-            "docRelics": "",
-            "docFenix": "",
-            "docDeathBeam": "",
-            "docGeno": ""
-        },
-        "salasPermitidas": [0],
-        "horaBossInicial": 0,
-        "horaBossFinal": 0,
-        "collectionLogs": "",
-        "documentLogs": "",
-        "documentTimeouts": "",
-        "documentErrosInput": "",
-        "documentContadorAnotacao": "",
-        "collectionUsuarios": "",
-        "collectionBackups": ""
-    },
+    "collectionConfig": "",
+    "documentConfigProd": "",
+    "documentConfigTest": "",
     "firebaseConfig": {
         "apiKey": "",
         "authDomain": "",
@@ -35,12 +10,5 @@
         "messagingSenderId": "",
         "appId": "",
         "measurementId": ""
-    },
-    "kafkaConfig": {
-        "brokers": [""],
-        "topicLogsGeralBot": "",
-        "topicLogsErrosInputBot": "",
-        "saslUsername": "",
-        "saslPassword": ""
     }
 }

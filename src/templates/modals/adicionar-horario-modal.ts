@@ -72,11 +72,11 @@ export class AdicionarHorarioModal {
         const valoresGeno: string[] = ['g','geno', 'gen', 'gem', 'genocider', 'gneo', 'gno', 'ge', 'genocid', 'genocider'];
 
         switch (true) {
-            case valoresRei.includes(textInputNomeBoss):    nomeDocBoss = config.bossFirestoreConfig.docs.docRei;       break;
-            case valoresRelics.includes(textInputNomeBoss): nomeDocBoss = config.bossFirestoreConfig.docs.docRelics;    break;
-            case valoresFenix.includes(textInputNomeBoss):  nomeDocBoss = config.bossFirestoreConfig.docs.docFenix;     break;
-            case valoresDbk.includes(textInputNomeBoss):    nomeDocBoss = config.bossFirestoreConfig.docs.docDeathBeam; break;
-            case valoresGeno.includes(textInputNomeBoss):    nomeDocBoss = config.bossFirestoreConfig.docs.docGeno;     break;
+            case valoresRei.includes(textInputNomeBoss):    nomeDocBoss = config().documents.rei;       break;
+            case valoresRelics.includes(textInputNomeBoss): nomeDocBoss = config().documents.relics;    break;
+            case valoresFenix.includes(textInputNomeBoss):  nomeDocBoss = config().documents.fenix;     break;
+            case valoresDbk.includes(textInputNomeBoss):    nomeDocBoss = config().documents.deathBeam; break;
+            case valoresGeno.includes(textInputNomeBoss):   nomeDocBoss = config().documents.geno;      break;
         }
 
         if (!nomeDocBoss) {
@@ -92,7 +92,7 @@ export class AdicionarHorarioModal {
         const textInputSalaBoss: string = interaction.fields.getTextInputValue(Ids.INPUT_SALA_BOSS);
         
         const salaBoss = parseInt(textInputSalaBoss);
-        const salasConhecidas = config.bossFirestoreConfig.salasPermitidas;
+        const salasConhecidas = config().mu.salasPermitidas;
 
         if (salaBoss === NaN || !salasConhecidas.includes(salaBoss)) {
             const msgErroSala: string = `${interaction.user} Sala (${bold(textInputSalaBoss)}) não é reconhecida! Use as salas ${salasConhecidas}.`;

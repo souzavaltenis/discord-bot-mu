@@ -50,7 +50,7 @@ const isBossAberto = (horario: Moment): boolean => {
     if (!horario || !horario.isValid()) return false;
     
     const dataAtual = moment().utcOffset('GMT-03:00');
-    const dataNascimentoBossInicio = moment(horario).add(config.bossFirestoreConfig.horaBossInicial, 'hours');
+    const dataNascimentoBossInicio = moment(horario).add(config().mu.horaBossInicial, 'hours');
 
     return dataAtual.isAfter(dataNascimentoBossInicio);
 }
@@ -59,7 +59,7 @@ const isBossVencido = (horario: Moment): boolean => {
     if (!horario || !horario.isValid()) return false;
 
     const dataAtual = moment().utcOffset('GMT-03:00');
-    const dataNascimentoBossFim = moment(horario).add(config.bossFirestoreConfig.horaBossFinal, 'hours');
+    const dataNascimentoBossFim = moment(horario).add(config().mu.horaBossFinal, 'hours');
 
     return dataAtual.isAfter(dataNascimentoBossFim);
 }
@@ -67,8 +67,8 @@ const isBossVencido = (horario: Moment): boolean => {
 const previsaoBoss = (horario: Moment): string => {
     if (!horario || !horario.isValid()) return '';
 
-    const horarioNascimentoBossInicio = moment(horario).add(config.bossFirestoreConfig.horaBossInicial, 'hours').format('HH:mm');
-    const horarioNascimentoBossFim = moment(horario).add(config.bossFirestoreConfig.horaBossFinal, 'hours').format('HH:mm');
+    const horarioNascimentoBossInicio = moment(horario).add(config().mu.horaBossInicial, 'hours').format('HH:mm');
+    const horarioNascimentoBossFim = moment(horario).add(config().mu.horaBossFinal, 'hours').format('HH:mm');
 
     return bold(`[de ${horarioNascimentoBossInicio} até ${horarioNascimentoBossFim}]`);
 }
@@ -87,7 +87,7 @@ const vaiFecharBoss = (horarioBoss: Moment): boolean => {
 }
 
 const previsaoParaAbrir = (horario: Moment): Moment => {
-    const horarioAbertura = moment(horario).add(config.bossFirestoreConfig.horaBossInicial, 'hours');
+    const horarioAbertura = moment(horario).add(config().mu.horaBossInicial, 'hours');
     return diffDatas(horarioAbertura, dataNowMoment());
 }
 
@@ -118,7 +118,7 @@ const atualizarStatusBot = async (): Promise<void> => {
     client.user?.setPresence({ activities: [{ name: `${contadorBossAbertos} Boss Abertos`, type: 'PLAYING' }], status: 'idle' });
 }
 const mandarHorarios = async (): Promise<void> => {
-    const mainTextChannel = client.channels.cache.get(config.channelTextId) as TextChannel;
+    const mainTextChannel = client.channels.cache.get(config().channels.textHorarios) as TextChannel;
     await mostrarHorarios(mainTextChannel);
 }
 

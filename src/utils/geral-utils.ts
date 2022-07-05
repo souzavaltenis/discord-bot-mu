@@ -50,11 +50,11 @@ const underbold = (str: string): string => {
 
 const getNomeBossByDoc = (nomeDocBoss: string): string => {
     switch(nomeDocBoss) {
-        case config.bossFirestoreConfig.docs.docRei:       return "Rei Kundun";
-        case config.bossFirestoreConfig.docs.docRelics:    return "Relics";
-        case config.bossFirestoreConfig.docs.docFenix:     return "Fenix";
-        case config.bossFirestoreConfig.docs.docDeathBeam: return "Death Beam";
-        case config.bossFirestoreConfig.docs.docGeno:      return "Genocider";
+        case config().documents.rei:       return "Rei Kundun";
+        case config().documents.relics:    return "Relics";
+        case config().documents.fenix:     return "Fenix";
+        case config().documents.deathBeam: return "Death Beam";
+        case config().documents.geno:      return "Genocider";
         default: return '';
     }
 }
@@ -69,7 +69,7 @@ const formatInfosInputs = (nomeDocBoss: string, salaBoss: number, horarioInforma
 const gerarTabelaSalas = (listaBoss: Boss[]): Map<number, SalaBoss[]> => {
     const mapSalasHorarios = new Map<number, SalaBoss[]>();
 
-    config.bossFirestoreConfig.salasPermitidas.forEach((sala: number) => {
+    config().mu.salasPermitidas.forEach((sala: number) => {
         mapSalasHorarios.set(sala, [] as SalaBoss[]);
     });
 
@@ -179,7 +179,7 @@ const getLogsErrosInputString = (interaction: Interaction, msgErroBoss: string):
 }
 
 const sendLogErroInput = async(interaction: Interaction, msgErroBoss: string): Promise<RecordMetadata[]> => {
-    return await sendMessageKafka(config.kafkaConfig.topicLogsErrosInputBot, getLogsErrosInputString(interaction, msgErroBoss));
+    return await sendMessageKafka(config().kafka.topicLogsErrosInputBot, getLogsErrosInputString(interaction, msgErroBoss));
 }
 
 const sleep = async (ms: number): Promise<void> => {

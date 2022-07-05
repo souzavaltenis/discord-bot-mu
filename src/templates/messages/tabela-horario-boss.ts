@@ -28,7 +28,7 @@ const mostrarHorarios = async (textChannel: TextBasedChannel | null) => {
 
         await textChannel?.send({ embeds: [getEmbedTabelaBoss(listaBoss)], components: [rowButtons] }).then((message: Message) => {
 
-            if (message.channelId === config.channelTextId) {
+            if (message.channelId === config().channels.textHorarios) {
                 LastMessageSingleton.getInstance().lastMessage = message;
             }
 
@@ -36,7 +36,7 @@ const mostrarHorarios = async (textChannel: TextBasedChannel | null) => {
 
             collector.on("collect", async (interactionMessage: MessageComponentInteraction) => {
 
-                await sendMessageKafka(config.kafkaConfig.topicLogsGeralBot, getLogsGeralString({ msgInteraction: interactionMessage }));
+                await sendMessageKafka(config().kafka.topicLogsGeralBot, getLogsGeralString({ msgInteraction: interactionMessage }));
 
                 let embedSelecionada: MessageEmbed;
 

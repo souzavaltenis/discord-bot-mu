@@ -1,6 +1,6 @@
 {
   "name": "bot-horarios-mu",
-  "version": "1.9.15",
+  "version": "1.10.0",
   "description": "",
   "main": "src/index.ts",
   "scripts": {

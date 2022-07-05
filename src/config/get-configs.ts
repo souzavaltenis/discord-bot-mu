@@ -1,14 +1,11 @@
-import configProd from './config-prod.json';
-import configTeste from './config-teste.json';
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { carregarConfigsBot } from '../db/db';
+import { ConfigBot } from '../models/config-bot';
+import { ConfigBotSingleton } from '../models/singleton/config-bot-singleton';
 
 const botIsProd: boolean = true;
-const bdIsProd: boolean = true;
 
-if (!botIsProd && bdIsProd) {
-    configTeste.firebaseConfig = configProd.firebaseConfig;
-    configTeste.bossFirestoreConfig = configProd.bossFirestoreConfig;
-}
+const loadConfig = async (): Promise<void> => await carregarConfigsBot(botIsProd);
+const config = (): ConfigBot => ConfigBotSingleton.getInstance().configBot!;
 
-const config = botIsProd ? configProd : configTeste;
-
-export { config, botIsProd }
+export { botIsProd, loadConfig, config }

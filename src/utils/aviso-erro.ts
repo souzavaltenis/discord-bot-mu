@@ -6,7 +6,7 @@ import { getEmbedAlertaErro } from "../templates/embeds/alerta-erro-embed";
 const listenerErrors = (): void => {
     process.on('unhandledRejection', async (err) => {
         if (!(err instanceof Error)) return;
-        const user = await client.users.fetch(config.ownerID).catch((e) => {e});
+        const user = await client.users.fetch(config().ownerId).catch((e) => {e});
         const embedAlertaErro: MessageEmbed = getEmbedAlertaErro(err);
         await user?.send({ embeds: [embedAlertaErro] }).catch((e) => {e});
     });

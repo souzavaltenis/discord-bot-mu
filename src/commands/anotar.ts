@@ -19,11 +19,11 @@ export class Anotar {
             .setDescription('Qual Boss?')
             .setRequired(true)
             .addChoices(
-                { name: 'Rei Kundun', value: config.bossFirestoreConfig.docs.docRei },
-                { name: 'Relics',     value: config.bossFirestoreConfig.docs.docRelics },
-                { name: 'Fenix',      value: config.bossFirestoreConfig.docs.docFenix },
-                { name: 'Death Beam', value: config.bossFirestoreConfig.docs.docDeathBeam },
-                { name: 'Genocider',  value: config.bossFirestoreConfig.docs.docGeno }
+                { name: 'Rei Kundun', value: config().documents.rei },
+                { name: 'Relics',     value: config().documents.relics },
+                { name: 'Fenix',      value: config().documents.fenix },
+                { name: 'Death Beam', value: config().documents.deathBeam },
+                { name: 'Genocider',  value: config().documents.geno }
             );
 
             return option;
@@ -31,7 +31,7 @@ export class Anotar {
         .addNumberOption(option => {
             option.setName('sala').setDescription('Qual sala?').setRequired(true);
 
-            config.bossFirestoreConfig.salasPermitidas.forEach((sala: number) => {
+            config().mu.salasPermitidas.forEach((sala: number) => {
                 option.addChoices({ name: `Sala ${sala}`, value: sala});
             });
 

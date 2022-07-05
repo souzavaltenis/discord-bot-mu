@@ -1,16 +1,18 @@
 import { User } from "discord.js";
 import { initializeApp } from "firebase/app";
-import { doc, getFirestore, QueryDocumentSnapshot, WithFieldValue, DocumentData, SnapshotOptions, updateDoc, getDocs, collection, arrayUnion, orderBy, query, setDoc, QuerySnapshot } from "firebase/firestore";
+import { doc, getFirestore, QueryDocumentSnapshot, WithFieldValue, DocumentData, SnapshotOptions, updateDoc, getDocs, collection, arrayUnion, orderBy, query, setDoc, QuerySnapshot, getDoc } from "firebase/firestore";
 import { Moment } from "moment";
-import { config } from '../config/get-configs';
+import { firebaseConfig, collectionConfig, documentConfigProd, documentConfigTest } from '../config/config.json';
 import { Boss } from "../models/boss";
+import { ConfigBot } from "../models/config-bot";
 import { IBossInfoAdd } from "../models/interface/boss-info-add";
+import { ConfigBotSingleton } from "../models/singleton/config-bot-singleton";
 import { GeralSingleton } from "../models/singleton/geral-singleton";
-import { TimeoutSingleton } from "../models/singleton/timeout-singleton";
 import { Usuario } from "../models/usuario";
-import { dataNowString, momentToString, stringToMoment } from "../utils/data-utils";
+import { momentToString, stringToMoment } from "../utils/data-utils";
+import { config } from "../config/get-configs";
 
-const appFirebase = initializeApp(config.firebaseConfig);
+const appFirebase = initializeApp(firebaseConfig);
 const db = getFirestore(appFirebase);
 
 const bossConverter = {
@@ -32,8 +34,22 @@ const bossConverter = {
     }
 };
 
+const configConverter = {
+    toFirestore(boss: WithFieldValue<ConfigBot>): DocumentData { return boss; },
+    fromFirestore(snapshot: QueryDocumentSnapshot, options: SnapshotOptions): ConfigBot {
+        const data = snapshot.data(options);
+        return new ConfigBot(data.bot, data.cargos, data.channels, data.collections, data.documents, data.mu, data.kafka, data.ownerId);
+    }
+};
+
+const carregarConfigsBot = async (isProd: boolean): Promise<void> => {
+    const docConfigRef = doc(db, collectionConfig, isProd ? documentConfigProd : documentConfigTest).withConverter(configConverter);
+    const snapDocConfig = await getDoc(docConfigRef);
+    ConfigBotSingleton.getInstance().configBot = snapDocConfig.data();
+}
+
 const adicionarHorarioBoss = async (bossInfo: IBossInfoAdd): Promise<void> => {
-    const bossRef = doc(db, config.bossFirestoreConfig.collectionBoss, bossInfo.nomeDocBoss);
+    const bossRef = doc(db, config().collections.boss, bossInfo.nomeDocBoss);
     return updateDoc(bossRef, {
         [`salas.${bossInfo.salaBoss}`]: bossInfo.horarioInformado
     });
@@ -41,33 +57,11 @@ const adicionarHorarioBoss = async (bossInfo: IBossInfoAdd): Promise<void> => {
 
 const consultarHorarioBoss = async (): Promise<Boss[]> => {
     return new Promise<Boss[]>(async (resolve) => {
-        const querySnapshot = await getDocs(query(collection(db, config.bossFirestoreConfig.collectionBoss), orderBy("id")).withConverter(bossConverter));
+        const querySnapshot = await getDocs(query(collection(db, config().collections.boss), orderBy("id")).withConverter(bossConverter));
         const listaBoss = [] as Boss[];
         querySnapshot.forEach(boss => listaBoss.push(boss.data()));
         resolve(listaBoss);
     });
-}
-
-const adicionarLog = async (log: string): Promise<void> => {
-    const logsRef = doc(db, config.bossFirestoreConfig.collectionLogs, config.bossFirestoreConfig.documentLogs);
-    await updateDoc(logsRef, {
-        [dataNowString("DD-MM-YY")]: arrayUnion(`[${dataNowString('HH:mm:ss')}] ${log}`)
-    });
-}
-
-const adicionarTimeoutsDB = async (): Promise<void> => {
-    const timeouts: Map<string, NodeJS.Timeout> = TimeoutSingleton.getInstance().timeouts;
-    const logsRef = doc(db, config.bossFirestoreConfig.collectionLogs, config.bossFirestoreConfig.documentTimeouts);
-    await setDoc(logsRef, {
-        mapTimeouts: Array.from(timeouts.keys())
-    });
-}
-
-const adicionarErroInput = async (erro: string): Promise<void> => {
-    const logsRef = doc(db, config.bossFirestoreConfig.collectionLogs, config.bossFirestoreConfig.documentErrosInput);
-    await setDoc(logsRef, {
-        erros: arrayUnion(`[${dataNowString('HH:mm:ss')}] ${erro}`)
-    }, { merge: true });
 }
 
 const adicionarAnotacaoHorario = async (user: User, timestampAcao: number): Promise<void> => {
@@ -76,7 +70,7 @@ const adicionarAnotacaoHorario = async (user: User, timestampAcao: number): Prom
     GeralSingleton.getInstance().isReset = false;
     GeralSingleton.getInstance().isAvisoReset = false;
 
-    const userRef = doc(db, config.bossFirestoreConfig.collectionUsuarios, user.id);
+    const userRef = doc(db, config().collections.usuarios, user.id);
     
     await setDoc(userRef, {
         id: user.id,
@@ -86,7 +80,7 @@ const adicionarAnotacaoHorario = async (user: User, timestampAcao: number): Prom
 }
 
 const consultarUsuarios = async(): Promise<Usuario[]> => {
-    const collectionUsuariosRef = collection(db, config.bossFirestoreConfig.collectionUsuarios);
+    const collectionUsuariosRef = collection(db, config().collections.usuarios);
 
     const listaUsuariosSnap: QuerySnapshot<DocumentData> = await getDocs(collectionUsuariosRef);
     
@@ -98,8 +92,8 @@ const consultarUsuarios = async(): Promise<Usuario[]> => {
 const realizarBackupHorarios = async(momento: Moment, autor: string, tipoReset: string): Promise<void> => {
     const momentoAcao: string = momento.format("DD-MM-YY HH:mm:ss");
 
-    const querySnapshot = await getDocs(query(collection(db, config.bossFirestoreConfig.collectionBoss), orderBy("id")));
-    const refDocBackup = doc(db, config.bossFirestoreConfig.collectionBackups, momentoAcao);
+    const querySnapshot = await getDocs(query(collection(db, config().collections.boss), orderBy("id")));
+    const refDocBackup = doc(db, config().collections.backups, momentoAcao);
 
     const horariosBackup = querySnapshot.docs.map(d => d.data()).reduce((a, v) => ({...a, [v.id]: v}), {});
 
@@ -111,12 +105,10 @@ const realizarBackupHorarios = async(momento: Moment, autor: string, tipoReset: 
     });
 }
 
-export { 
+export {
+    carregarConfigsBot,
     adicionarHorarioBoss,
     consultarHorarioBoss,
-    adicionarLog,
-    adicionarTimeoutsDB,
-    adicionarErroInput,
     adicionarAnotacaoHorario,
     consultarUsuarios,
     realizarBackupHorarios

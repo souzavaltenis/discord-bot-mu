@@ -15,7 +15,7 @@ import { dataNowString } from "./data-utils";
 import { numberToEmoji, underbold } from "./geral-utils";
 
 const mensagemAvisoAbertura = async (nomeBoss: string, salaBoss: number): Promise<void> => {
-    const textChannel = client.channels.cache.get(config.channelTextId) as TextChannel;
+    const textChannel = client.channels.cache.get(config().channels.textHorarios) as TextChannel;
 
     const isIgnoreAviso = verificarAvisoReset();
     if (isIgnoreAviso) return;
@@ -30,7 +30,7 @@ const mensagemAvisoAbertura = async (nomeBoss: string, salaBoss: number): Promis
 }
 
 const mensagemAvisoFechamento = async (nomeBoss: string, salaBoss: number): Promise<void> => {
-    const textChannel = client.channels.cache.get(config.channelTextId) as TextChannel;
+    const textChannel = client.channels.cache.get(config().channels.textHorarios) as TextChannel;
 
     const isIgnoreAviso = verificarAvisoReset();
     if (isIgnoreAviso) return;
@@ -45,7 +45,7 @@ const mensagemAvisoFechamento = async (nomeBoss: string, salaBoss: number): Prom
 }
 
 const apagarUltimoAviso = async (message: Message): Promise<void> => {
-    const textChannel = client.channels.cache.get(config.channelTextId) as TextChannel;
+    const textChannel = client.channels.cache.get(config().channels.textHorarios) as TextChannel;
     const lastMessageAlert = LastMessageSingleton.getInstance().lastMessageAlert;
 
     if (lastMessageAlert) {
@@ -56,7 +56,7 @@ const apagarUltimoAviso = async (message: Message): Promise<void> => {
 }
 
 const verificarAtualizacaoMessage = async (): Promise<void> => {
-    const textChannel = client.channels.cache.get(config.channelTextId) as TextChannel;
+    const textChannel = client.channels.cache.get(config().channels.textHorarios) as TextChannel;
 
     const lastMessage: Message | undefined = LastMessageSingleton.getInstance().lastMessage;
     if (!lastMessage) return;
@@ -73,7 +73,7 @@ const verificarAtualizacaoMessage = async (): Promise<void> => {
 }
 
 const verificarAvisoReset = (): boolean => {
-    const textChannel = client.channels.cache.get(config.channelTextId) as TextChannel;
+    const textChannel = client.channels.cache.get(config().channels.textHorarios) as TextChannel;
     const geral = GeralSingleton.getInstance();
 
     if (geral.isReset && geral.isAvisoReset === false) {
