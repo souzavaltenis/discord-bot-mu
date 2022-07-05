@@ -95,7 +95,7 @@ const setEvents = (client: Client): void => {
         }
         // If unmute audio on afk channel, move to main channel
         if (!newState.member?.roles.cache.has(config().cargos.headset) && !newState.selfDeaf && newState.channelId === config().channels.voiceAfk) {
-            await newState.member?.voice.setChannel(config().channels.voiceAfk);
+            await newState.member?.voice.setChannel(config().channels.voiceHorarios);
         }
     });
 }
