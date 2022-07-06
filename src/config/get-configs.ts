@@ -5,7 +5,7 @@ import { ConfigBotSingleton } from '../models/singleton/config-bot-singleton';
 const botIsProd: boolean = true;
 const bdIsProd: boolean = true;
 
-const loadConfig = async (): Promise<void> => await carregarConfigsBot(botIsProd, bdIsProd);
+const loadConfig = async (): Promise<void> => await carregarConfigsBot();
 const config = (): ConfigBot => ConfigBotSingleton.getInstance().configBot;
 
-export { botIsProd, loadConfig, config }
+export { botIsProd, bdIsProd, loadConfig, config }

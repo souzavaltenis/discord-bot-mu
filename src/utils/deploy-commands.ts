@@ -8,6 +8,7 @@ import { Client, Guild } from 'discord.js';
 import { Anotar } from '../commands/anotar';
 import { Help } from '../commands/help';
 import { Say } from '../commands/say';
+import { Config } from '../commands/config';
 
 const deployCommands = async (client: Client, guild: Guild): Promise<unknown> => {
  
@@ -16,6 +17,7 @@ const deployCommands = async (client: Client, guild: Guild): Promise<unknown> =>
 	const commands: RESTPostAPIApplicationCommandsJSONBody[] = [
 		new Add().data.toJSON(),
 		new Anotar().data.toJSON(),
+		new Config().data.toJSON(),
 		new List().data.toJSON(),
 		new Reset().data.toJSON(),
 		new Help().data.toJSON(),

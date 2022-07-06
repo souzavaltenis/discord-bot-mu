@@ -11,7 +11,7 @@ import { ConfigBotSingleton } from "../models/singleton/config-bot-singleton";
 import { GeralSingleton } from "../models/singleton/geral-singleton";
 import { Usuario } from "../models/usuario";
 import { momentToString, stringToMoment } from "../utils/data-utils";
-import { config } from "../config/get-configs";
+import { botIsProd, bdIsProd, config } from "../config/get-configs";
 
 const appFirebase = initializeApp(firebaseConfig);
 const db = getFirestore(appFirebase);
@@ -36,25 +36,30 @@ const bossConverter = {
 };
 
 const configConverter = {
-    toFirestore(boss: WithFieldValue<ConfigBot>): DocumentData { return boss; },
+    toFirestore(configBot: WithFieldValue<ConfigBot>): DocumentData { return Object.assign({}, configBot); },
     fromFirestore(snapshot: QueryDocumentSnapshot, options: SnapshotOptions): ConfigBot {
         const data = snapshot.data(options);
         return new ConfigBot(data.bot, data.cargos, data.channels, data.collections, data.documents, data.mu, data.kafka, data.ownerId);
     }
 };
 
-const carregarConfigsBot = async (isProd: boolean, isBdProd: boolean): Promise<void> => {
-    const docConfigRef = doc(db, collectionConfig, isProd ? documentConfigProd : documentConfigTest).withConverter(configConverter);
+const carregarConfigsBot = async (): Promise<void> => {
+    const docConfigRef = doc(db, collectionConfig, botIsProd ? documentConfigProd : documentConfigTest).withConverter(configConverter);
     const snapDocConfig = await getDoc(docConfigRef);
     ConfigBotSingleton.getInstance().configBot = snapDocConfig.data()!;
 
-    if (!isProd && isBdProd) {
+    if (!botIsProd && bdIsProd) {
         const docConfigProdRef = doc(db, collectionConfig, documentConfigProd).withConverter(configConverter);
         const snapDocConfigProd = await getDoc(docConfigProdRef);
         const dataConfigProd = snapDocConfigProd.data()!;
         ConfigBotSingleton.getInstance().configBot.collections = dataConfigProd?.collections;
         ConfigBotSingleton.getInstance().configBot.documents = dataConfigProd?.documents;
     }
+}
+
+const sincronizarConfigsBot = async (): Promise<void> => {
+    const docConfigRef = doc(db, collectionConfig, botIsProd ? documentConfigProd : documentConfigTest).withConverter(configConverter);
+    await setDoc(docConfigRef, config(), { merge: true });
 }
 
 const adicionarHorarioBoss = async (bossInfo: IBossInfoAdd): Promise<void> => {
@@ -116,6 +121,7 @@ const realizarBackupHorarios = async(momento: Moment, autor: string, tipoReset: 
 
 export {
     carregarConfigsBot,
+    sincronizarConfigsBot,
     adicionarHorarioBoss,
     consultarHorarioBoss,
     adicionarAnotacaoHorario,

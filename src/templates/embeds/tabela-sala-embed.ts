@@ -15,7 +15,7 @@ const getEmbedTabelaSala = (listaBoss: Boss[]): MessageEmbed => {
     const mapSalasHorarios: Map<number, SalaBoss[]> = gerarTabelaSalas(listaBoss);
 
     mapSalasHorarios.forEach((bossSala: SalaBoss[], sala: number) => {
-        embedTabelaSalas.addField(`${underbold('Sala')} ${underbold(sala+'')}`, formatSalaBoss(bossSala));
+        embedTabelaSalas.addField(`${underbold('Sala ' + sala)}`, formatSalaBoss(bossSala));
     });
 
     return embedTabelaSalas;

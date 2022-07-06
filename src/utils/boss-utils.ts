@@ -25,7 +25,7 @@ const formatBoss = (boss: Boss, somenteAbertos?: boolean): string => {
         infoBoss += 'Nenhum aberto\n';
     }
 
-    return infoBoss + '\u200B\n';
+    return infoBoss;
 };
 
 const formatSalaBoss = (bossSalas: SalaBoss[]) => {
@@ -35,7 +35,7 @@ const formatSalaBoss = (bossSalas: SalaBoss[]) => {
         infoSala += `${bold(`${salaBoss.nomeBoss}`)}: ${formatLinhaInfo(salaBoss.horario)}\n`;
     });
     
-    return infoSala + '\u200B\n';
+    return infoSala;
 }
 
 const formatLinhaInfo = (horario: Moment): string => {

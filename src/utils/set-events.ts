@@ -17,6 +17,7 @@ import { Help } from '../commands/help';
 import { Say } from '../commands/say';
 import { ListBossSingleton } from '../models/singleton/list-boss-singleton';
 import { mandarHorarios } from './boss-utils';
+import { Config } from '../commands/config';
 
 const setEvents = (client: Client): void => {
 
@@ -58,6 +59,7 @@ const setEvents = (client: Client): void => {
             switch (interaction.commandName) {
                 case 'add': await new Add().execute(interaction); break;
                 case 'anotar': await new Anotar().execute(interaction); break;
+                case 'config': await new Config().execute(interaction); break;
                 case 'list': await new List().execute(interaction); break;
                 case 'reset': await new Reset().execute(interaction); break;
                 case 'help': await new Help().execute(interaction); break;
@@ -94,7 +96,7 @@ const setEvents = (client: Client): void => {
             await newState.member?.voice.setChannel(config().channels.voiceAfk);
         }
         // If unmute audio on afk channel, move to main channel
-        if (!newState.member?.roles.cache.has(config().cargos.headset) && !newState.selfDeaf && newState.channelId === config().channels.voiceAfk) {
+        if (!newState.member?.roles.cache.has(config().cargos.headset) && oldState.channelId === config().channels.voiceAfk && !newState.selfDeaf && newState.channelId === config().channels.voiceAfk) {
             await newState.member?.voice.setChannel(config().channels.voiceHorarios);
         }
     });

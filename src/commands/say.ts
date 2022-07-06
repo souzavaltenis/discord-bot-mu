@@ -2,10 +2,12 @@ import { bold, SlashCommandBuilder } from '@discordjs/builders';
 import { CommandInteraction, TextChannel } from 'discord.js';
 import { client } from '../index';
 import { config } from '../config/get-configs';
+import { PermissionFlagsBits } from 'discord-api-types/v9';
 
 export class Say {
     data = new SlashCommandBuilder()
         .setName('say')
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .setDescription('.')
         .addStringOption(option => option.setName('msg').setDescription('.').setRequired(true));
 
