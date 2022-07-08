@@ -12,6 +12,7 @@ export class ConfigBot {
         public cargos: ICargosConfigBot, 
         public channels: IChannelsConfigBot, 
         public collections: ICollectionsConfigBot, 
+        public dicasFooter: string[], 
         public documents: IDocumentsConfigBot, 
         public mu: IMuConfigBot, 
         public kafka: IKafkaConfigBot,
@@ -21,6 +22,7 @@ export class ConfigBot {
         this.cargos = cargos;
         this.channels = channels;
         this.collections = collections;
+        this.dicasFooter = dicasFooter;
         this.documents = documents;
         this.mu = mu;
         this.kafka = kafka;

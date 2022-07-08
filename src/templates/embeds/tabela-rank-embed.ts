@@ -13,7 +13,7 @@ const getEmbedTabelaRank = async (): Promise<MessageEmbed> => {
         .setColor("DARK_BLUE")
         .setTitle("Rank de Anotações 🏆")
         .setDescription('\u200B')
-        .setFooter({ text: textoFooterRandom()})
+        .setFooter({ text: textoFooterRandom() })
         .setTimestamp();
 
     const limitUsers: number = 10;

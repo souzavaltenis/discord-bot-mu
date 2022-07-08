@@ -23,6 +23,7 @@ export class ConfigBotSingleton {
                 {} as ICargosConfigBot, 
                 {} as IChannelsConfigBot, 
                 {} as ICollectionsConfigBot, 
+                [], 
                 {} as IDocumentsConfigBot, 
                 {} as IMuConfigBot, 
                 {} as IKafkaConfigBot,

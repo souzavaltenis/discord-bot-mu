@@ -9,7 +9,7 @@ const getEmbedTabelaSala = (listaBoss: Boss[]): MessageEmbed => {
         .setColor("DARK_BLUE")
         .setTitle("Tabela de Horários por Sala")
         .setDescription("\u200B")
-        .setFooter({ text: textoFooterRandom()})
+        .setFooter({ text: textoFooterRandom() })
         .setTimestamp();
 
     const mapSalasHorarios: Map<number, SalaBoss[]> = gerarTabelaSalas(listaBoss);

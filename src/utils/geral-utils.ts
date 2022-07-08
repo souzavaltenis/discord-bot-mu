@@ -187,23 +187,10 @@ const sleep = async (ms: number): Promise<void> => {
 }
 
 const textoFooterRandom = (): string => {
-    const textosFooter: string[] = [
-        'Alguma dúvida? Use /help',
-        'Use /add para adicionar horário',
-        'Use /list para listar horários',
-        'Servidor reiniciou? Use /reset geral',
-        'Sala reiniciou? Use /reset sala',
-        'Ícone ✅ = horário aberto',
-        'Ícone ❌ = horário vencido',
-        'Ícone 💤 = horário que irá abrir',
-        '[Todos] = lista horários por boss',
-        '[Salas] = lista horários por sala',
-        '[Próximos] = mostra boss próximos',
-        '[🏆] = Rank top 10 anotadores'
-    ];
-
-    return 'Dica: ' + textosFooter[Math.floor(Math.random() * textosFooter.length)];
+    const textosFooter: string[] = config().dicasFooter;
+    return '\u200B\nDica: ' + textosFooter[Math.floor(Math.random() * textosFooter.length)];
 }
+
 export { 
     tracos, 
     numberToEmoji, 

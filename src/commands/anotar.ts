@@ -59,7 +59,7 @@ export class Anotar {
         const horarioMoment: Moment = stringToMoment(`${dataNowString('DD/MM/YYYY')} ${horario} -0300`)
 
         if (foiontem === 'N' && distanceDatasInMinutes(horarioMoment, dataNowMoment()) >= 40) {
-            const msgErroHorarioData: string = `${interaction.user} Horário (${bold(horario)}) é muito distante! Se foi de ontem, preencha o último campo com ${bold('Sim')}`;
+            const msgErroHorarioData: string = `${interaction.user} Horário (${bold(horario)}) é muito distante! Se foi de ontem, preencha o campo (foi ontem?) com ${bold('Sim')}`;
             await sendLogErroInput(interaction, msgErroHorarioData);
             await interaction.reply({
                 content: msgErroHorarioData,

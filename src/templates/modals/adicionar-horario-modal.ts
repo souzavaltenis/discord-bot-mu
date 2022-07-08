@@ -122,7 +122,7 @@ export class AdicionarHorarioModal {
         const foiOntem: boolean = inputPerguntaOntem.length > 0 && ['s', 'si', 'sim'].includes(inputPerguntaOntem.toLocaleLowerCase());
 
         if (!foiOntem && distanceDatasInMinutes(horarioInformado, dataNowMoment()) >= 40) {
-            const msgErroHorarioData: string = `${interaction.user} Horário (${bold(textInputHorarioBoss)}) é muito distante! Se foi de ontem, preencha o último campo com ${bold('sim')}.`;
+            const msgErroHorarioData: string = `${interaction.user} Horário (${bold(textInputHorarioBoss)}) é muito distante! Se foi de ontem, preencha o campo (foi ontem?) com ${bold('sim')}.`;
             await sendLogErroInput(interaction, msgErroHorarioData);
             await interaction.reply({
                 content: msgErroHorarioData,
