@@ -29,6 +29,7 @@ const mostrarHorarios = async (textChannel: TextBasedChannel | null) => {
         await textChannel?.send({ embeds: [getEmbedTabelaBoss(listaBoss)], components: [rowButtons] }).then((message: Message) => {
 
             if (message.channelId === config().channels.textHorarios) {
+                LastMessageSingleton.getInstance().lastMessage?.delete().catch(e => console.log(e));
                 LastMessageSingleton.getInstance().lastMessage = message;
             }
 
