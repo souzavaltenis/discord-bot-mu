@@ -38,7 +38,18 @@ const configConverter = {
     toFirestore(configBot: WithFieldValue<ConfigBot>): DocumentData { return Object.assign({}, configBot); },
     fromFirestore(snapshot: QueryDocumentSnapshot, options: SnapshotOptions): ConfigBot {
         const data = snapshot.data(options);
-        return new ConfigBot(data.bot, data.cargos, data.channels, data.collections, data.dicasFooter, data.documents, data.mu, data.kafka, data.ownerId);
+        return new ConfigBot(
+            data.bot, 
+            data.cargos, 
+            data.channels, 
+            data.collections, 
+            data.dicasFooter, 
+            data.documents,
+            data.geral,
+            data.mu, 
+            data.kafka, 
+            data.ownerId
+        );
     }
 };
 
