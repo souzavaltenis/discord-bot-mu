@@ -7,23 +7,23 @@ import { Reset } from '../commands/reset';
 import { Client, Guild } from 'discord.js';
 import { Anotar } from '../commands/anotar';
 import { Help } from '../commands/help';
-import { Say } from '../commands/say';
 import { Config } from '../commands/config';
 import { Sala } from '../commands/sala';
+import { Admin } from '../commands/admin';
 
 const deployCommands = async (client: Client, guild: Guild): Promise<unknown> => {
  
     if (!client.user?.id || !guild.id) return;
 
 	const commands: RESTPostAPIApplicationCommandsJSONBody[] = [
-		new Add().data.toJSON(),
+        new Add().data.toJSON(),
+		new Admin().data.toJSON(),
 		new Anotar().data.toJSON(),
 		new Config().data.toJSON(),
 		new List().data.toJSON(),
 		new Reset().data.toJSON(),
 		new Help().data.toJSON(),
-		new Sala().data.toJSON(),
-		new Say().data.toJSON()
+		new Sala().data.toJSON()
 	];
 	
 	const rest = new REST({ version: '9' }).setToken(config().bot.token);
