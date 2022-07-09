@@ -1,10 +1,10 @@
 import { bold } from "@discordjs/builders";
 import { MessageEmbed, Message, TextChannel, MessageButton } from "discord.js";
 import { config } from "../config/get-configs";
+import { sincronizarConfigsBot } from "../db/db";
 import { client } from "../index";
 import { Boss } from "../models/boss";
 import { Ids } from "../models/ids";
-import { GeralSingleton } from "../models/singleton/geral-singleton";
 import { LastMessageSingleton } from "../models/singleton/last-message-singleton";
 import { ListBossSingleton } from "../models/singleton/list-boss-singleton";
 import { getButtonsTabela } from "../templates/buttons/style-tabela-buttons";
@@ -12,7 +12,7 @@ import { getEmbedTabelaBoss } from "../templates/embeds/tabela-boss-embed";
 import { atualizarStatusBot } from "./boss-utils";
 import { disableButton } from "./buttons-utils";
 import { dataNowString } from "./data-utils";
-import { numberToEmoji, underbold } from "./geral-utils";
+import { numbersToEmoji, underbold } from "./geral-utils";
 
 const mensagemAvisoAbertura = async (nomeBoss: string, salaBoss: number): Promise<void> => {
     const textChannel = client.channels.cache.get(config().channels.textHorarios) as TextChannel;
@@ -22,7 +22,7 @@ const mensagemAvisoAbertura = async (nomeBoss: string, salaBoss: number): Promis
 
     const emebedAvisoAbertura = new MessageEmbed()
         .setColor("GREEN")
-        .setDescription(`✅ Boss ${underbold(nomeBoss)} sala ${numberToEmoji(salaBoss)} ${underbold('abriu')}  🕗 [${dataNowString('HH:mm')}]`);
+        .setDescription(`✅ Boss ${underbold(nomeBoss)} sala ${numbersToEmoji(salaBoss)} ${underbold('abriu')}  🕗 [${dataNowString('HH:mm')}]`);
 
     await textChannel?.send({ embeds: [emebedAvisoAbertura] }).then(async messageAlert => await apagarUltimoAviso(messageAlert));
     await atualizarStatusBot();
@@ -37,7 +37,7 @@ const mensagemAvisoFechamento = async (nomeBoss: string, salaBoss: number): Prom
 
     const emebedAvisoFechamento = new MessageEmbed()
         .setColor("RED")
-        .setDescription(`❌ Boss ${underbold(nomeBoss)} sala ${numberToEmoji(salaBoss)} ${underbold('fechou')}  🕛 [${dataNowString('HH:mm')}]`);
+        .setDescription(`❌ Boss ${underbold(nomeBoss)} sala ${numbersToEmoji(salaBoss)} ${underbold('fechou')}  🕛 [${dataNowString('HH:mm')}]`);
         
     await textChannel?.send({ embeds: [emebedAvisoFechamento] }).then(async messageAlert => await apagarUltimoAviso(messageAlert));
     await atualizarStatusBot();
@@ -73,16 +73,17 @@ const verificarAtualizacaoMessage = async (): Promise<void> => {
 }
 
 const verificarAvisoReset = (): boolean => {
-    const textChannel = client.channels.cache.get(config().channels.textHorarios) as TextChannel;
-    const geral = GeralSingleton.getInstance();
-
-    if (geral.isReset && geral.isAvisoReset === false) {
-        textChannel?.send(`📢 @everyone Bora ${textChannel.guild.name}, estão perdendo tempo, ${bold('TODOS OS BOSS ABRIRAM')}, boa sorte!`);
+    if (config().mu.isHorariosReset && config().mu.isAvisoReset === false) {
+        const textChannel = client.channels.cache.get(config().channels.textHorarios) as TextChannel;
+        textChannel?.send(`📢 @everyone Bora ${textChannel.guild.name}, ${bold('TODOS OS BOSS ABRIRAM')}, boa sorte!`);
+        
         verificarAtualizacaoMessage();
-        geral.isAvisoReset = true;
+
+        config().mu.isAvisoReset = true;
+        sincronizarConfigsBot();
     }
 
-    return geral.isReset;
+    return config().mu.isHorariosReset;
 }
 
 export { mensagemAvisoAbertura, mensagemAvisoFechamento }

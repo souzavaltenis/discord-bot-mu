@@ -11,4 +11,6 @@ export class Ids {
     static BUTTON_TABLE_RANK: string = "style-table-rank";
     static BUTTON_SIM_RESET: string = "sim-reset";
     static BUTTON_NAO_RESET: string = "nao-resets";
+    static BUTTON_SIM_REMOVE_SALA: string = "sim-remove-sala";
+    static BUTTON_NAO_REMOVE_SALA: string = "nao-remove-sala";
 }

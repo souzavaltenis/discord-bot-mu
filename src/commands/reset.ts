@@ -7,12 +7,9 @@ import { dataNowMoment, dataNowString, distanceDatasInMinutes, momentToString, s
 import { getLogsGeralString, sendLogErroInput } from "../utils/geral-utils";
 import { config } from '../config/get-configs';
 import { Ids } from "../models/ids";
-import { adicionarHorarioBoss, consultarHorarioBoss, realizarBackupHorarios } from "../db/db";
-import { Boss } from "../models/boss";
+import { adicionarHorarioBoss, realizarBackupHorarios, sincronizarConfigsBot } from "../db/db";
 import { IBossInfoAdd } from "../models/interface/boss-info-add";
-import { agendarAvisos } from "../utils/avisos-utils";
 import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
-import { GeralSingleton } from "../models/singleton/geral-singleton";
 
 export class Reset {
     data = new SlashCommandBuilder()
@@ -32,15 +29,7 @@ export class Reset {
             .setName('sala')
             .setDescription('Reseta horários em uma sala específica')
             .addStringOption(option => option.setName('horario').setDescription('Qual horário?').setRequired(true))
-            .addNumberOption(option => {
-                option.setName('sala').setDescription('Qual sala?').setRequired(true);
-
-                config().mu.salasPermitidas.forEach((sala: number) => {
-                    option.addChoices({ name: `Sala ${sala}`, value: sala});
-                });
-
-                return option;
-            })
+            .addNumberOption(option => option.setName('sala').setDescription('Qual sala?').setRequired(true).setMinValue(1).setMaxValue(20))
             .addStringOption(option => option.setName('foi_ontem').setDescription('Esse horário foi ontem?').addChoices({ name: 'Não', value: 'N' }, { name: 'Sim', value: 'S' }).setRequired(true));
 
             return subcommand;
@@ -54,8 +43,7 @@ export class Reset {
         if (!(/^(?:[01][0-9]|2[0-3]):[0-5][0-9](?::[0-5][0-9])?$/).test(horario)) {
             const msgErroHorario: string = `${interaction.user} Horário (${bold(horario)}) não é reconhecido! Use como exemplo: 15:46`;
             await sendLogErroInput(interaction, msgErroHorario);
-            await interaction.reply(msgErroHorario);
-            return;
+            return await interaction.reply(msgErroHorario);
         }
 
         const foiontem: string = interaction.options.getString('foi_ontem') || '';
@@ -64,8 +52,7 @@ export class Reset {
         if (foiontem === 'N' && distanceDatasInMinutes(horarioReset, dataNowMoment()) >= 40) {
             const msgErroHorarioData: string = `${interaction.user} Horário (${bold(horario)}) é muito distante! Se foi de ontem, preencha o último campo com ${bold('Sim')}`;
             await sendLogErroInput(interaction, msgErroHorarioData);
-            await interaction.reply(msgErroHorarioData);
-            return;
+            return await interaction.reply(msgErroHorarioData);
         }
 
         if (foiontem === 'S') {
@@ -73,6 +60,13 @@ export class Reset {
         }
 
         const sala: number = interaction.options.getNumber('sala') || 0;
+
+        if (!config().mu.salasPermitidas.includes(sala) && opcaoSubCommand === "sala") {
+            return await interaction.reply({
+                content: `${interaction.user} sala ${sala} não foi encontrada`,
+                ephemeral: true
+            });
+        }
 
         const buttonsSimNao: MessageButton[] = getButtonsSimNao();
         const rowButtons = new MessageActionRow().setComponents(buttonsSimNao);
@@ -111,35 +105,31 @@ export class Reset {
             switch(interactionMessage.customId) {
                 case Ids.BUTTON_SIM_RESET: 
                     msgBotoes = `🔄 Reset ${msgComando} foi confirmado por ${interactionMessage.user} e será concluído em instantes...`; 
-                    this.resetHorarios(interactionMessage, opcaoSubCommand, msgComando, horarioReset, sala); 
                     break;
                 case Ids.BUTTON_NAO_RESET:
                     msgBotoes = `❌ Reset ${msgComando} foi cancelado por ${interactionMessage.user}`;
                     break;
             }
 
-            message?.edit({content: msgBotoes, components: [] });
+            await message?.edit({content: msgBotoes, components: [] });
             await interactionMessage.deferUpdate();
+
+            if (interactionMessage.customId === Ids.BUTTON_SIM_RESET) {
+                await this.resetHorarios(interactionMessage, opcaoSubCommand, msgComando, horarioReset, sala); 
+            }
         });
     }
 
     async resetHorarios(interaction: MessageComponentInteraction, opcaoSubCommand: string, msgComando: string, horarioReset: Moment, sala: number): Promise<void> {
-
         await realizarBackupHorarios(dataNowMoment(), `${interaction.user.tag} (${interaction.user.id})`, `${opcaoSubCommand}${sala ? sala : ''}`);
 
-        const docsBoss: string[] = [
-            config().documents.rei,
-            config().documents.relics,
-            config().documents.fenix,
-            config().documents.deathBeam,
-            config().documents.geno
-        ];
+        const docsBoss: string[] = Object.values(config().documents);
 
         if (opcaoSubCommand === 'sala' && sala) {
             for (const doc of docsBoss) {
                 await adicionarHorarioBoss({
                     nomeDocBoss: doc,
-                    salaBoss: sala+'',
+                    salaBoss: sala + '',
                     horarioInformado: momentToString(horarioReset),
                     timestampAcao: dataNowMoment().valueOf()
                 } as IBossInfoAdd);
@@ -150,7 +140,7 @@ export class Reset {
                 for (const salaPermitida of config().mu.salasPermitidas) {
                     await adicionarHorarioBoss({
                         nomeDocBoss: doc,
-                        salaBoss: salaPermitida+'',
+                        salaBoss: salaPermitida + '',
                         horarioInformado: momentToString(horarioReset),
                         timestampAcao: dataNowMoment().valueOf()
                     } as IBossInfoAdd);
@@ -158,12 +148,9 @@ export class Reset {
             }
         }
 
-        await consultarHorarioBoss().then(async (listaBoss: Boss[]) => {
-            await mostrarHorarios(interaction.channel);
-            await interaction.channel?.send({ content: `✅ Reset ${msgComando} para ${bold(horarioReset.format('HH:mm (DD/MM)'))} confirmado por ${interaction.user} foi concluído com sucesso!` });
-            agendarAvisos(listaBoss);
-            GeralSingleton.getInstance().isReset = opcaoSubCommand === 'geral';
-        });
-
+        await mostrarHorarios(interaction.channel);
+        await interaction.channel?.send({ content: `✅ Reset ${msgComando} para ${bold(horarioReset.format('HH:mm (DD/MM)'))} confirmado por ${interaction.user} foi concluído com sucesso!` });
+        config().mu.isHorariosReset = opcaoSubCommand === 'geral';
+        await sincronizarConfigsBot();
     }
 }

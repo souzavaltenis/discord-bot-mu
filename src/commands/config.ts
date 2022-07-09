@@ -1,5 +1,4 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { PermissionFlagsBits } from "discord-api-types/v9";
 import { CommandInteraction } from "discord.js";
 import { config } from "../config/get-configs";
 import { sincronizarConfigsBot } from "../db/db";
@@ -10,7 +9,6 @@ export class Config {
     data = new SlashCommandBuilder()
         .setName('config')
         .setDescription('Realize configurações no bot')
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .addSubcommand(subcommand => {
             subcommand.setName('horario')
                 .setDescription('Defina o intervalo inicial e final dos boss')
@@ -22,27 +20,30 @@ export class Config {
     async execute(interaction: CommandInteraction): Promise<void> {
         const opcaoSubCommand = interaction.options.getSubcommand();
 
-        if (opcaoSubCommand === "horario") {
-
-            const intervaloInicial: number = interaction.options.getNumber('intervalo_inicial', true);
-            const intervaloFinal: number = interaction.options.getNumber('intervalo_final', true);
-
-            const intervaloInicialAntigo = config().mu.horaBossInicial;
-            const intervaloFinalAntigo = config().mu.horaBossFinal;
-            
-            config().mu.horaBossInicial = intervaloInicial;
-            config().mu.horaBossFinal = intervaloFinal;
-            
-            await sincronizarConfigsBot();
-
-            const textoIntevaloAntigo: string = underbold(`${intervaloInicialAntigo}/${intervaloFinalAntigo}`);
-            const textoIntevaloNovo: string = underbold(`${intervaloInicial}/${intervaloFinal}`);
-            
-            await interaction.deferReply();
-            await interaction.deleteReply();
-            await mostrarHorarios(interaction.channel);
-            await interaction.channel?.send(`✅ ${interaction.user} intervalo dos boss alterado de ${textoIntevaloAntigo} para ${textoIntevaloNovo} horas`);
+        switch(opcaoSubCommand) {
+            case "horario": await this.subCommandHorario(interaction); break;
         }
-
     }
+
+    async subCommandHorario(interaction: CommandInteraction): Promise<void> {
+        const intervaloInicial: number = interaction.options.getNumber('intervalo_inicial', true);
+        const intervaloFinal: number = interaction.options.getNumber('intervalo_final', true);
+
+        const intervaloInicialAntigo = config().mu.horaBossInicial;
+        const intervaloFinalAntigo = config().mu.horaBossFinal;
+        
+        config().mu.horaBossInicial = intervaloInicial;
+        config().mu.horaBossFinal = intervaloFinal;
+        
+        await sincronizarConfigsBot();
+
+        const textoIntevaloAntigo: string = underbold(`${intervaloInicialAntigo}/${intervaloFinalAntigo}`);
+        const textoIntevaloNovo: string = underbold(`${intervaloInicial}/${intervaloFinal}`);
+        
+        await interaction.deferReply();
+        await interaction.deleteReply();
+        await mostrarHorarios(interaction.channel);
+        await interaction.channel?.send(`✅ ${interaction.user} intervalo dos boss alterado de ${textoIntevaloAntigo} para ${textoIntevaloNovo} horas`);
+    }
+
 }

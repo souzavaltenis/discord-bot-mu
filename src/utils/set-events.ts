@@ -18,6 +18,7 @@ import { Say } from '../commands/say';
 import { ListBossSingleton } from '../models/singleton/list-boss-singleton';
 import { mandarHorarios } from './boss-utils';
 import { Config } from '../commands/config';
+import { Sala } from '../commands/sala';
 
 const setEvents = (client: Client): void => {
 
@@ -63,6 +64,7 @@ const setEvents = (client: Client): void => {
                 case 'list': await new List().execute(interaction); break;
                 case 'reset': await new Reset().execute(interaction); break;
                 case 'help': await new Help().execute(interaction); break;
+                case 'sala': await new Sala().execute(interaction); break;
                 case 'say': await new Say().execute(interaction); break;
             }
         }

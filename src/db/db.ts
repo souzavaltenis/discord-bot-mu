@@ -1,14 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { User } from "discord.js";
 import { initializeApp } from "firebase/app";
-import { doc, getFirestore, QueryDocumentSnapshot, WithFieldValue, DocumentData, SnapshotOptions, updateDoc, getDocs, collection, arrayUnion, orderBy, query, setDoc, QuerySnapshot, getDoc } from "firebase/firestore";
+import { doc, getFirestore, QueryDocumentSnapshot, WithFieldValue, DocumentData, SnapshotOptions, updateDoc, getDocs, collection, arrayUnion, orderBy, query, setDoc, QuerySnapshot, getDoc, deleteField } from "firebase/firestore";
 import { Moment } from "moment";
 import { firebaseConfig, collectionConfig, documentConfigProd, documentConfigTest } from '../config/config.json';
 import { Boss } from "../models/boss";
 import { ConfigBot } from "../models/config-bot";
 import { IBossInfoAdd } from "../models/interface/boss-info-add";
 import { ConfigBotSingleton } from "../models/singleton/config-bot-singleton";
-import { GeralSingleton } from "../models/singleton/geral-singleton";
 import { Usuario } from "../models/usuario";
 import { momentToString, stringToMoment } from "../utils/data-utils";
 import { botIsProd, bdIsProd, config } from "../config/get-configs";
@@ -62,6 +61,30 @@ const sincronizarConfigsBot = async (): Promise<void> => {
     await setDoc(docConfigRef, config(), { merge: true });
 }
 
+const adicionarSala = async (sala: number): Promise<void> => {
+    const documentsBoss: string[] = Object.values(config().documents);
+
+    for (const docBoss of documentsBoss) {
+        await adicionarHorarioBoss({
+            nomeDocBoss: docBoss,
+            salaBoss: sala + '',
+            horarioInformado: '',
+            timestampAcao: new Date().valueOf()
+        } as IBossInfoAdd);
+    }
+}
+
+const removerSala = async (sala: number): Promise<void> => {
+    const documentsBoss: string[] = Object.values(config().documents);
+
+    for (const docBoss of documentsBoss) {
+        const bossRef = doc(db, config().collections.boss, docBoss);
+        await updateDoc(bossRef, {
+            [`salas.${sala}`]: deleteField()
+        });
+    }
+}
+
 const adicionarHorarioBoss = async (bossInfo: IBossInfoAdd): Promise<void> => {
     const bossRef = doc(db, config().collections.boss, bossInfo.nomeDocBoss);
     return updateDoc(bossRef, {
@@ -81,8 +104,9 @@ const consultarHorarioBoss = async (): Promise<Boss[]> => {
 const adicionarAnotacaoHorario = async (user: User, timestampAcao: number): Promise<void> => {
     if (!user || !timestampAcao) return;
 
-    GeralSingleton.getInstance().isReset = false;
-    GeralSingleton.getInstance().isAvisoReset = false;
+    config().mu.isHorariosReset = false;
+    config().mu.isAvisoReset = false;
+    await sincronizarConfigsBot();
 
     const userRef = doc(db, config().collections.usuarios, user.id);
     
@@ -122,6 +146,8 @@ const realizarBackupHorarios = async(momento: Moment, autor: string, tipoReset: 
 export {
     carregarConfigsBot,
     sincronizarConfigsBot,
+    adicionarSala,
+    removerSala,
     adicionarHorarioBoss,
     consultarHorarioBoss,
     adicionarAnotacaoHorario,

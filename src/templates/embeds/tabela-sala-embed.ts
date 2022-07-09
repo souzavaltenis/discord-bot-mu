@@ -1,4 +1,5 @@
 import { MessageEmbed } from "discord.js";
+import { config } from "../../config/get-configs";
 import { Boss } from "../../models/boss";
 import { SalaBoss } from "../../models/sala-boss";
 import { formatSalaBoss } from "../../utils/boss-utils";
@@ -9,7 +10,7 @@ const getEmbedTabelaSala = (listaBoss: Boss[]): MessageEmbed => {
         .setColor("DARK_BLUE")
         .setTitle("Tabela de Horários por Sala")
         .setDescription("\u200B")
-        .setFooter({ text: textoFooterRandom() })
+        .setFooter({ text: config().mu.avisoFooter || textoFooterRandom() })
         .setTimestamp();
 
     const mapSalasHorarios: Map<number, SalaBoss[]> = gerarTabelaSalas(listaBoss);

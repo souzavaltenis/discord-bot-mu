@@ -4,6 +4,7 @@ import { consultarUsuarios } from "../../db/db";
 import { bold, underscore } from "@discordjs/builders";
 import { isSameMoment } from "../../utils/data-utils";
 import { textoFooterRandom } from "../../utils/geral-utils";
+import { config } from "../../config/get-configs";
 
 const getEmbedTabelaRank = async (): Promise<MessageEmbed> => {
 
@@ -13,7 +14,7 @@ const getEmbedTabelaRank = async (): Promise<MessageEmbed> => {
         .setColor("DARK_BLUE")
         .setTitle("Rank de Anotações 🏆")
         .setDescription('\u200B')
-        .setFooter({ text: textoFooterRandom() })
+        .setFooter({ text: config().mu.avisoFooter || textoFooterRandom() })
         .setTimestamp();
 
     const limitUsers: number = 10;

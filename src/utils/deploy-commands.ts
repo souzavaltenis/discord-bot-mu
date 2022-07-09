@@ -9,6 +9,7 @@ import { Anotar } from '../commands/anotar';
 import { Help } from '../commands/help';
 import { Say } from '../commands/say';
 import { Config } from '../commands/config';
+import { Sala } from '../commands/sala';
 
 const deployCommands = async (client: Client, guild: Guild): Promise<unknown> => {
  
@@ -21,6 +22,7 @@ const deployCommands = async (client: Client, guild: Guild): Promise<unknown> =>
 		new List().data.toJSON(),
 		new Reset().data.toJSON(),
 		new Help().data.toJSON(),
+		new Sala().data.toJSON(),
 		new Say().data.toJSON()
 	];
 	
