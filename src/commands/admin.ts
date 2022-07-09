@@ -10,6 +10,7 @@ import { Ids } from "../models/ids";
 import { getEmbedTabelaBoss } from "../templates/embeds/tabela-boss-embed";
 import { Boss } from "../models/boss";
 import { ListBossSingleton } from "../models/singleton/list-boss-singleton";
+import { sendLogErroInput } from "../utils/geral-utils";
 
 export class Admin {
     data = new SlashCommandBuilder()
@@ -31,8 +32,12 @@ export class Admin {
 
     async execute(interaction: CommandInteraction): Promise<void> {
         if (interaction.user.id !== config().ownerId) {
-            await interaction.reply({ content: 'Você não pode utilizar esse comando', ephemeral: true });
-            return;
+            const msgErroPermissao: string = `${interaction.user} Você não pode utilizar esse comando`;
+            await sendLogErroInput(interaction, msgErroPermissao);
+            return await interaction.reply({ 
+                content: msgErroPermissao,
+                ephemeral: true
+            });
         }
 
         const opcaoSubCommand = interaction.options.getSubcommand();
@@ -57,7 +62,7 @@ export class Admin {
         const msgFooter: string = interaction.options.getString('msg_footer') || '';
         const textChannel = client.channels.cache.get(config().channels.textHorarios) as TextChannel;
 
-        config().mu.avisoFooter = msgFooter;
+        config().mu.avisoFooter = msgFooter.replace(/\\n/g, '\u200B\n');
         await sincronizarConfigsBot();
 
         const idLastMessageBoss: string = config().geral.idLastMessageBoss;

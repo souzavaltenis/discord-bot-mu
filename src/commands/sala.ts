@@ -6,7 +6,7 @@ import { Ids } from "../models/ids";
 import { sendMessageKafka } from "../services/kafka/kafka-producer";
 import { getButtonsSimNaoSala } from "../templates/buttons/sim-nao-buttons-sala";
 import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
-import { getLogsGeralString } from "../utils/geral-utils";
+import { getLogsGeralString, sendLogErroInput } from "../utils/geral-utils";
 
 export class Sala {
     data = new SlashCommandBuilder()
@@ -33,15 +33,19 @@ export class Sala {
 
         if (opcaoSubCommand === "adicionar") {
             if (config().mu.salasPermitidas.includes(sala)) {
+                const msgErroSalaExiste: string = `Sala ${sala} já existe!`;
+                await sendLogErroInput(interaction, msgErroSalaExiste);
                 return await interaction.reply({
-                    content: `Sala ${sala} já existe!`,
+                    content: msgErroSalaExiste,
                     ephemeral: true
                 });
             }
 
             if (config().mu.salasPermitidas.length >= config().mu.limitSalas) {
+                const msgErroLimiteSala: string = `Falha! O limite de ${config().mu.limitSalas} salas foi atingido.`;
+                await sendLogErroInput(interaction, msgErroLimiteSala);
                 return await interaction.reply({
-                    content: `Falha! O limite de ${config().mu.limitSalas} salas foi atingido.`,
+                    content: msgErroLimiteSala,
                     ephemeral: true
                 });
             }
@@ -61,8 +65,10 @@ export class Sala {
 
         if (opcaoSubCommand === "remover") {
             if (!config().mu.salasPermitidas.includes(sala)) {
+                const msgErroSalaInvalida: string = `Sala ${sala} não existe.`;
+                await sendLogErroInput(interaction, msgErroSalaInvalida);
                 return await interaction.reply({
-                    content: `Sala ${sala} não existe.`,
+                    content: msgErroSalaInvalida,
                     ephemeral: true
                 });
             }
