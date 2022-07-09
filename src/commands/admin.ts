@@ -1,10 +1,15 @@
 import { bold, SlashCommandBuilder } from "@discordjs/builders";
 import { PermissionFlagsBits } from "discord-api-types/v9";
-import { CommandInteraction, TextChannel } from "discord.js";
+import { CommandInteraction, Message, MessageButton, TextChannel } from "discord.js";
 import { client } from "../index";
 import { config } from "../config/get-configs";
 import { sincronizarConfigsBot } from "../db/db";
-import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
+import { getButtonsTabela } from "../templates/buttons/style-tabela-buttons";
+import { disableButton } from "../utils/buttons-utils";
+import { Ids } from "../models/ids";
+import { getEmbedTabelaBoss } from "../templates/embeds/tabela-boss-embed";
+import { Boss } from "../models/boss";
+import { ListBossSingleton } from "../models/singleton/list-boss-singleton";
 
 export class Admin {
     data = new SlashCommandBuilder()
@@ -55,10 +60,23 @@ export class Admin {
         config().mu.avisoFooter = msgFooter;
         await sincronizarConfigsBot();
 
-        await mostrarHorarios(textChannel);
+        const idLastMessageBoss: string = config().geral.idLastMessageBoss;
+
+        if (idLastMessageBoss) {
+            const listaBoss: Boss[] = ListBossSingleton.getInstance().boss;
+            if (listaBoss.length === 0) return;
+
+            await textChannel.messages.fetch(idLastMessageBoss)
+                .then(async (m: Message) => {
+                    const buttons: MessageButton[] = getButtonsTabela();
+                    const rowButtons = disableButton(buttons, Ids.BUTTON_TABLE_BOSS);
+                    await m.edit({ embeds: [getEmbedTabelaBoss(listaBoss)], components: [rowButtons] });
+                })
+                .catch(e => console.log(e));
+        }
 
         await interaction.reply({
-            content: `Aviso no footer foi atualizado com sucesso para "${msgFooter}"`,
+            content: `Aviso footer foi atualizado com sucesso para "${msgFooter}"`,
             ephemeral: true
         });
     }
