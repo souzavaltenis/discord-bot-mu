@@ -30,7 +30,7 @@ export class AdicionarHorarioModal {
             .setLabel("Qual sala?")
             .setPlaceholder("Ex: 3")
             .setMinLength(1)
-            .setMaxLength(1)
+            .setMaxLength(2)
             .setRequired(true)
             .setStyle('SHORT');
 
