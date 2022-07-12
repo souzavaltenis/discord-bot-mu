@@ -4,7 +4,7 @@ import { Moment } from "moment";
 import { sendMessageKafka } from "../services/kafka/kafka-producer";
 import { getButtonsSimNao } from "../templates/buttons/sim-nao-buttons";
 import { dataNowMoment, dataNowString, distanceDatasInMinutes, momentToString, stringToMoment } from "../utils/data-utils";
-import { getLogsGeralString, sendLogErroInput } from "../utils/geral-utils";
+import { getLogsGeralString, sendLogErroInput, sleep } from "../utils/geral-utils";
 import { config } from '../config/get-configs';
 import { Ids } from "../models/ids";
 import { adicionarHorarioBoss, realizarBackupHorarios, sincronizarConfigsBot } from "../db/db";
@@ -148,6 +148,7 @@ export class Reset {
             }
         }
 
+        await sleep(3000);
         await mostrarHorarios(interaction.channel);
         await interaction.channel?.send({ content: `✅ Reset ${msgComando} para ${bold(horarioReset.format('HH:mm (DD/MM)'))} confirmado por ${interaction.user} foi concluído com sucesso!` });
         config().mu.isHorariosReset = opcaoSubCommand === 'geral';
