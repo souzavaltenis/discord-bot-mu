@@ -15,12 +15,14 @@ import { Reset } from '../commands/reset';
 import { Anotar } from '../commands/anotar';
 import { Help } from '../commands/help';
 import { ListBossSingleton } from '../models/singleton/list-boss-singleton';
-import { mandarHorarios } from './boss-utils';
 import { Config } from '../commands/config';
 import { Sala } from '../commands/sala';
 import { Admin } from '../commands/admin';
+import Statcord from 'statcord.js';
+import { client } from '../index';
+import { mostrarHorarios } from '../templates/messages/tabela-horario-boss';
 
-const setEvents = (client: Client): void => {
+const setEvents = (statcord: Statcord.Client): void => {
 
     client.on("guildCreate", async (guild: Guild) => {
         await sendMessageKafka(config().kafka.topicLogsGeralBot, getLogsGeralString({ guild: guild }));
@@ -39,12 +41,12 @@ const setEvents = (client: Client): void => {
             await deployCommands(client, guild);
         });
 
-        await mandarHorarios();
+        await mostrarHorarios();
+        await statcord.autopost();
     });
 
     client.on('interactionCreate', async (interaction: Interaction) => {
         if (interaction.isCommand()) {
-
             if (interaction.channelId !== config().channels.textHorarios && interaction.user.id !== config().ownerId) {
                 const textChannel = client.channels.cache.get(config().channels.textHorarios) as TextChannel;
                 const msgWrongChannel: string = `${interaction.user} os comandos só podem ser utilizados no canal ${textChannel}`;
@@ -56,7 +58,8 @@ const setEvents = (client: Client): void => {
             }
 
             await sendMessageKafka(config().kafka.topicLogsGeralBot, getLogsGeralString({ cmdInteraction: interaction }));
-            
+            await statcord.postCommand(interaction.commandName, interaction.user.id);
+
             switch (interaction.commandName) {
                 case 'add': await new Add().execute(interaction); break;
                 case 'admin': await new Admin().execute(interaction); break;

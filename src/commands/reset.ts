@@ -148,10 +148,11 @@ export class Reset {
             }
         }
 
+        config().mu.isHorariosReset = opcaoSubCommand === 'geral';
+        
         await sleep(3000);
         await mostrarHorarios(interaction.channel);
         await interaction.channel?.send({ content: `✅ Reset ${msgComando} para ${bold(horarioReset.format('HH:mm (DD/MM)'))} confirmado por ${interaction.user} foi concluído com sucesso!` });
-        config().mu.isHorariosReset = opcaoSubCommand === 'geral';
         await sincronizarConfigsBot();
     }
 }

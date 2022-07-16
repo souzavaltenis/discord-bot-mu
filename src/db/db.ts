@@ -115,10 +115,6 @@ const consultarHorarioBoss = async (): Promise<Boss[]> => {
 const adicionarAnotacaoHorario = async (user: User, timestampAcao: number): Promise<void> => {
     if (!user || !timestampAcao) return;
 
-    config().mu.isHorariosReset = false;
-    config().mu.isAvisoReset = false;
-    await sincronizarConfigsBot();
-
     const userRef = doc(db, config().collections.usuarios, user.id);
     
     await setDoc(userRef, {

@@ -13,8 +13,10 @@ import { config } from "../../config/get-configs";
 import { getLogsGeralString } from "../../utils/geral-utils";
 import { getEmbedTabelaRank } from "../embeds/tabela-rank-embed";
 import { ListBossSingleton } from "../../models/singleton/list-boss-singleton";
+import { mainTextChannel } from "../../utils/channels-utils";
 
-const mostrarHorarios = async (textChannel: TextBasedChannel | null) => {
+const mostrarHorarios = async (channel?: TextBasedChannel | null) => {
+    const textChannel = channel || mainTextChannel();
     
     await consultarHorarioBoss().then(async (listaBoss: Boss[]) => {
 
