@@ -1,6 +1,6 @@
 import { bold, SlashCommandBuilder } from "@discordjs/builders";
 import { PermissionFlagsBits } from "discord-api-types/v9";
-import { CommandInteraction, Message, MessageButton, TextChannel } from "discord.js";
+import { CommandInteraction, Message, MessageButton, MessageEmbed, TextChannel } from "discord.js";
 import { client } from "../index";
 import { config } from "../config/get-configs";
 import { sincronizarConfigsBot } from "../db/db";
@@ -11,6 +11,7 @@ import { getEmbedTabelaBoss } from "../templates/embeds/tabela-boss-embed";
 import { Boss } from "../models/boss";
 import { ListBossSingleton } from "../models/singleton/list-boss-singleton";
 import { sendLogErroInput } from "../utils/geral-utils";
+import { TimeoutSingleton } from "../models/singleton/timeout-singleton";
 
 export class Admin {
     data = new SlashCommandBuilder()
@@ -27,6 +28,11 @@ export class Admin {
             subcommand.setName('aviso_footer')
                 .setDescription('Informe uma aviso para aparecer no footer')
                 .addStringOption(option => option.setName('msg_footer').setDescription('.'));
+            return subcommand;
+        })
+        .addSubcommand(subcommand => {
+            subcommand.setName('timeouts')
+                .setDescription('Verifique os timeouts de avisos ativos');
             return subcommand;
         });
 
@@ -45,6 +51,7 @@ export class Admin {
         switch(opcaoSubCommand) {
             case "say": await this.subCommandSay(interaction); break;
             case "aviso_footer": await this.subCommandAvisoFooter(interaction); break;
+            case "timeouts": await this.subCommandTimeouts(interaction); break;
         }
     }
 
@@ -84,6 +91,21 @@ export class Admin {
             content: `Aviso footer foi atualizado com sucesso para "${msgFooter}"`,
             ephemeral: true
         });
+    }
+
+    async subCommandTimeouts(interaction: CommandInteraction): Promise<void> {
+        const keysTimeouts: string[] = Array.from(TimeoutSingleton.getInstance().timeouts.keys());
+        let strTimeouts: string = '';
+        
+        keysTimeouts.forEach((key: string, index: number) => strTimeouts += `\n${bold(index + 1 + '')} - ${key}`)
+
+        const embedTimeouts = new MessageEmbed()
+            .setTitle("Timeouts de avisos ativos")
+            .setColor("WHITE")
+            .setDescription(strTimeouts)
+            .setTimestamp();
+
+        await interaction.reply({ embeds: [embedTimeouts], ephemeral: true });
     }
 
 }
