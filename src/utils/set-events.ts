@@ -18,11 +18,12 @@ import { ListBossSingleton } from '../models/singleton/list-boss-singleton';
 import { Config } from '../commands/config';
 import { Sala } from '../commands/sala';
 import { Admin } from '../commands/admin';
-import Statcord from 'statcord.js';
+import { Client as ClientStatcord} from 'statcord.js';
 import { client } from '../index';
 import { mostrarHorarios } from '../templates/messages/tabela-horario-boss';
 
-const setEvents = (statcord: Statcord.Client): void => {
+const setEvents = (): void => {
+    const statcord = new ClientStatcord({ client: client, key: config().bot.keyStatcord });
 
     client.on("guildCreate", async (guild: Guild) => {
         await sendMessageKafka(config().kafka.topicLogsGeralBot, getLogsGeralString({ guild: guild }));
