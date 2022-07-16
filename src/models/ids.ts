@@ -13,4 +13,7 @@ export class Ids {
     static BUTTON_NAO_RESET: string = "nao-resets";
     static BUTTON_SIM_REMOVE_SALA: string = "sim-remove-sala";
     static BUTTON_NAO_REMOVE_SALA: string = "nao-remove-sala";
+    static BUTTON_ABRIR_PROXIMOS: string = "ira-abrir-proximos";
+    static BUTTON_FECHAR_PROXIMOS: string = "ira-fechar-proximos";
+    
 }

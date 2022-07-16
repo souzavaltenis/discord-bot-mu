@@ -24,7 +24,7 @@ export class Help {
         const strBotoes: string = '\u200B\n' +
             `${bold('[Todos]')}: Visão dos horários por boss\n` +
             `${bold('[Salas]')}: Visão dos horários por cada sala\n` +
-            `${bold('[Próximos]')}: Exibe os boss que irão abrir ordenados pelo tempo restante\n` +
+            `${bold('[Próximos]')}: Exibe os boss próximos de abrir/fechar\n` +
             `${bold('[🏆]')}: Rank Top 10 Geral, Semanal e Diário de quem está anotando horários\n\u200B`;
 
         const embedHelp = new MessageEmbed()

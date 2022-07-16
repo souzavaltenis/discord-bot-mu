@@ -89,10 +89,15 @@ const previsaoParaAbrir = (horario: Moment): Moment => {
     return diffDatas(horarioAbertura, dataNowMoment());
 }
 
-const sortBossAbertosByHorario = (salas: Map<number, Moment>): Map<number, Moment> => {
+const previsaoParaFechar = (horario: Moment): Moment => {
+    const horarioFechamento = moment(horario).add(config().mu.horaBossFinal, 'hours');
+    return diffDatas(horarioFechamento, dataNowMoment());
+}
+
+const sortBossPorHorario = (salas: Map<number, Moment>, isAbrir: boolean): Map<number, Moment> => {
     return new Map<number, Moment>(
         [...salas.entries()]
-        .filter((x: [number, Moment]) => vaiAbrirBoss(x[1]))
+        .filter((x: [number, Moment]) => isAbrir ? vaiAbrirBoss(x[1]) : vaiFecharBoss(x[1]))
         .sort((a: [number, Moment], b: [number, Moment]) => {
             if (a[1].isAfter(b[1])) {
                 return 1;
@@ -127,6 +132,7 @@ export {
     vaiAbrirBoss, 
     vaiFecharBoss, 
     previsaoParaAbrir,
-    sortBossAbertosByHorario,
+    previsaoParaFechar,
+    sortBossPorHorario,
     atualizarStatusBot
 }
