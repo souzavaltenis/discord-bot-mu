@@ -12,7 +12,7 @@ const getEmbedTabelaProximos = (listaBoss: Boss[], tipoProximos: string): Messag
 
     const embedTabelaProximos = new MessageEmbed()
         .setColor("DARK_BLUE")
-        .setTitle(`Próximos Horários que ${isAbrir ? "Abrirão" : "Fecharão"}`)
+        .setTitle(`Próximos Horários que ${isAbrir ? "Abrirão ✅" : "Fecharão ❌"}`)
         .setDescription("\u200B")
         .setFooter({ text: config().mu.avisoFooter || textoFooterRandom() })
         .setTimestamp();
@@ -23,7 +23,7 @@ const getEmbedTabelaProximos = (listaBoss: Boss[], tipoProximos: string): Messag
         sortBossPorHorario(boss.salas, isAbrir).forEach((horario: Moment, sala: number) => {
             const tempoRestante = isAbrir ? previsaoParaAbrir(horario) : previsaoParaFechar(horario);
             const previsaoString: string = tempoRestante.hours() + 'h ' + tempoRestante.minutes() + 'm';
-            infoBoss += `\nSala ${numbersToEmoji(sala)} ${isAbrir ? "abrirá" : "fechará"} em ${underbold(previsaoString)}`;
+            infoBoss += `\nSala ${numbersToEmoji(sala)} ${underbold(isAbrir ? "abrirá" : "fechará")} em ${underbold(previsaoString)}`;
         });
 
         infoBoss += '\n\u200B';
