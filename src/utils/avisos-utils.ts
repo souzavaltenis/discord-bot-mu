@@ -8,6 +8,7 @@ import { sincronizarConfigsBot } from "../db/db";
 
 const agendarAvisos = (listaBoss: Boss[]): void => {
     limparTimeoutsBoss();
+    atualizarStatusBot();
 
     if (verificarReset(listaBoss)) return;
 
@@ -30,8 +31,6 @@ const agendarAvisos = (listaBoss: Boss[]): void => {
             }
         });
     });
-
-    atualizarStatusBot();
 }
 
 const adicionarTimeoutBoss = (idTimeout: string, funcaoAviso: (nomeBoss: string, salaBoss: number) => Promise<void>, time: number,  nomeBoss: string, sala: number): void => {
