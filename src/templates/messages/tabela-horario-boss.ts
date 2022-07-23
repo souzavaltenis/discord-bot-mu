@@ -31,13 +31,13 @@ const mostrarHorarios = async (channel?: TextBasedChannel | null) => {
         await textChannel?.send({ embeds: [getEmbedTabelaBoss(listaBoss)], components: [rowButtons] }).then(async (message: Message) => {
 
             if (message.channelId === config().channels.textHorarios) {
-                const idLastMessageBoss: string = config().geral.idLastMessageBoss;
+                // const idLastMessageBoss: string = config().geral.idLastMessageBoss;
 
-                if (idLastMessageBoss) {
-                    await textChannel.messages.fetch(idLastMessageBoss)
-                        .then(async m => await m.delete())
-                        .catch(e => console.log(e));
-                }
+                // if (idLastMessageBoss) {
+                //     await textChannel.messages.fetch(idLastMessageBoss)
+                //         .then(async m => await m.delete())
+                //         .catch(e => console.log(e));
+                // }
 
                 config().geral.idLastMessageBoss = message.id;
                 await sincronizarConfigsBot();
