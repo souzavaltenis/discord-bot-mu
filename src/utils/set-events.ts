@@ -42,7 +42,7 @@ const setEvents = (): void => {
             await deployCommands(client, guild);
         });
 
-        await mostrarHorarios();
+        // await mostrarHorarios();
         await statcord.autopost();
     });
 

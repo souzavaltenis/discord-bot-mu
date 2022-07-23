@@ -11,6 +11,7 @@ import { ConfigBotSingleton } from "../models/singleton/config-bot-singleton";
 import { Usuario } from "../models/usuario";
 import { momentToString, stringToMoment } from "../utils/data-utils";
 import { botIsProd, bdIsProd, config } from "../config/get-configs";
+import { usuariosSingleton } from "../models/singleton/usuarios-singleton";
 
 const appFirebase = initializeApp(firebaseConfig);
 const db = getFirestore(appFirebase);
@@ -35,7 +36,14 @@ const bossConverter = {
 };
 
 const configConverter = {
-    toFirestore(configBot: WithFieldValue<ConfigBot>): DocumentData { return Object.assign({}, configBot); },
+    toFirestore(configBot: WithFieldValue<ConfigBot>): DocumentData {
+        const configObj = JSON.parse(JSON.stringify(configBot));
+
+        delete configObj["collections"];
+        delete configObj["documents"];
+
+        return configObj;
+    },
     fromFirestore(snapshot: QueryDocumentSnapshot, options: SnapshotOptions): ConfigBot {
         const data = snapshot.data(options);
         return new ConfigBot(
@@ -53,7 +61,7 @@ const configConverter = {
     }
 };
 
-const carregarConfigsBot = async (): Promise<void> => {
+const carregarDadosBot = async (): Promise<void> => {
     const docConfigRef = doc(db, collectionConfig, botIsProd ? documentConfigProd : documentConfigTest).withConverter(configConverter);
     const snapDocConfig = await getDoc(docConfigRef);
     ConfigBotSingleton.getInstance().configBot = snapDocConfig.data()!;
@@ -65,6 +73,8 @@ const carregarConfigsBot = async (): Promise<void> => {
         ConfigBotSingleton.getInstance().configBot.collections = dataConfigProd?.collections;
         ConfigBotSingleton.getInstance().configBot.documents = dataConfigProd?.documents;
     }
+
+    await consultarUsuarios();
 }
 
 const sincronizarConfigsBot = async (): Promise<void> => {
@@ -121,15 +131,31 @@ const adicionarAnotacaoHorario = async (user: User, timestampAcao: number): Prom
         id: user.id,
         name: user.tag,
         timestampsAnotacoes: arrayUnion(timestampAcao)
-    }, { merge: true });
+    }, { merge: true }).then(() => {
+
+        if (usuariosSingleton.usuarios.length > 0) {
+            const indexUsuario: number = usuariosSingleton.usuarios.findIndex(u => u.id === user.id);
+    
+            if (indexUsuario === -1) {
+                usuariosSingleton.usuarios.push({
+                    id: user.id,
+                    name: user.tag,
+                    timestampsAnotacoes: [timestampAcao]
+                });
+            } else if (indexUsuario > -1) {
+                usuariosSingleton.usuarios[indexUsuario].timestampsAnotacoes.push(timestampAcao);
+            }
+        }
+
+    });
 }
 
-const consultarUsuarios = async(): Promise<Usuario[]> => {
+const consultarUsuarios = async(): Promise<void> => {
     const collectionUsuariosRef = collection(db, config().collections.usuarios);
 
     const listaUsuariosSnap: QuerySnapshot<DocumentData> = await getDocs(collectionUsuariosRef);
     
-    return listaUsuariosSnap.docs
+    usuariosSingleton.usuarios = listaUsuariosSnap.docs
         .map(docUser => docUser.data())
         .map(user => new Usuario(user.id || 0, user.name || '', user.timestampsAnotacoes || []));
 }
@@ -151,7 +177,7 @@ const realizarBackupHorarios = async(momento: Moment, autor: string, tipoReset: 
 }
 
 export {
-    carregarConfigsBot,
+    carregarDadosBot,
     sincronizarConfigsBot,
     adicionarSala,
     removerSala,

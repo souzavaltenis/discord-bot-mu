@@ -46,12 +46,11 @@ const mostrarHorarios = async (channel?: TextBasedChannel | null) => {
             const collector = message.createMessageComponentCollector({ filter: (i: Interaction) => i.isButton(), time: 1000 * 60 * 60 * 4 });
 
             collector.on("collect", async (interactionMessage: MessageComponentInteraction) => {
-
-                await sendMessageKafka(config().kafka.topicLogsGeralBot, getLogsGeralString({ msgInteraction: interactionMessage }));
+                await interactionMessage.deferUpdate();
+                sendMessageKafka(config().kafka.topicLogsGeralBot, getLogsGeralString({ msgInteraction: interactionMessage }));
 
                 let embedSelecionada: MessageEmbed;
                 const rows: MessageActionRow[] = [];
-
                 switch(interactionMessage.customId) {
                     case Ids.BUTTON_TABLE_SALA: embedSelecionada = getEmbedTabelaSala(listaBoss); break;
 
@@ -63,14 +62,13 @@ const mostrarHorarios = async (channel?: TextBasedChannel | null) => {
                         rows.push(disableButtonProximos(getButtonsProximos(), idButtonProximos));
                         break;
                         
-                    case Ids.BUTTON_TABLE_RANK: embedSelecionada = await getEmbedTabelaRank(); break;
+                    case Ids.BUTTON_TABLE_RANK: embedSelecionada = getEmbedTabelaRank(); break;
                     default: embedSelecionada = getEmbedTabelaBoss(listaBoss); break;
                 }
 
                 rows.push(disableButton(buttons, interactionMessage.customId));
 
                 message.edit({ embeds: [embedSelecionada], components: rows });
-                await interactionMessage.deferUpdate();
             });
 
         });
