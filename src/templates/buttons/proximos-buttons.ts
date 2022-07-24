@@ -7,7 +7,7 @@ const getButtonsProximos = (): ButtonBuilder[] => {
         .setCustomId(Ids.BUTTON_ABRIR_PROXIMOS)
         .setEmoji('✅')
         .setLabel('Vai Abrir')
-        .setStyle(ButtonStyle.Primary);
+        .setStyle(ButtonStyle.Success);
 
     const buttonProximoFechar = new ButtonBuilder()
         .setCustomId(Ids.BUTTON_FECHAR_PROXIMOS)
