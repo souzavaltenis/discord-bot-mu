@@ -1,29 +1,29 @@
-import { MessageEmbed } from "discord.js";
+import { APIEmbedField, bold, EmbedBuilder } from "discord.js";
 import { config } from "../../config/get-configs";
 import { Boss } from "../../models/boss";
 import { formatBoss } from "../../utils/boss-utils";
+import { timestampToMoment } from "../../utils/data-utils";
 import { textoFooterRandom } from "../../utils/geral-utils";
 
-const getEmbedTabelaBoss = (listaBoss: Boss[], isBackup?: boolean): MessageEmbed => {
-    const embedTabelaBoss = new MessageEmbed()
-        .setColor("DARK_BLUE")
-        .setTitle("Tabela de Horários Boss")
-        .setDescription("\u200B")
-        .setFooter({ text: config().mu.avisoFooter || textoFooterRandom() })
-        .setTimestamp();
+const getEmbedTabelaBoss = (listaBoss: Boss[], timestampBackup?: number): EmbedBuilder => {
+    const fieldsBoss: APIEmbedField[] = listaBoss.map((b => { 
+        return { name: b.nome, value: formatBoss(b) } as APIEmbedField
+    }));
 
-    listaBoss.forEach((boss: Boss) => embedTabelaBoss.addField(boss.nome, formatBoss(boss)));
-
-    if (isBackup) {
-        embedTabelaBoss
-            .setTitle('')
-            .setColor("YELLOW")
-            .setDescription('')
-            .setFooter({ text: '' })
-            .setTimestamp(null);
-    }
-
-    return embedTabelaBoss;
+    return timestampBackup
+        ?  new EmbedBuilder()
+            .setColor("DarkerGrey")
+            .addFields([
+                ...fieldsBoss,
+                { name: '\u200B', value: `💾 Backup selecionado: ${bold(timestampToMoment(timestampBackup).format("HH:mm (DD/MM)"))}` }
+            ])
+        : new EmbedBuilder()
+            .setColor("DarkBlue")
+            .setTitle("Tabela de Horários Boss")
+            .setDescription("\u200B")
+            .setFooter({ text: config().mu.avisoFooter || textoFooterRandom() })
+            .addFields(fieldsBoss)
+            .setTimestamp();
 }
 
 export { getEmbedTabelaBoss }

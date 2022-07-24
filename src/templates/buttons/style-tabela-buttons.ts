@@ -1,37 +1,37 @@
-import { MessageButton } from "discord.js";
+import { ButtonBuilder, ButtonStyle } from "discord.js";
 import { Ids } from "../../models/ids";
 
-const getButtonsTabela = (): MessageButton[] => {
+const getButtonsTabela = (): ButtonBuilder[] => {
 
-    const buttonTableBoss = new MessageButton()
+    const buttonTableBoss = new ButtonBuilder()
         .setCustomId(Ids.BUTTON_TABLE_BOSS)
         .setEmoji('🔥')
         .setLabel('Todos')
-        .setStyle('SECONDARY');
+        .setStyle(ButtonStyle.Secondary);
 
-    const buttonTableSala = new MessageButton()
+    const buttonTableSala = new ButtonBuilder()
         .setCustomId(Ids.BUTTON_TABLE_SALA)
         .setEmoji('💢')
         .setLabel('Salas')
-        .setStyle('SECONDARY');
+        .setStyle(ButtonStyle.Secondary);
 
-    const buttonTableProximos = new MessageButton()
+    const buttonTableProximos = new ButtonBuilder()
         .setCustomId(Ids.BUTTON_TABLE_PROXIMOS)
         .setEmoji('⏭')
         .setLabel('Próximos')
-        .setStyle('SECONDARY');
+        .setStyle(ButtonStyle.Secondary);
 
-    const buttonTableRank = new MessageButton()
+    const buttonTableRank = new ButtonBuilder()
         .setCustomId(Ids.BUTTON_TABLE_RANK)
         .setEmoji('🏆')
         .setLabel('Rank')
-        .setStyle('SECONDARY');
+        .setStyle(ButtonStyle.Secondary);
 
-    const buttonTableHistorico = new MessageButton()
+    const buttonTableHistorico = new ButtonBuilder()
         .setCustomId(Ids.BUTTON_TABLE_HISTORICO)
         .setEmoji('💾')
         .setLabel('Histórico')
-        .setStyle('SECONDARY');
+        .setStyle(ButtonStyle.Secondary);
 
     return [buttonTableBoss, buttonTableSala, buttonTableProximos, buttonTableRank, buttonTableHistorico];
 }

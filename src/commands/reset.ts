@@ -1,5 +1,5 @@
 import { bold, SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, Interaction, MessageActionRow, MessageButton, MessageComponentInteraction, MessageEmbed } from "discord.js";
+import { Interaction, ActionRowBuilder, ButtonBuilder, MessageComponentInteraction, EmbedBuilder, ChatInputCommandInteraction, InteractionResponse } from "discord.js";
 import { Moment } from "moment";
 import { sendMessageKafka } from "../services/kafka/kafka-producer";
 import { getButtonsSimNao } from "../templates/buttons/sim-nao-buttons";
@@ -35,7 +35,7 @@ export class Reset {
             return subcommand;
         });
 
-    async execute(interaction: CommandInteraction): Promise<void> {
+    async execute(interaction: ChatInputCommandInteraction): Promise<InteractionResponse<boolean> | undefined> {
         const opcaoSubCommand = interaction.options.getSubcommand();
 
         const horario: string = interaction.options.getString('horario') || '';
@@ -68,8 +68,8 @@ export class Reset {
             });
         }
 
-        const buttonsSimNao: MessageButton[] = getButtonsSimNao();
-        const rowButtons = new MessageActionRow().setComponents(buttonsSimNao);
+        const buttonsSimNao: ButtonBuilder[] = getButtonsSimNao();
+        const rowButtons = new ActionRowBuilder<ButtonBuilder>().setComponents(buttonsSimNao);
 
         let mensagemReset: string = '';
 
@@ -78,13 +78,13 @@ export class Reset {
             case 'sala': mensagemReset +=  `\nIsso substituirá ${bold('TODOS')} horários na ${bold('Sala ' + sala)}`; break;
         }
 
-        const embedReset = new MessageEmbed()
-            .setColor('DARK_RED')
-            .addFields(
+        const embedReset = new EmbedBuilder()
+            .setColor('DarkRed')
+            .addFields([
                 { name: 'Tipo de Reset', value: opcaoSubCommand },
                 { name: 'Novo Horário', value: horarioReset.format('HH:mm (DD/MM)') },
                 { name: 'Aviso', value: mensagemReset }
-            )
+            ])
             .setTimestamp();
 
         await interaction.reply({ embeds: [embedReset] });

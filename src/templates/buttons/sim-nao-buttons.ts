@@ -1,19 +1,19 @@
-import { MessageButton } from "discord.js";
+import { ButtonBuilder, ButtonStyle } from "discord.js";
 import { Ids } from "../../models/ids";
 
-const getButtonsSimNao = (): MessageButton[] => {
+const getButtonsSimNao = (): ButtonBuilder[] => {
 
-    const buttonSimReset = new MessageButton()
+    const buttonSimReset = new ButtonBuilder()
         .setCustomId(Ids.BUTTON_SIM_RESET)
         .setEmoji('⚰')
         .setLabel('Sim')
-        .setStyle('DANGER');
+        .setStyle(ButtonStyle.Danger);
 
-    const buttonNaoReset = new MessageButton()
+    const buttonNaoReset = new ButtonBuilder()
         .setCustomId(Ids.BUTTON_NAO_RESET)
         .setEmoji('😓')
         .setLabel('Não')
-        .setStyle('PRIMARY');
+        .setStyle(ButtonStyle.Primary);
 
     return [buttonSimReset, buttonNaoReset];
 }

@@ -1,4 +1,4 @@
-import { ModalActionRowComponent, MessageActionRow, Modal, TextInputComponent, ModalSubmitInteraction, MessageEmbed } from 'discord.js';
+import { ActionRowBuilder, ModalBuilder, TextInputBuilder, ModalSubmitInteraction, EmbedBuilder, TextInputStyle, ModalActionRowComponentBuilder } from 'discord.js';
 import { Ids } from '../../models/ids';
 import { adicionarAnotacaoHorario, adicionarHorarioBoss } from '../../db/db';
 import { mostrarHorarios } from '../messages/tabela-horario-boss';
@@ -12,50 +12,51 @@ import { getEmbedAddBoss } from '../embeds/adicionar-boss-embed';
 
 export class AdicionarHorarioModal {
 
-    getModal(): Modal {
-        const modalHorarioBoss = new Modal()
+    getModal(): ModalBuilder {
+        const modalHorarioBoss = new ModalBuilder()
             .setCustomId(Ids.MODAL_ADICIONAR_HORARIO_BOSS)
             .setTitle('Adicionar Horário de Boss');
 
-        const inputNomeBoss = new TextInputComponent()
+        const inputNomeBoss = new TextInputBuilder()
             .setCustomId(Ids.INPUT_NOME_BOSS)
             .setLabel("Qual boss?")
             .setPlaceholder("Ex: rei, fenix, relics, dbk, geno")
             .setMinLength(3)
             .setMaxLength(20)
             .setRequired(true)
-            .setStyle('SHORT');
+            .setStyle(TextInputStyle.Short);
         
-        const inputSalaBoss = new TextInputComponent()
+        const inputSalaBoss = new TextInputBuilder()
             .setCustomId(Ids.INPUT_SALA_BOSS)
             .setLabel("Qual sala?")
             .setPlaceholder("Ex: 3")
             .setMinLength(1)
             .setMaxLength(2)
             .setRequired(true)
-            .setStyle('SHORT');
+            .setStyle(TextInputStyle.Short);
 
-        const inputHorarioBoss = new TextInputComponent()
+        const inputHorarioBoss = new TextInputBuilder()
             .setCustomId(Ids.INPUT_HORARIO_BOSS)
             .setLabel("Qual horário?")
             .setPlaceholder("Ex: 21:45")
             .setMinLength(5)
             .setMaxLength(5)
             .setRequired(true)
-            .setStyle('SHORT');
+            .setStyle(TextInputStyle.Short);
 
-        const inputPerguntaOntem = new TextInputComponent()
+        const inputPerguntaOntem = new TextInputBuilder()
             .setCustomId(Ids.INPUT_PERGUNTA_ONTEM)
             .setLabel("Foi ontem? Se não foi, pode deixar vazio.")
             .setPlaceholder("Ex: sim")
             .setMaxLength(3)
-            .setStyle('SHORT');
+            .setRequired(false)
+            .setStyle(TextInputStyle.Short);
 
         modalHorarioBoss.addComponents(
-            new MessageActionRow<ModalActionRowComponent>().addComponents(inputNomeBoss),
-            new MessageActionRow<ModalActionRowComponent>().addComponents(inputSalaBoss),
-            new MessageActionRow<ModalActionRowComponent>().addComponents(inputHorarioBoss),
-            new MessageActionRow<ModalActionRowComponent>().addComponents(inputPerguntaOntem)
+            new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(inputNomeBoss),
+            new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(inputSalaBoss),
+            new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(inputHorarioBoss),
+            new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(inputPerguntaOntem)
         );
 
         return modalHorarioBoss;
@@ -144,7 +145,7 @@ export class AdicionarHorarioModal {
         } as IBossInfoAdd;
 
         adicionarHorarioBoss(bossInfo).then(async () => {
-            const embedAddBoss: MessageEmbed = getEmbedAddBoss(nomeDocBoss, horarioInformado, salaBoss, interaction.user.username);
+            const embedAddBoss: EmbedBuilder = getEmbedAddBoss(nomeDocBoss, horarioInformado, salaBoss, interaction.user.username);
 
             await interaction.reply({ embeds: [embedAddBoss] });
             await adicionarAnotacaoHorario(interaction.user, bossInfo.timestampAcao);

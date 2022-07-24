@@ -1,19 +1,19 @@
-import { MessageActionRow, MessageButton } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 import { Ids } from "../../models/ids";
 
-const getButtonsSimNaoSala = (): MessageActionRow => {
+const getButtonsSimNaoSala = (): ActionRowBuilder<ButtonBuilder> => {
 
-    const buttonSim = new MessageButton()
+    const buttonSim = new ButtonBuilder()
         .setCustomId(Ids.BUTTON_SIM_REMOVE_SALA)
         .setLabel('Sim')
-        .setStyle('DANGER');
+        .setStyle(ButtonStyle.Danger);
 
-    const buttonNao = new MessageButton()
+    const buttonNao = new ButtonBuilder()
         .setCustomId(Ids.BUTTON_NAO_REMOVE_SALA)
         .setLabel('Não')
-        .setStyle('PRIMARY');
+        .setStyle(ButtonStyle.Primary);
 
-    return new MessageActionRow().setComponents([buttonSim, buttonNao]);
+    return new ActionRowBuilder<ButtonBuilder>().setComponents([buttonSim, buttonNao]);
 }
 
 export { getButtonsSimNaoSala }

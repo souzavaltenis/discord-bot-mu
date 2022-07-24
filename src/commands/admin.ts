@@ -1,6 +1,6 @@
 import { bold, SlashCommandBuilder } from "@discordjs/builders";
 import { PermissionFlagsBits } from "discord-api-types/v9";
-import { CommandInteraction, Message, MessageButton, MessageEmbed, TextChannel } from "discord.js";
+import { Message, ButtonBuilder, EmbedBuilder, TextChannel, InteractionResponse, ChatInputCommandInteraction, codeBlock } from "discord.js";
 import { client } from "../index";
 import { config } from "../config/get-configs";
 import { sincronizarConfigsBot } from "../db/db";
@@ -36,7 +36,7 @@ export class Admin {
             return subcommand;
         });
 
-    async execute(interaction: CommandInteraction): Promise<void> {
+    async execute(interaction: ChatInputCommandInteraction): Promise<InteractionResponse<boolean> | undefined> {
         if (interaction.user.id !== config().ownerId) {
             const msgErroPermissao: string = `${interaction.user} Você não pode utilizar esse comando`;
             await sendLogErroInput(interaction, msgErroPermissao);
@@ -55,17 +55,17 @@ export class Admin {
         }
     }
 
-    async subCommandSay(interaction: CommandInteraction): Promise<void> {
+    async subCommandSay(interaction: ChatInputCommandInteraction): Promise<void> {
         const msg: string = interaction.options.getString('msg', true);
         const textChannel = client.channels.cache.get(config().channels.textHorarios) as TextChannel;
 
         if (!client || !textChannel) return;
 
         await textChannel.send({ content: msg.replace(/\\n/g, '\n') });
-        await interaction.reply({ content: `Mensagem foi enviada com sucesso no canal ${bold(textChannel.name)}`, ephemeral: true });
+        await interaction.reply({ content: `Mensagem ${codeBlock(msg)} foi enviada com sucesso no canal ${bold(textChannel.name)}`, ephemeral: true });
     }
 
-    async subCommandAvisoFooter(interaction: CommandInteraction): Promise<void> {
+    async subCommandAvisoFooter(interaction: ChatInputCommandInteraction): Promise<void> {
         const msgFooter: string = interaction.options.getString('msg_footer') || '';
         const textChannel = client.channels.cache.get(config().channels.textHorarios) as TextChannel;
 
@@ -80,7 +80,7 @@ export class Admin {
 
             await textChannel.messages.fetch(idLastMessageBoss)
                 .then(async (m: Message) => {
-                    const buttons: MessageButton[] = getButtonsTabela();
+                    const buttons: ButtonBuilder[] = getButtonsTabela();
                     const rowButtons = disableButton(buttons, Ids.BUTTON_TABLE_BOSS);
                     await m.edit({ embeds: [getEmbedTabelaBoss(listaBoss)], components: [rowButtons] });
                 })
@@ -93,15 +93,15 @@ export class Admin {
         });
     }
 
-    async subCommandTimeouts(interaction: CommandInteraction): Promise<void> {
+    async subCommandTimeouts(interaction: ChatInputCommandInteraction): Promise<void> {
         const keysTimeouts: string[] = Array.from(TimeoutSingleton.getInstance().timeouts.keys());
         let strTimeouts: string = '';
         
         keysTimeouts.forEach((key: string, index: number) => strTimeouts += `\n${bold(index + 1 + '')} - ${key}`)
 
-        const embedTimeouts = new MessageEmbed()
+        const embedTimeouts = new EmbedBuilder()
             .setTitle("Timeouts de avisos ativos")
-            .setColor("WHITE")
+            .setColor("White")
             .setDescription(strTimeouts)
             .setTimestamp();
 

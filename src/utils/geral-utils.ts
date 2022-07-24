@@ -1,5 +1,5 @@
 import { bold, underscore } from "@discordjs/builders";
-import { Interaction } from "discord.js";
+import { APIButtonComponentWithCustomId, ButtonBuilder, ButtonStyle, Interaction } from "discord.js";
 import { RecordMetadata } from "kafkajs";
 import { Moment } from "moment";
 import { config } from '../config/get-configs';
@@ -202,6 +202,11 @@ const textoFooterRandom = (): string => {
     return '\u200B\nDica: ' + textosFooter[Math.floor(Math.random() * textosFooter.length)];
 }
 
+const getIdButton = (button: ButtonBuilder): string => {
+    if (button.data.style === ButtonStyle.Link) return '';
+    return (button.data as Partial<APIButtonComponentWithCustomId>).custom_id || '';
+}
+
 export { 
     tracos, 
     numberToEmoji, 
@@ -216,5 +221,6 @@ export {
     sendLogErroInput,
     sleep,
     textoFooterRandom,
-    getIdBossByDoc
+    getIdBossByDoc,
+    getIdButton
 }

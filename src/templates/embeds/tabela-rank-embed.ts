@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { MessageEmbed } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import { Usuario } from "../../models/usuario";
 import { bold, underscore } from "@discordjs/builders";
 import { dataNowMoment, isSameMoment } from "../../utils/data-utils";
@@ -10,12 +10,12 @@ import { Moment } from "moment";
 
 let dataNow: Moment;
 
-const getEmbedTabelaRank = (): MessageEmbed => {
+const getEmbedTabelaRank = (): EmbedBuilder => {
     dataNow = dataNowMoment();
     const usuariosGeral: Usuario[] = usuariosSingleton.usuarios;
 
-    const embedTabelaRank = new MessageEmbed()
-        .setColor("DARK_BLUE")
+    const embedTabelaRank = new EmbedBuilder()
+        .setColor("DarkBlue")
         .setTitle("Rank de Anotações 🏆")
         .setDescription('\u200B')
         .setFooter({ text: config().mu.avisoFooter || textoFooterRandom() })
@@ -42,7 +42,7 @@ const getEmbedTabelaRank = (): MessageEmbed => {
     return embedTabelaRank;
 }
 
-const addFieldsRank = (type: string, usuarios: Usuario[], embed: MessageEmbed, limitUsers: number): void => {
+const addFieldsRank = (type: string, usuarios: Usuario[], embed: EmbedBuilder, limitUsers: number): void => {
     let msgUsuario = '\u200B\n';
 
     usuarios.slice(0, limitUsers).forEach((usuario, index) => {
@@ -52,7 +52,7 @@ const addFieldsRank = (type: string, usuarios: Usuario[], embed: MessageEmbed, l
         msgUsuario += `${getTextPosition(index)} ${index < 3 ? underscore(userName) : userName}  →  ( ${bold(quantidadeAnotacoes + '')} ${quantidadeAnotacoes > 1 ? 'anotações' : 'anotação'} )\n`;
     });
 
-    embed.addField(getTitleFieldByType(type), msgUsuario + '\u200B' || '\u200B');
+    embed.addFields([{ name: getTitleFieldByType(type), value: msgUsuario + '\u200B' || '\u200B' }]);
 }
 
 const getTextPosition = (index: number): string => {

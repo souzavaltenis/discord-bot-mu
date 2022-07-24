@@ -8,6 +8,7 @@ import { dataNowMoment, diffDatas } from "./data-utils";
 import { SalaBoss } from "../models/sala-boss";
 import { ListBossSingleton } from "../models/singleton/list-boss-singleton";
 import { client } from "../index";
+import { ActivityType } from "discord.js";
 
 const formatBoss = (boss: Boss, somenteAbertos?: boolean): string => {
     let infoBoss: string = tracos(55) + '\n';
@@ -118,7 +119,7 @@ const atualizarStatusBot = async (): Promise<void> => {
         return acumulador + Array.from(value.salas.values()).filter((horario: Moment) => vaiFecharBoss(horario)).length;
     }, 0);
 
-    client.user?.setPresence({ activities: [{ name: `${contadorBossAbertos} Boss Abertos`, type: 'PLAYING' }], status: 'idle' });
+    client.user?.setPresence({ activities: [{ name: `${contadorBossAbertos} Boss Abertos`, type: ActivityType.Playing }], status: 'idle' });
 }
 
 export { 

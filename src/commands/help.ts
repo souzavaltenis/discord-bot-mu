@@ -1,12 +1,12 @@
 import { bold, SlashCommandBuilder } from '@discordjs/builders';
-import { CommandInteraction, MessageEmbed } from 'discord.js';
+import { ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
 
 export class Help {
     data = new SlashCommandBuilder()
         .setName('help')
         .setDescription('Veja como me utilizar');
 
-    async execute(interaction: CommandInteraction): Promise<void> {
+    async execute(interaction: ChatInputCommandInteraction): Promise<void> {
 
         const strComandos: string = `\u200B\n` +
             `${bold('/add')} Anota um horário com formulário\n` +
@@ -22,17 +22,19 @@ export class Help {
         const strIcones: string = '\u200B\n✅ aberto\n❌ vencido\n💤 irá abrir\n\u200B';
 
         const strBotoes: string = '\u200B\n' +
-            `${bold('[🔥 Todos]')}: Visão dos horários por boss\n` +
-            `${bold('[💢 Salas]')}: Visão dos horários por cada sala\n` +
-            `${bold('[⏭ Próximos]')}: Exibe os boss próximos de abrir/fechar\n` +
-            `${bold('[🏆 Rank]')}: Rank Top 10 Geral, Semanal e Diário de quem está anotando horários\n` +
-            `${bold('[💾 Histórico]')}: Histórico da tabela nas últimas 24hrs com intervalo de 1hr\n\u200B`;
+            `${bold('🔥 Todos')}: Visão dos horários por boss\n` +
+            `${bold('💢 Salas')}: Visão dos horários por cada sala\n` +
+            `${bold('⏭ Próximos')}: Exibe os boss próximos de abrir/fechar\n` +
+            `${bold('🏆 Rank')}: Rank Top 10 Geral, Semanal e Diário de quem está anotando horários\n` +
+            `${bold('💾 Histórico')}: Histórico da tabela nas últimas 24hrs com intervalo de 1hr\n\u200B`;
 
-        const embedHelp = new MessageEmbed()
-            .setColor('GREY')
-            .addField('⚙ Comandos', strComandos)
-            .addField('Descrição Ícones', strIcones)
-            .addField('Descrição Botões Tabela', strBotoes);
+        const embedHelp = new EmbedBuilder()
+            .setColor('Grey')
+            .addFields([
+                { name: '⚙ Comandos', value: strComandos},
+                { name: 'Descrição Ícones', value: strIcones},
+                { name: 'Descrição Botões Tabela', value: strBotoes}
+            ]);
 
         await interaction.reply({
             embeds: [embedHelp],

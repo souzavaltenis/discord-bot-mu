@@ -1,5 +1,5 @@
 import { bold } from "@discordjs/builders";
-import { MessageEmbed, Message, TextChannel } from "discord.js";
+import { EmbedBuilder, Message, TextChannel } from "discord.js";
 import { config } from "../config/get-configs";
 import { sincronizarConfigsBot } from "../db/db";
 import { Boss } from "../models/boss";
@@ -15,16 +15,16 @@ import { dataNowString } from "./data-utils";
 import { numbersToEmoji, underbold } from "./geral-utils";
 
 const mensagemAvisoAbertura = async (nomeBoss: string, salaBoss: number): Promise<void> => {
-    const emebedAvisoAbertura = new MessageEmbed()
-        .setColor("GREEN")
+    const emebedAvisoAbertura = new EmbedBuilder()
+        .setColor("Green")
         .setDescription(`✅ Boss ${underbold(nomeBoss)} sala ${numbersToEmoji(salaBoss)} ${underbold('abriu')} 🕗 [${dataNowString('HH:mm')}]`);
 
     await mainTextChannel()?.send({ embeds: [emebedAvisoAbertura] }).then(async messageAlert => await atualizarInformacoes(messageAlert.id));
 }
 
 const mensagemAvisoFechamento = async (nomeBoss: string, salaBoss: number): Promise<void> => {
-    const emebedAvisoFechamento = new MessageEmbed()
-        .setColor("RED")
+    const emebedAvisoFechamento = new EmbedBuilder()
+        .setColor("Red")
         .setDescription(`❌ Boss ${underbold(nomeBoss)} sala ${numbersToEmoji(salaBoss)} ${underbold('fechou')} 🕛 [${dataNowString('HH:mm')}]`);
         
     await mainTextChannel()?.send({ embeds: [emebedAvisoFechamento] }).then(async messageAlert => await atualizarInformacoes(messageAlert.id));
@@ -33,8 +33,8 @@ const mensagemAvisoFechamento = async (nomeBoss: string, salaBoss: number): Prom
 const mensagemAvisoAberturaGeral = async (): Promise<void> => {
     const textChannel: TextChannel | undefined = mainTextChannel();
     
-    const emebedAvisoAberturaGeral = new MessageEmbed()
-        .setColor("GREEN")
+    const emebedAvisoAberturaGeral = new EmbedBuilder()
+        .setColor("Green")
         .setDescription(`📢 Bora ${textChannel?.guild.name}, ${bold('TODOS BOSS ABRIRAM')}, boa sorte!`);
     
     config().mu.isHorariosReset = false;

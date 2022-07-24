@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
 import { config } from "../config/get-configs";
 import { sincronizarConfigsBot } from "../db/db";
 import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
@@ -17,7 +17,7 @@ export class Config {
             return subcommand;
         });
 
-    async execute(interaction: CommandInteraction): Promise<void> {
+    async execute(interaction: ChatInputCommandInteraction): Promise<void> {
         const opcaoSubCommand = interaction.options.getSubcommand();
 
         switch(opcaoSubCommand) {
@@ -25,9 +25,16 @@ export class Config {
         }
     }
 
-    async subCommandHorario(interaction: CommandInteraction): Promise<void> {
+    async subCommandHorario(interaction: ChatInputCommandInteraction): Promise<InteractionResponse<boolean> | undefined> {
         const intervaloInicial: number = interaction.options.getNumber('intervalo_inicial', true);
         const intervaloFinal: number = interaction.options.getNumber('intervalo_final', true);
+
+        if (intervaloFinal < intervaloInicial) {
+            return await interaction.reply({
+                content: 'O intervalo final deve ser maior que o inicial',
+                ephemeral: true
+            });
+        }
 
         const intervaloInicialAntigo = config().mu.horaBossInicial;
         const intervaloFinalAntigo = config().mu.horaBossFinal;

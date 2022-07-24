@@ -1,5 +1,5 @@
 import { bold, SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, Interaction, MessageComponentInteraction } from "discord.js";
+import { ChatInputCommandInteraction, Interaction, InteractionResponse, MessageComponentInteraction } from "discord.js";
 import { config } from '../config/get-configs';
 import { adicionarSala, removerSala, sincronizarConfigsBot } from "../db/db";
 import { Ids } from "../models/ids";
@@ -27,7 +27,7 @@ export class Sala {
             return subcommand;
         });
 
-    async execute(interaction: CommandInteraction): Promise<void> {
+    async execute(interaction: ChatInputCommandInteraction): Promise<InteractionResponse<boolean> | undefined> {
         const opcaoSubCommand = interaction.options.getSubcommand();
         const sala: number = interaction.options.getNumber('sala', true);
 

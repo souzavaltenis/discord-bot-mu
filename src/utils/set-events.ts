@@ -1,11 +1,11 @@
-import { Client, Guild, Interaction, TextChannel, VoiceState } from 'discord.js';
+import { ApplicationCommandType, Client, Guild, Interaction, InteractionType, TextChannel, VoiceState } from 'discord.js';
 import { Add } from '../commands/add';
 import { List } from '../commands/list';
 import { AdicionarHorarioModal } from '../templates/modals/adicionar-horario-modal';
 import { deployCommands } from './deploy-commands';
 import { Ids } from '../models/ids';
 import { config } from '../config/get-configs';
-import { consultarBackupsListaBoss, consultarHorarioBoss } from '../db/db';
+import { consultarHorarioBoss } from '../db/db';
 import { Boss } from '../models/boss';
 import { agendarAvisos } from './avisos-utils';
 import { dataNowString } from './data-utils';
@@ -50,33 +50,40 @@ const setEvents = (): void => {
     });
 
     client.on('interactionCreate', async (interaction: Interaction) => {
-        if (interaction.isCommand()) {
+        if (interaction.type === InteractionType.ApplicationCommand) {
             if (interaction.channelId !== config().channels.textHorarios && interaction.user.id !== config().ownerId) {
                 const textChannel = client.channels.cache.get(config().channels.textHorarios) as TextChannel;
                 const msgWrongChannel: string = `${interaction.user} os comandos só podem ser utilizados no canal ${textChannel}`;
                 await sendLogErroInput(interaction, msgWrongChannel);
-                return await interaction.reply({
+                
+                await interaction.reply({
                     content: msgWrongChannel,
                     ephemeral: true
                 }).catch(e => console.log(e));
+
+                return;
             }
 
             await sendMessageKafka(config().kafka.topicLogsGeralBot, getLogsGeralString({ cmdInteraction: interaction }));
             await statcord.postCommand(interaction.commandName, interaction.user.id);
 
-            switch (interaction.commandName) {
-                case 'add': await new Add().execute(interaction); break;
-                case 'admin': await new Admin().execute(interaction); break;
-                case 'anotar': await new Anotar().execute(interaction); break;
-                case 'config': await new Config().execute(interaction); break;
-                case 'list': await new List().execute(interaction); break;
-                case 'reset': await new Reset().execute(interaction); break;
-                case 'help': await new Help().execute(interaction); break;
-                case 'sala': await new Sala().execute(interaction); break;
+            if (interaction.commandType === ApplicationCommandType.ChatInput) {
+                
+                switch (interaction.commandName) {
+                    case 'add': await new Add().execute(interaction); break;
+                    case 'admin': await new Admin().execute(interaction); break;
+                    case 'anotar': await new Anotar().execute(interaction); break;
+                    case 'config': await new Config().execute(interaction); break;
+                    case 'list': await new List().execute(interaction); break;
+                    case 'reset': await new Reset().execute(interaction); break;
+                    case 'help': await new Help().execute(interaction); break;
+                    case 'sala': await new Sala().execute(interaction); break;
+                }
+
             }
         }
 
-        if (interaction.isModalSubmit()) {
+        if (interaction.type === InteractionType.ModalSubmit) {
             switch (interaction.customId) {
                 case Ids.MODAL_ADICIONAR_HORARIO_BOSS: await new AdicionarHorarioModal().action(interaction); break;
             }

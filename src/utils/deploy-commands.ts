@@ -26,7 +26,7 @@ const deployCommands = async (client: Client, guild: Guild): Promise<unknown> =>
 		new Sala().data.toJSON()
 	];
 	
-	const rest = new REST({ version: '9' }).setToken(config().bot.token);
+	const rest = new REST({ version: '10' }).setToken(config().bot.token);
 	
 	return rest.put(Routes.applicationGuildCommands(client.user.id, guild.id), { body: commands })
 		.then((x) => x)

@@ -1,19 +1,19 @@
-import { MessageButton } from "discord.js";
+import { ButtonBuilder, ButtonStyle } from "discord.js";
 import { Ids } from "../../models/ids";
 
-const getButtonsProximos = (): MessageButton[] => {
+const getButtonsProximos = (): ButtonBuilder[] => {
 
-    const buttonProximoAbrir = new MessageButton()
+    const buttonProximoAbrir = new ButtonBuilder()
         .setCustomId(Ids.BUTTON_ABRIR_PROXIMOS)
         .setEmoji('✅')
         .setLabel('Vai Abrir')
-        .setStyle('SUCCESS');
+        .setStyle(ButtonStyle.Primary);
 
-    const buttonProximoFechar = new MessageButton()
+    const buttonProximoFechar = new ButtonBuilder()
         .setCustomId(Ids.BUTTON_FECHAR_PROXIMOS)
         .setEmoji('🏴‍☠️')
         .setLabel('Vai Fechar')
-        .setStyle('DANGER');
+        .setStyle(ButtonStyle.Danger);
 
     return [buttonProximoAbrir, buttonProximoFechar];
 }

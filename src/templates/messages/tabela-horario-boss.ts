@@ -1,4 +1,4 @@
-import { Interaction, Message, MessageActionRow, MessageButton, MessageComponentInteraction, MessageEmbed, SelectMenuInteraction, TextBasedChannel } from "discord.js";
+import { Interaction, Message, ActionRowBuilder, ButtonBuilder, MessageComponentInteraction, EmbedBuilder, SelectMenuInteraction, TextBasedChannel, SelectMenuBuilder } from "discord.js";
 import { Boss } from "../../models/boss";
 import { consultarBackupsListaBoss, consultarHorarioBoss, sincronizarConfigsBot } from "../../db/db";
 import { agendarAvisos } from "../../utils/avisos-utils";
@@ -18,7 +18,6 @@ import { getButtonsProximos } from "../buttons/proximos-buttons";
 import { BackupListaBoss } from "../../models/backup-lista-boss";
 import { getSelectMenuBackup } from "../selects/backups-selects";
 import { backupsBossSingleton } from "../../models/singleton/lista-backup-singleton";
-import { timestampToMoment } from "../../utils/data-utils";
 
 const mostrarHorarios = async (channel?: TextBasedChannel | null) => {
     const textChannel = channel || mainTextChannel();
@@ -29,8 +28,8 @@ const mostrarHorarios = async (channel?: TextBasedChannel | null) => {
 
         agendarAvisos(listaBoss);
 
-        const buttons: MessageButton[] = getButtonsTabela();
-        const rowButtons = disableButton(buttons, Ids.BUTTON_TABLE_BOSS);
+        const buttons: ButtonBuilder[] = getButtonsTabela();
+        const rowButtons: ActionRowBuilder<ButtonBuilder> = disableButton(buttons, Ids.BUTTON_TABLE_BOSS);
 
         await textChannel?.send({ embeds: [getEmbedTabelaBoss(listaBoss)], components: [rowButtons] }).then(async (message: Message) => {
 
@@ -53,15 +52,16 @@ const mostrarHorarios = async (channel?: TextBasedChannel | null) => {
     });
 }
 
-const configCollectorButtons = async (message: Message, listaBoss: Boss[], buttons: MessageButton[]) => {
+const configCollectorButtons = async (message: Message, listaBoss: Boss[], buttons: ButtonBuilder[]) => {
     const collectorButtons = message.createMessageComponentCollector({ filter: (i: Interaction) => i.isButton(), time: 1000 * 60 * 60 * 4 });
 
     collectorButtons.on("collect", async (interactionMessage: MessageComponentInteraction) => {
         await interactionMessage.deferUpdate();
         sendMessageKafka(config().kafka.topicLogsGeralBot, getLogsGeralString({ msgInteraction: interactionMessage }));
 
-        let embedSelecionada: MessageEmbed = getEmbedTabelaBoss(listaBoss);
-        const rows: MessageActionRow[] = [];
+        let embedSelecionada: EmbedBuilder = getEmbedTabelaBoss(listaBoss);
+        const rowButtons: ActionRowBuilder<ButtonBuilder>[] = [];
+        const rowSelects: ActionRowBuilder<SelectMenuBuilder>[] = [];
 
         switch(interactionMessage.customId) {
             // Button Salas
@@ -73,7 +73,7 @@ const configCollectorButtons = async (message: Message, listaBoss: Boss[], butto
             case Ids.BUTTON_FECHAR_PROXIMOS:
                 const idButtonProximos: string = interactionMessage.customId === Ids.BUTTON_TABLE_PROXIMOS ? Ids.BUTTON_ABRIR_PROXIMOS : interactionMessage.customId;
                 embedSelecionada = getEmbedTabelaProximos(listaBoss, idButtonProximos);
-                rows.push(disableButtonProximos(getButtonsProximos(), idButtonProximos));
+                rowButtons.push(disableButtonProximos(getButtonsProximos(), idButtonProximos));
                 break;
             
             // Button Rank
@@ -82,13 +82,13 @@ const configCollectorButtons = async (message: Message, listaBoss: Boss[], butto
             // Button Histórico
             case Ids.BUTTON_TABLE_HISTORICO:
                 backupsBossSingleton.backups = await consultarBackupsListaBoss();
-                rows.push(getSelectMenuBackup(backupsBossSingleton.backups));
+                rowSelects.push(getSelectMenuBackup(backupsBossSingleton.backups));
                 break;
         }
 
-        rows.push(disableButton(buttons, interactionMessage.customId));
+        rowButtons.push(disableButton(buttons, interactionMessage.customId));
 
-        message.edit({ embeds: [embedSelecionada], components: rows });
+        message.edit({ embeds: [embedSelecionada], components: [...rowSelects, ...rowButtons] });
     });
 };
 
@@ -103,12 +103,8 @@ const configCollectorSelects = async (message: Message): Promise<void> => {
             if (indexBackup === -1) return;
     
             const backupSelecionado: BackupListaBoss = backupsBossSingleton.backups[indexBackup];
-            const horarioBackup: string = timestampToMoment(backupSelecionado.timestamp).format("HH:mm (DD/MM)");
-            const embedBackupSelecionado = new MessageEmbed()
-                .setTitle(`💾 Backup selecionado: ${horarioBackup}`)
-                .setColor("GREEN");
     
-            message.edit({ embeds: [getEmbedTabelaBoss(backupSelecionado.listaBoss, true), embedBackupSelecionado] });
+            message.edit({ embeds: [getEmbedTabelaBoss(backupSelecionado.listaBoss, backupSelecionado.timestamp)] });
         }
     });
 }

@@ -1,5 +1,5 @@
 import { bold, SlashCommandBuilder } from '@discordjs/builders';
-import { CommandInteraction, MessageEmbed } from 'discord.js';
+import { ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
 import { Moment } from 'moment';
 import { config } from '../config/get-configs';
 import { adicionarAnotacaoHorario, adicionarHorarioBoss } from '../db/db';
@@ -40,7 +40,7 @@ export class Anotar {
         })
         .addStringOption(option => option.setName('foi_ontem').setDescription('Esse horário foi ontem?').addChoices({ name: 'Não', value: 'N' }, { name: 'Sim', value: 'S' }).setRequired(true));
 
-    async execute(interaction: CommandInteraction): Promise<void> {
+    async execute(interaction: ChatInputCommandInteraction): Promise<void> {
 
         const horario: string = interaction.options.getString('horario') || '';
         const bossDoc: string = interaction.options.getString('boss') || '';
@@ -81,7 +81,7 @@ export class Anotar {
         } as IBossInfoAdd;
 
         await adicionarHorarioBoss(bossInfo).then(async () => {
-            const embedAddBoss: MessageEmbed = getEmbedAddBoss(bossDoc, horarioMoment, salaBoss, interaction.user.username);
+            const embedAddBoss: EmbedBuilder = getEmbedAddBoss(bossDoc, horarioMoment, salaBoss, interaction.user.username);
 
             await interaction.reply({ embeds: [embedAddBoss] });
             await adicionarAnotacaoHorario(interaction.user, bossInfo.timestampAcao);
