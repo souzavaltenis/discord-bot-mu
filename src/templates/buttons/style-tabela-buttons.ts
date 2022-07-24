@@ -23,7 +23,12 @@ const getButtonsTabela = (): MessageButton[] => {
         .setEmoji('🏆')
         .setStyle('SECONDARY');
 
-    return [buttonTableBoss, buttonTableSala, buttonTableProximos, buttonTableRank];
+    const buttonTableHistorico = new MessageButton()
+        .setCustomId(Ids.BUTTON_TABLE_HISTORICO)
+        .setLabel('Histórico')
+        .setStyle('SECONDARY');
+
+    return [buttonTableBoss, buttonTableSala, buttonTableProximos, buttonTableRank, buttonTableHistorico];
 }
 
 export { getButtonsTabela }

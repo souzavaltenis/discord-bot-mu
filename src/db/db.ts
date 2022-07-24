@@ -1,65 +1,22 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { User } from "discord.js";
 import { initializeApp } from "firebase/app";
-import { doc, getFirestore, QueryDocumentSnapshot, WithFieldValue, DocumentData, SnapshotOptions, updateDoc, getDocs, collection, arrayUnion, orderBy, query, setDoc, QuerySnapshot, getDoc, deleteField } from "firebase/firestore";
+import { doc, getFirestore, DocumentData, updateDoc, getDocs, collection, arrayUnion, orderBy, query, setDoc, QuerySnapshot, getDoc, deleteField, limit } from "firebase/firestore";
 import { Moment } from "moment";
 import { firebaseConfig, collectionConfig, documentConfigProd, documentConfigTest } from '../config/config.json';
 import { Boss } from "../models/boss";
-import { ConfigBot } from "../models/config-bot";
 import { IBossInfoAdd } from "../models/interface/boss-info-add";
 import { ConfigBotSingleton } from "../models/singleton/config-bot-singleton";
 import { Usuario } from "../models/usuario";
-import { momentToString, stringToMoment } from "../utils/data-utils";
+import { dataNowMoment, dataNowString } from "../utils/data-utils";
 import { botIsProd, bdIsProd, config } from "../config/get-configs";
 import { usuariosSingleton } from "../models/singleton/usuarios-singleton";
+import { BackupListaBoss } from "../models/backup-lista-boss";
+import { bossConverter, backupListaBossConverter, configConverter } from "./converters";
 
 const appFirebase = initializeApp(firebaseConfig);
 const db = getFirestore(appFirebase);
-
-const bossConverter = {
-    toFirestore(boss: WithFieldValue<Boss>): DocumentData {
-        const salasMoment = boss.salas as Map<number, Moment>;
-        const salasString = new Map<number, string>();
-        salasMoment.forEach((value, key) => {
-            salasString.set(key, momentToString(value));
-        });
-        return { id: boss.id, nome: boss.nome, salas: Object.fromEntries(salasString) };
-    },
-    fromFirestore(snapshot: QueryDocumentSnapshot, options: SnapshotOptions): Boss {
-        const data = snapshot.data(options);
-        const salas = new Map<number, Moment>();
-        Object.keys(data.salas).forEach(key => {
-            salas.set(parseInt(key), stringToMoment(data.salas[key]))
-        });
-        return new Boss(data.id, data.nome, salas);
-    }
-};
-
-const configConverter = {
-    toFirestore(configBot: WithFieldValue<ConfigBot>): DocumentData {
-        const configObj = JSON.parse(JSON.stringify(configBot));
-
-        delete configObj["collections"];
-        delete configObj["documents"];
-
-        return configObj;
-    },
-    fromFirestore(snapshot: QueryDocumentSnapshot, options: SnapshotOptions): ConfigBot {
-        const data = snapshot.data(options);
-        return new ConfigBot(
-            data.bot, 
-            data.cargos, 
-            data.channels, 
-            data.collections, 
-            data.dicasFooter, 
-            data.documents,
-            data.geral,
-            data.mu, 
-            data.kafka, 
-            data.ownerId
-        );
-    }
-};
 
 const carregarDadosBot = async (): Promise<void> => {
     const docConfigRef = doc(db, collectionConfig, botIsProd ? documentConfigProd : documentConfigTest).withConverter(configConverter);
@@ -176,6 +133,33 @@ const realizarBackupHorarios = async(momento: Moment, autor: string, tipoReset: 
     });
 }
 
+const adicionarBackupListaBoss = async (): Promise<void> => {
+    const querySnapshot = await getDocs(query(collection(db, config().collections.boss), orderBy("id")));
+    const listaBoss: any[] = [];
+    querySnapshot.forEach(boss => listaBoss.push(boss.data()));
+
+    const nomeDocHoraBackup: string = dataNowString("HH");
+    const refDocBackup = doc(db, config().collections.backupsListaBoss, nomeDocHoraBackup);
+    
+    await setDoc(
+        refDocBackup,
+        {
+            timestamp: dataNowMoment().valueOf(),
+            listaBoss: listaBoss
+        },
+        { merge: true }
+    );
+}
+
+const consultarBackupsListaBoss = async (): Promise<BackupListaBoss[]> => {
+    const querySnapshot = await getDocs(query(collection(db, config().collections.backupsListaBoss), orderBy("timestamp", "desc"), limit(24)).withConverter(backupListaBossConverter));
+
+    const listaBoss: BackupListaBoss[] = [];
+    querySnapshot.forEach(snapshot => listaBoss.push(snapshot.data()));
+
+    return listaBoss;
+}
+
 export {
     carregarDadosBot,
     sincronizarConfigsBot,
@@ -185,5 +169,7 @@ export {
     consultarHorarioBoss,
     adicionarAnotacaoHorario,
     consultarUsuarios,
-    realizarBackupHorarios
+    realizarBackupHorarios,
+    adicionarBackupListaBoss,
+    consultarBackupsListaBoss
 };

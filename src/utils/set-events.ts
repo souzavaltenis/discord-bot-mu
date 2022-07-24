@@ -5,7 +5,7 @@ import { AdicionarHorarioModal } from '../templates/modals/adicionar-horario-mod
 import { deployCommands } from './deploy-commands';
 import { Ids } from '../models/ids';
 import { config } from '../config/get-configs';
-import { consultarHorarioBoss } from '../db/db';
+import { consultarBackupsListaBoss, consultarHorarioBoss } from '../db/db';
 import { Boss } from '../models/boss';
 import { agendarAvisos } from './avisos-utils';
 import { dataNowString } from './data-utils';
@@ -21,6 +21,7 @@ import { Admin } from '../commands/admin';
 import { Client as ClientStatcord} from 'statcord.js';
 import { client } from '../index';
 import { mostrarHorarios } from '../templates/messages/tabela-horario-boss';
+import { initBackupListaBoss } from './backup-utils';
 
 const setEvents = (): void => {
     const statcord = new ClientStatcord({ client: client, key: config().bot.keyStatcord });
@@ -42,8 +43,10 @@ const setEvents = (): void => {
             await deployCommands(client, guild);
         });
 
-        // await mostrarHorarios();
+        await mostrarHorarios();
         await statcord.autopost();
+
+        initBackupListaBoss();
     });
 
     client.on('interactionCreate', async (interaction: Interaction) => {

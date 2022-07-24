@@ -4,7 +4,7 @@ import { Boss } from "../../models/boss";
 import { formatBoss } from "../../utils/boss-utils";
 import { textoFooterRandom } from "../../utils/geral-utils";
 
-const getEmbedTabelaBoss = (listaBoss: Boss[]): MessageEmbed => {
+const getEmbedTabelaBoss = (listaBoss: Boss[], isBackup?: boolean): MessageEmbed => {
     const embedTabelaBoss = new MessageEmbed()
         .setColor("DARK_BLUE")
         .setTitle("Tabela de Horários Boss")
@@ -13,6 +13,15 @@ const getEmbedTabelaBoss = (listaBoss: Boss[]): MessageEmbed => {
         .setTimestamp();
 
     listaBoss.forEach((boss: Boss) => embedTabelaBoss.addField(boss.nome, formatBoss(boss)));
+
+    if (isBackup) {
+        embedTabelaBoss
+            .setTitle('')
+            .setColor("YELLOW")
+            .setDescription('')
+            .setFooter({ text: '' })
+            .setTimestamp(null);
+    }
 
     return embedTabelaBoss;
 }

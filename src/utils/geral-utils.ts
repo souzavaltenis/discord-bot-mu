@@ -59,6 +59,17 @@ const getNomeBossByDoc = (nomeDocBoss: string): string => {
     }
 }
 
+const getIdBossByDoc = (nomeDocBoss: string): number => {
+    switch(nomeDocBoss) {
+        case config().documents.rei:       return 1;
+        case config().documents.relics:    return 2;
+        case config().documents.fenix:     return 3;
+        case config().documents.deathBeam: return 4;
+        case config().documents.geno:      return 5;
+        default: return 0;
+    }
+}
+
 const formatInfosInputs = (nomeDocBoss: string, salaBoss: number, horarioInformado: Moment): string => {
     const nomeBoss: string = getNomeBossByDoc(nomeDocBoss);
     const infoHorario: string = horarioInformado.format('HH:mm');
@@ -204,5 +215,6 @@ export {
     getLogsErrosInputString,
     sendLogErroInput,
     sleep,
-    textoFooterRandom
+    textoFooterRandom,
+    getIdBossByDoc
 }
