@@ -34,11 +34,6 @@ const setEvents = (): void => {
         console.log(`Logado como: ${client.user?.tag} ás ${dataNowString("HH:mm:ss DD/MM/YYYY")}`);
         await sendMessageKafka(config().kafka.topicLogsGeralBot, getLogsGeralString({ client: client }));
 
-        consultarHorarioBoss().then((listaBoss: Boss[]) => {
-            ListBossSingleton.getInstance().boss = listaBoss;
-            agendarAvisos(listaBoss);
-        });
-
         client.guilds.cache.forEach(async (guild: Guild) => {
             await deployCommands(client, guild);
         });
