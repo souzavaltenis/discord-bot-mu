@@ -98,16 +98,18 @@ const configCollectorSelects = async (message: Message): Promise<void> => {
     collectorSelects.on("collect", async (interaction: SelectMenuInteraction) => {
         await interaction.deferUpdate();
 
-        const indexBackup: number = backupsBossSingleton.backups.findIndex(backup => backup.timestamp+'' === interaction.values[0]);
-        if (indexBackup === -1) return;
-
-        const backupSelecionado: BackupListaBoss = backupsBossSingleton.backups[indexBackup];
-        const horarioBackup: string = timestampToMoment(backupSelecionado.timestamp).format("HH:mm (DD/MM)");
-        const embedBackupSelecionado = new MessageEmbed()
-            .setTitle(`💾 Backup selecionado: ${horarioBackup}`)
-            .setColor("GREEN");
-
-        message.edit({ embeds: [getEmbedTabelaBoss(backupSelecionado.listaBoss, true), embedBackupSelecionado] });
+        if (interaction.customId === Ids.SELECT_MENU_BACKUP) {
+            const indexBackup: number = backupsBossSingleton.backups.findIndex(backup => backup.timestamp+'' === interaction.values[0]);
+            if (indexBackup === -1) return;
+    
+            const backupSelecionado: BackupListaBoss = backupsBossSingleton.backups[indexBackup];
+            const horarioBackup: string = timestampToMoment(backupSelecionado.timestamp).format("HH:mm (DD/MM)");
+            const embedBackupSelecionado = new MessageEmbed()
+                .setTitle(`💾 Backup selecionado: ${horarioBackup}`)
+                .setColor("GREEN");
+    
+            message.edit({ embeds: [getEmbedTabelaBoss(backupSelecionado.listaBoss, true), embedBackupSelecionado] });
+        }
     });
 }
 

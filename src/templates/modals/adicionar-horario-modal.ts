@@ -6,9 +6,9 @@ import { config } from '../../config/get-configs';
 import { dataNowMoment, dataNowString, distanceDatasInMinutes, momentToString, stringToMoment } from '../../utils/data-utils';
 import { bold } from '@discordjs/builders';
 import { Moment } from 'moment';
-import { getIdBossByDoc, sendLogErroInput } from '../../utils/geral-utils';
+import { sendLogErroInput } from '../../utils/geral-utils';
 import { IBossInfoAdd } from '../../models/interface/boss-info-add';
-import { ListBossSingleton } from '../../models/singleton/list-boss-singleton';
+import { getEmbedAddBoss } from '../embeds/adicionar-boss-embed';
 
 export class AdicionarHorarioModal {
 
@@ -144,15 +144,7 @@ export class AdicionarHorarioModal {
         } as IBossInfoAdd;
 
         adicionarHorarioBoss(bossInfo).then(async () => {
-            const bossAntigo = ListBossSingleton.getInstance().boss.find(b => b.id === getIdBossByDoc(nomeDocBoss));
-
-            const horarioAntigo: string = bossAntigo?.salas.get(salaBoss)?.format("HH:mm (DD/MM)") + '';
-            const horarioNovo: string = horarioInformado.format("HH:mm (DD/MM)");
-
-            const embedAddBoss = new MessageEmbed()
-                .setTitle(`${interaction.user.username} anotou ${bossAntigo?.nome} sala ${salaBoss}`)
-                .addField(`${bold('Novo: ' + horarioNovo)}`, 'Antigo: ' + horarioAntigo)
-                .setColor("DARK_GOLD");
+            const embedAddBoss: MessageEmbed = getEmbedAddBoss(nomeDocBoss, horarioInformado, salaBoss, interaction.user.username);
 
             await interaction.reply({ embeds: [embedAddBoss] });
             await adicionarAnotacaoHorario(interaction.user, bossInfo.timestampAcao);

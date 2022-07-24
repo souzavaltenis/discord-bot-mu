@@ -9,7 +9,7 @@ import { Boss } from "../models/boss";
 import { IBossInfoAdd } from "../models/interface/boss-info-add";
 import { ConfigBotSingleton } from "../models/singleton/config-bot-singleton";
 import { Usuario } from "../models/usuario";
-import { dataNowMoment, dataNowString } from "../utils/data-utils";
+import { dataNowMoment, dataNowString, isSameMoment } from "../utils/data-utils";
 import { botIsProd, bdIsProd, config } from "../config/get-configs";
 import { usuariosSingleton } from "../models/singleton/usuarios-singleton";
 import { BackupListaBoss } from "../models/backup-lista-boss";
@@ -111,10 +111,18 @@ const consultarUsuarios = async(): Promise<void> => {
     const collectionUsuariosRef = collection(db, config().collections.usuarios);
 
     const listaUsuariosSnap: QuerySnapshot<DocumentData> = await getDocs(collectionUsuariosRef);
+    const dataNow: Moment = dataNowMoment();
     
     usuariosSingleton.usuarios = listaUsuariosSnap.docs
         .map(docUser => docUser.data())
-        .map(user => new Usuario(user.id || 0, user.name || '', user.timestampsAnotacoes || []));
+        .map(user => {
+            const timestamps: number[] = (user.timestampsAnotacoes as number[] || [] as number[])
+                .map((timestamp: number) => {
+                    const isOld: boolean = !isSameMoment(dataNow, timestamp, 'week') && !isSameMoment(dataNow, timestamp, 'day');
+                    return isOld ? 0 : timestamp;
+                })
+            return new Usuario(user.id || 0, user.name || '', timestamps);
+        });
 }
 
 const realizarBackupHorarios = async(momento: Moment, autor: string, tipoReset: string): Promise<void> => {

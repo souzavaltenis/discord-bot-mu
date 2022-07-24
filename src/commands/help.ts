@@ -22,10 +22,11 @@ export class Help {
         const strIcones: string = '\u200B\n✅ aberto\n❌ vencido\n💤 irá abrir\n\u200B';
 
         const strBotoes: string = '\u200B\n' +
-            `${bold('[Todos]')}: Visão dos horários por boss\n` +
-            `${bold('[Salas]')}: Visão dos horários por cada sala\n` +
-            `${bold('[Próximos]')}: Exibe os boss próximos de abrir/fechar\n` +
-            `${bold('[🏆]')}: Rank Top 10 Geral, Semanal e Diário de quem está anotando horários\n\u200B`;
+            `${bold('[🔥 Todos]')}: Visão dos horários por boss\n` +
+            `${bold('[💢 Salas]')}: Visão dos horários por cada sala\n` +
+            `${bold('[⏭ Próximos]')}: Exibe os boss próximos de abrir/fechar\n` +
+            `${bold('[🏆 Rank]')}: Rank Top 10 Geral, Semanal e Diário de quem está anotando horários\n` +
+            `${bold('[💾 Histórico]')}: Histórico da tabela nas últimas 24hrs com intervalo de 1hr\n\u200B`;
 
         const embedHelp = new MessageEmbed()
             .setColor('GREY')

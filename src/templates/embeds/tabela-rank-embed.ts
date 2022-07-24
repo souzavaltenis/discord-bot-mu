@@ -92,7 +92,7 @@ const calcularHorariosPorTempo = (timestampsAnotacoes: number[], type: string): 
     let quantidadeHorarios: number = 0;
     
     for(let i = 0; i < timestampsAnotacoes.length; i++) {
-        if (isSameMoment(dataNow, timestampsAnotacoes[i], type)) {
+        if (timestampsAnotacoes[i] !== 0 && isSameMoment(dataNow, timestampsAnotacoes[i], type)) {
             quantidadeHorarios++;
         }
     }

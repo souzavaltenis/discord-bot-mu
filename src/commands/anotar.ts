@@ -1,12 +1,13 @@
 import { bold, SlashCommandBuilder } from '@discordjs/builders';
-import { CommandInteraction } from 'discord.js';
+import { CommandInteraction, MessageEmbed } from 'discord.js';
 import { Moment } from 'moment';
 import { config } from '../config/get-configs';
 import { adicionarAnotacaoHorario, adicionarHorarioBoss } from '../db/db';
 import { IBossInfoAdd } from '../models/interface/boss-info-add';
+import { getEmbedAddBoss } from '../templates/embeds/adicionar-boss-embed';
 import { mostrarHorarios } from '../templates/messages/tabela-horario-boss';
 import { dataNowMoment, dataNowString, distanceDatasInMinutes, momentToString, stringToMoment } from '../utils/data-utils';
-import { formatInfosInputs, sendLogErroInput } from '../utils/geral-utils';
+import { sendLogErroInput } from '../utils/geral-utils';
 
 export class Anotar {
     data = new SlashCommandBuilder()
@@ -80,8 +81,9 @@ export class Anotar {
         } as IBossInfoAdd;
 
         await adicionarHorarioBoss(bossInfo).then(async () => {
-            const infosInputs: string = formatInfosInputs(bossDoc, salaBoss, horarioMoment);
-            await interaction.reply(`${interaction.user} Horário adicionado com sucesso! (${infosInputs})`);
+            const embedAddBoss: MessageEmbed = getEmbedAddBoss(bossDoc, horarioMoment, salaBoss, interaction.user.username);
+
+            await interaction.reply({ embeds: [embedAddBoss] });
             await adicionarAnotacaoHorario(interaction.user, bossInfo.timestampAcao);
             await mostrarHorarios(interaction.channel);
         });
