@@ -2,13 +2,16 @@
 import { MessageEmbed } from "discord.js";
 import { Usuario } from "../../models/usuario";
 import { bold, underscore } from "@discordjs/builders";
-import { isSameMoment } from "../../utils/data-utils";
+import { dataNowMoment, isSameMoment } from "../../utils/data-utils";
 import { textoFooterRandom } from "../../utils/geral-utils";
 import { config } from "../../config/get-configs";
 import { usuariosSingleton } from '../../models/singleton/usuarios-singleton';
+import { Moment } from "moment";
+
+let dataNow: Moment;
 
 const getEmbedTabelaRank = (): MessageEmbed => {
-
+    dataNow = dataNowMoment();
     const usuariosGeral: Usuario[] = usuariosSingleton.usuarios;
 
     const embedTabelaRank = new MessageEmbed()
@@ -21,29 +24,20 @@ const getEmbedTabelaRank = (): MessageEmbed => {
     const limitUsers: number = 10;
 
     // Geral
-    const initGeral = new Date().valueOf();
     usuariosGeral.sort((a: Usuario, b: Usuario) => {
         if (a.timestampsAnotacoes.length < b.timestampsAnotacoes.length) return 1;
         if (a.timestampsAnotacoes.length > b.timestampsAnotacoes.length) return -1;
         return 0;
     });
     addFieldsRank('', usuariosGeral, embedTabelaRank, limitUsers);
-    const endGeral = new Date().valueOf();
-    console.log("type: Geral total: " + ((endGeral-initGeral)/1000) + " s");
 
     // Semanal
-    const initSemanal = new Date().valueOf();
     const usuariosSemanal = sortUsuariosPorTempo(usuariosGeral, 'week').slice(0, limitUsers);
     addFieldsRank('week', usuariosSemanal, embedTabelaRank, limitUsers);
-    const endSemanal = new Date().valueOf();
-    console.log("type: Semanal total: " + ((endSemanal-initSemanal)/1000) + " s");
 
     // Dia
-    const initDiario = new Date().valueOf();
     const usuariosDia = sortUsuariosPorTempo(usuariosGeral, 'day').slice(0, limitUsers);
     addFieldsRank('day', usuariosDia, embedTabelaRank, limitUsers);
-    const endDiario = new Date().valueOf();
-    console.log("type: Diario total: " + ((endDiario-initDiario)/1000) + " s\n-----------------\n");
 
     return embedTabelaRank;
 }
@@ -81,28 +75,29 @@ const getTitleFieldByType = (type: string): string => {
 
 const sortUsuariosPorTempo = (usuarios: Usuario[], type: string): Usuario[] => {
     const qtdHorarios = new Map<string, number>();
+
+    usuarios.forEach(user => {
+        qtdHorarios.set(`${user.id}.${type}`, calcularHorariosPorTempo(user.timestampsAnotacoes, type));
+    });
     
     return usuarios.slice().sort((a: Usuario, b: Usuario) => {
-        const keyUserA = `${a.id}.${type}`;
-        const keyUserB = `${b.id}.${type}`;
-
-        if (!qtdHorarios.get(keyUserA)) {
-            qtdHorarios.set(keyUserA, calcularHorariosPorTempo(a.timestampsAnotacoes, type))
-        }
-        
-        if (!qtdHorarios.get(keyUserB)) {
-            qtdHorarios.set(keyUserB, calcularHorariosPorTempo(b.timestampsAnotacoes, type))
-        }
-
-        const qtdHorariosA: number = qtdHorarios.get(keyUserA)!;
-        const qtdHorariosB: number = qtdHorarios.get(keyUserB)!;
+        const qtdHorariosA: number = qtdHorarios.get(`${a.id}.${type}`)!;
+        const qtdHorariosB: number = qtdHorarios.get(`${b.id}.${type}`)!;
 
         return qtdHorariosA < qtdHorariosB ? 1 : qtdHorariosA > qtdHorariosB ? -1 : 0;
     });
 }
 
 const calcularHorariosPorTempo = (timestampsAnotacoes: number[], type: string): number => {
-    return timestampsAnotacoes.filter(timestamp => isSameMoment(timestamp, type)).length;
+    let quantidadeHorarios: number = 0;
+    
+    for(let i = 0; i < timestampsAnotacoes.length; i++) {
+        if (isSameMoment(dataNow, timestampsAnotacoes[i], type)) {
+            quantidadeHorarios++;
+        }
+    }
+
+    return quantidadeHorarios;
 }
 
 export { getEmbedTabelaRank }

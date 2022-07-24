@@ -35,8 +35,7 @@ const timestampToMoment = (timestamp: number): Moment => {
     return moment.utc(timestamp).utcOffset('GMT-03:00');
 }
 
-const isSameMoment = (timestamp: number, type: string): boolean => {
-    const now = dataNowMoment();
+const isSameMoment = (now: Moment, timestamp: number, type: string): boolean => {
     const input = timestampToMoment(timestamp);
 
     switch(type) {
