@@ -18,6 +18,7 @@ import { getButtonsProximos } from "../buttons/proximos-buttons";
 import { BackupListaBoss } from "../../models/backup-lista-boss";
 import { getSelectMenuBackup } from "../selects/backups-selects";
 import { backupsBossSingleton } from "../../models/singleton/lista-backup-singleton";
+import { getEmbedAvisoHistorico } from "../embeds/aviso-historico-embed";
 
 const mostrarHorarios = async (channel?: TextBasedChannel | null) => {
     const textChannel = channel || mainTextChannel();
@@ -59,13 +60,20 @@ const configCollectorButtons = async (message: Message, listaBoss: Boss[], butto
         await interactionMessage.deferUpdate();
         sendMessageKafka(config().kafka.topicLogsGeralBot, getLogsGeralString({ msgInteraction: interactionMessage }));
 
-        let embedSelecionada: EmbedBuilder = getEmbedTabelaBoss(listaBoss);
+        let embedSelecionada: EmbedBuilder | undefined;
         const rowButtons: ActionRowBuilder<ButtonBuilder>[] = [];
         const rowSelects: ActionRowBuilder<SelectMenuBuilder>[] = [];
 
         switch(interactionMessage.customId) {
+            // Button Todos
+            case Ids.BUTTON_TABLE_BOSS: 
+                embedSelecionada = getEmbedTabelaBoss(listaBoss); 
+                break;
+
             // Button Salas
-            case Ids.BUTTON_TABLE_SALA: embedSelecionada = getEmbedTabelaSala(listaBoss); break;
+            case Ids.BUTTON_TABLE_SALA: 
+                embedSelecionada = getEmbedTabelaSala(listaBoss); 
+                break;
 
             // Button Proximos
             case Ids.BUTTON_TABLE_PROXIMOS:
@@ -77,10 +85,13 @@ const configCollectorButtons = async (message: Message, listaBoss: Boss[], butto
                 break;
             
             // Button Rank
-            case Ids.BUTTON_TABLE_RANK: embedSelecionada = getEmbedTabelaRank(); break;
+            case Ids.BUTTON_TABLE_RANK:
+                embedSelecionada = getEmbedTabelaRank(); 
+                break;
 
             // Button Histórico
             case Ids.BUTTON_TABLE_HISTORICO:
+                embedSelecionada = getEmbedAvisoHistorico();
                 backupsBossSingleton.backups = await consultarBackupsListaBoss();
                 rowSelects.push(getSelectMenuBackup(backupsBossSingleton.backups));
                 break;
@@ -88,7 +99,10 @@ const configCollectorButtons = async (message: Message, listaBoss: Boss[], butto
 
         rowButtons.push(disableButton(buttons, interactionMessage.customId));
 
-        message.edit({ embeds: [embedSelecionada], components: [...rowSelects, ...rowButtons] });
+        message.edit({ 
+            embeds: embedSelecionada ? [embedSelecionada] : [], 
+            components: [...rowSelects, ...rowButtons] 
+        });
     });
 };
 

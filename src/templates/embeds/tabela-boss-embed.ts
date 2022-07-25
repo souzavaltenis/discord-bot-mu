@@ -3,7 +3,7 @@ import { config } from "../../config/get-configs";
 import { Boss } from "../../models/boss";
 import { formatBoss } from "../../utils/boss-utils";
 import { timestampToMoment } from "../../utils/data-utils";
-import { textoFooterRandom } from "../../utils/geral-utils";
+import { textoFooter } from "../../utils/geral-utils";
 
 const getEmbedTabelaBoss = (listaBoss: Boss[], timestampBackup?: number): EmbedBuilder => {
     const fieldsBoss: APIEmbedField[] = listaBoss.map((b => { 
@@ -21,7 +21,7 @@ const getEmbedTabelaBoss = (listaBoss: Boss[], timestampBackup?: number): EmbedB
             .setColor("DarkBlue")
             .setTitle("Tabela de Horários Boss")
             .setDescription("\u200B")
-            .setFooter({ text: config().mu.avisoFooter || textoFooterRandom() })
+            .setFooter({ text: config().mu.avisoFooter || textoFooter() })
             .addFields(fieldsBoss)
             .setTimestamp();
 }

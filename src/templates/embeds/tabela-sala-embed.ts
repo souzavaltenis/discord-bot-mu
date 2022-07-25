@@ -3,14 +3,14 @@ import { config } from "../../config/get-configs";
 import { Boss } from "../../models/boss";
 import { SalaBoss } from "../../models/sala-boss";
 import { formatSalaBoss } from "../../utils/boss-utils";
-import { gerarTabelaSalas, textoFooterRandom, underbold } from "../../utils/geral-utils";
+import { gerarTabelaSalas, textoFooter, underbold } from "../../utils/geral-utils";
 
 const getEmbedTabelaSala = (listaBoss: Boss[]): EmbedBuilder => {
     const embedTabelaSalas = new EmbedBuilder()
         .setColor("DarkBlue")
         .setTitle("Tabela de Horários por Sala")
         .setDescription("\u200B")
-        .setFooter({ text: config().mu.avisoFooter || textoFooterRandom() })
+        .setFooter({ text: config().mu.avisoFooter || textoFooter() })
         .setTimestamp();
 
     const mapSalasHorarios: Map<number, SalaBoss[]> = gerarTabelaSalas(listaBoss);

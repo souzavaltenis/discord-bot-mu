@@ -3,7 +3,7 @@ import { EmbedBuilder } from "discord.js";
 import { Usuario } from "../../models/usuario";
 import { bold, underscore } from "@discordjs/builders";
 import { dataNowMoment, isSameMoment } from "../../utils/data-utils";
-import { textoFooterRandom } from "../../utils/geral-utils";
+import { textoFooter } from "../../utils/geral-utils";
 import { config } from "../../config/get-configs";
 import { usuariosSingleton } from '../../models/singleton/usuarios-singleton';
 import { Moment } from "moment";
@@ -18,7 +18,7 @@ const getEmbedTabelaRank = (): EmbedBuilder => {
         .setColor("DarkBlue")
         .setTitle("Rank de Anotações 🏆")
         .setDescription('\u200B')
-        .setFooter({ text: config().mu.avisoFooter || textoFooterRandom() })
+        .setFooter({ text: config().mu.avisoFooter || textoFooter() })
         .setTimestamp();
 
     const limitUsers: number = 10;

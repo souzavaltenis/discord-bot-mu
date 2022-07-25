@@ -9,6 +9,7 @@ import { ILogsErrosInputKafka } from "../models/interface/kafka/logs-erros-input
 import { ILogsGeralKafka } from "../models/interface/kafka/logs-geral-kafka";
 import { IParamsLogsGeral } from "../models/interface/params-logs-geral";
 import { SalaBoss } from "../models/sala-boss";
+import { geralSingleton } from "../models/singleton/geral-singleton";
 import { sendMessageKafka } from "../services/kafka/kafka-producer";
 import { vaiAbrirBoss } from "./boss-utils";
 import { dataNowMoment } from "./data-utils";
@@ -197,9 +198,13 @@ const sleep = async (ms: number): Promise<void> => {
     return new Promise<void>(resolve => setTimeout(resolve, ms));
 }
 
-const textoFooterRandom = (): string => {
+const textoFooter = (): string => {
     const textosFooter: string[] = config().dicasFooter;
-    return '\u200B\nDica: ' + textosFooter[Math.floor(Math.random() * textosFooter.length)];
+    const dicaSelecionada: string = '\u200B\n' + textosFooter[geralSingleton.indexDicaFooter].replace(/\\n/g, '\n');
+
+    geralSingleton.indexDicaFooter = geralSingleton.indexDicaFooter < textosFooter.length - 1 ? geralSingleton.indexDicaFooter + 1 : 0;
+
+    return dicaSelecionada;
 }
 
 const getIdButton = (button: ButtonBuilder): string => {
@@ -220,7 +225,7 @@ export {
     getLogsErrosInputString,
     sendLogErroInput,
     sleep,
-    textoFooterRandom,
+    textoFooter,
     getIdBossByDoc,
     getIdButton
 }
