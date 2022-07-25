@@ -44,7 +44,7 @@ const setEvents = (): void => {
         if (interaction.type === InteractionType.ApplicationCommand) {
             if (interaction.channelId !== config().channels.textHorarios && interaction.user.id !== config().ownerId) {
                 const textChannel = client.channels.cache.get(config().channels.textHorarios) as TextChannel;
-                const msgWrongChannel: string = `${interaction.user} os comandos só podem ser utilizados no canal ${textChannel}`;
+                const msgWrongChannel: string = `${interaction.user} os comandos só podem ser utilizados no canal ${textChannel.name} (${textChannel.guild.name})`;
                 await sendLogErroInput(interaction, msgWrongChannel);
                 
                 await interaction.reply({
