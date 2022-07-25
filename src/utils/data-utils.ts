@@ -46,6 +46,18 @@ const isSameMoment = (now: Moment, timestamp: number, type: string): boolean => 
     }
 }
 
+const millisecondsToNextHour = (): number => {
+    const now: Moment = dataNowMoment();
+    const target: Moment = moment(now).add(60 - now.minutes(), 'minutes');
+    let diff: Moment = diffDatas(target, now);
+
+    if (!diff.isValid()) {
+        diff = now;
+    } 
+
+    return diff.valueOf();
+}
+
 export { 
     dataNowString,
     dataNowMoment,
@@ -55,5 +67,6 @@ export {
     distanceDatasInMinutes,
     distanceDatasInHours,
     timestampToMoment,
-    isSameMoment
+    isSameMoment,
+    millisecondsToNextHour
 }
