@@ -5,16 +5,12 @@ import { AdicionarHorarioModal } from '../templates/modals/adicionar-horario-mod
 import { deployCommands } from './deploy-commands';
 import { Ids } from '../models/ids';
 import { config } from '../config/get-configs';
-import { consultarHorarioBoss } from '../db/db';
-import { Boss } from '../models/boss';
-import { agendarAvisos } from './avisos-utils';
 import { dataNowString } from './data-utils';
 import { sendMessageKafka } from '../services/kafka/kafka-producer';
 import { getLogsGeralString, sendLogErroInput } from './geral-utils';
 import { Reset } from '../commands/reset';
 import { Anotar } from '../commands/anotar';
 import { Help } from '../commands/help';
-import { ListBossSingleton } from '../models/singleton/list-boss-singleton';
 import { Config } from '../commands/config';
 import { Sala } from '../commands/sala';
 import { Admin } from '../commands/admin';

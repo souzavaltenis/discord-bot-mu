@@ -3,7 +3,7 @@ import { PermissionFlagsBits } from "discord-api-types/v9";
 import { Message, ButtonBuilder, EmbedBuilder, TextChannel, InteractionResponse, ChatInputCommandInteraction, codeBlock } from "discord.js";
 import { client } from "../index";
 import { config } from "../config/get-configs";
-import { sincronizarConfigsBot } from "../db/db";
+import { carregarConfiguracoes, sincronizarConfigsBot } from "../db/db";
 import { getButtonsTabela } from "../templates/buttons/style-tabela-buttons";
 import { disableButton } from "../utils/buttons-utils";
 import { Ids } from "../models/ids";
@@ -34,6 +34,11 @@ export class Admin {
             subcommand.setName('timeouts')
                 .setDescription('Verifique os timeouts de avisos ativos');
             return subcommand;
+        })
+        .addSubcommand(subcommand => {
+            subcommand.setName('refresh')
+                .setDescription('Carrega as configurações mais atualizadas do banco de dados');
+            return subcommand;
         });
 
     async execute(interaction: ChatInputCommandInteraction): Promise<InteractionResponse<boolean> | undefined> {
@@ -52,6 +57,7 @@ export class Admin {
             case "say": await this.subCommandSay(interaction); break;
             case "aviso_footer": await this.subCommandAvisoFooter(interaction); break;
             case "timeouts": await this.subCommandTimeouts(interaction); break;
+            case "refresh": await this.subCommandRefresh(interaction); break;
         }
     }
 
@@ -62,7 +68,10 @@ export class Admin {
         if (!client || !textChannel) return;
 
         await textChannel.send({ content: msg.replace(/\\n/g, '\n') });
-        await interaction.reply({ content: `Mensagem ${codeBlock(msg)} foi enviada com sucesso no canal ${bold(textChannel.name)}`, ephemeral: true });
+        await interaction.reply({ 
+            content: `Mensagem ${codeBlock(msg)} foi enviada com sucesso no canal ${bold(textChannel.name)}`, 
+            ephemeral: true 
+        });
     }
 
     async subCommandAvisoFooter(interaction: ChatInputCommandInteraction): Promise<void> {
@@ -105,7 +114,18 @@ export class Admin {
             .setDescription(strTimeouts)
             .setTimestamp();
 
-        await interaction.reply({ embeds: [embedTimeouts], ephemeral: true });
+        await interaction.reply({ 
+            embeds: [embedTimeouts],
+            ephemeral: true 
+        });
+    }
+
+    async subCommandRefresh(interaction: ChatInputCommandInteraction): Promise<void> {
+        await carregarConfiguracoes();
+        await interaction.reply({ 
+            content: "As configurações mais atualizadas do banco de dados foram carregadas",
+            ephemeral: true 
+        });
     }
 
 }

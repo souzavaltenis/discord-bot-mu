@@ -18,7 +18,7 @@ import { bossConverter, backupListaBossConverter, configConverter } from "./conv
 const appFirebase = initializeApp(firebaseConfig);
 const db = getFirestore(appFirebase);
 
-const carregarDadosBot = async (): Promise<void> => {
+const carregarConfiguracoes = async (): Promise<void> => {
     const docConfigRef = doc(db, collectionConfig, botIsProd ? documentConfigProd : documentConfigTest).withConverter(configConverter);
     const snapDocConfig = await getDoc(docConfigRef);
     ConfigBotSingleton.getInstance().configBot = snapDocConfig.data()!;
@@ -30,7 +30,10 @@ const carregarDadosBot = async (): Promise<void> => {
         ConfigBotSingleton.getInstance().configBot.collections = dataConfigProd?.collections;
         ConfigBotSingleton.getInstance().configBot.documents = dataConfigProd?.documents;
     }
+}
 
+const carregarDadosBot = async (): Promise<void> => {
+    await carregarConfiguracoes();
     await consultarUsuarios();
 }
 
@@ -169,6 +172,7 @@ const consultarBackupsListaBoss = async (): Promise<BackupListaBoss[]> => {
 }
 
 export {
+    carregarConfiguracoes,
     carregarDadosBot,
     sincronizarConfigsBot,
     adicionarSala,
