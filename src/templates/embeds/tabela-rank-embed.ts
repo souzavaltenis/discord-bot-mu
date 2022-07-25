@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { EmbedBuilder } from "discord.js";
 import { Usuario } from "../../models/usuario";
-import { bold, underscore } from "@discordjs/builders";
+import { bold } from "@discordjs/builders";
 import { dataNowMoment, isSameMoment } from "../../utils/data-utils";
 import { textoFooter } from "../../utils/geral-utils";
 import { config } from "../../config/get-configs";
@@ -48,8 +48,11 @@ const addFieldsRank = (type: string, usuarios: Usuario[], embed: EmbedBuilder, l
     usuarios.slice(0, limitUsers).forEach((usuario, index) => {
         const quantidadeAnotacoes: number = type ? calcularHorariosPorTempo(usuario.timestampsAnotacoes, type) : usuario.timestampsAnotacoes.length;
         if (quantidadeAnotacoes === 0) return;
-        const userName: string = bold(usuario.name.split("#")[0]);
-        msgUsuario += `${getTextPosition(index)} ${index < 3 ? underscore(userName) : userName}  →  ( ${bold(quantidadeAnotacoes + '')} ${quantidadeAnotacoes > 1 ? 'anotações' : 'anotação'} )\n`;
+        const userName: string = usuario.name.split("#")[0];
+        const isTop3: boolean = index < 3;
+        msgUsuario += `${getTextPosition(index)} ${isTop3 ? bold(userName) : userName}` +
+            `  ${bold('→')}  ` +
+            `( ${isTop3 ? bold(quantidadeAnotacoes + '') : quantidadeAnotacoes} ${quantidadeAnotacoes > 1 ? 'anotações' : 'anotação'} )\n`;
     });
 
     embed.addFields([{ name: getTitleFieldByType(type), value: msgUsuario + '\u200B' || '\u200B' }]);
@@ -60,7 +63,7 @@ const getTextPosition = (index: number): string => {
         case 0: return '🥇';
         case 1: return '🥈';
         case 2: return '🥉';
-        default: return `${index+1}°`;
+        default: return `${index+1}${bold('°')}`;
     }
 }
 
