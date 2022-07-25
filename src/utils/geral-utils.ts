@@ -200,12 +200,18 @@ const sleep = async (ms: number): Promise<void> => {
 
 const textoFooter = (): string => {
     const textosFooter: string[] = config().dicasFooter;
+
+    if (geralSingleton.indexDicaFooter > textosFooter.length - 1) {
+        geralSingleton.indexDicaFooter = 0;
+    }
+
     const dicaSelecionada: string = '\u200B\n' + textosFooter[geralSingleton.indexDicaFooter].replace(/\\n/g, '\n');
 
-    geralSingleton.indexDicaFooter = geralSingleton.indexDicaFooter < textosFooter.length - 1 ? geralSingleton.indexDicaFooter + 1 : 0;
+    geralSingleton.indexDicaFooter++;
 
     return dicaSelecionada;
 }
+
 
 const getIdButton = (button: ButtonBuilder): string => {
     if (button.data.style === ButtonStyle.Link) return '';
