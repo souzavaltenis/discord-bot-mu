@@ -3,15 +3,13 @@ import { bold } from "@discordjs/builders";
 import { EmbedBuilder } from "discord.js";
 import { Moment } from "moment";
 import { ListBossSingleton } from "../../models/singleton/list-boss-singleton";
-import { diffDatas } from "../../utils/data-utils";
+import { distanceDatasString } from "../../utils/data-utils";
 import { getIdBossByDoc } from "../../utils/geral-utils";
 
 const getEmbedAddBoss = (nomeDocBoss: string, horarioInformado: Moment, salaBoss: number, username: string): EmbedBuilder => {
     const bossAntigo = ListBossSingleton.getInstance().boss.find(b => b.id === getIdBossByDoc(nomeDocBoss));
-
     const horarioAntigo: Moment | undefined = bossAntigo?.salas.get(salaBoss);
-    const diffNovoAntigo: Moment = diffDatas(horarioInformado, horarioAntigo!);
-    const diferencaFormatada: string = diffNovoAntigo.hours() + 'h ' + diffNovoAntigo.minutes() + 'm';
+    const diferencaFormatada: string = distanceDatasString(horarioInformado, horarioAntigo!);
 
     const embedAddBoss = new EmbedBuilder()
         .setColor("DarkPurple")

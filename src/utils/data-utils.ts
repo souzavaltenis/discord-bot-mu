@@ -31,6 +31,12 @@ const distanceDatasInHours = (x: Moment, y: Moment): number => {
     return moment.duration(diff).asHours();
 }
 
+const distanceDatasString = (x: Moment, y: Moment): string => {
+    const diff = x.diff(y);
+    const duration = moment.duration(diff);
+    return (duration.days() > 0 ? duration.days() + 'd ' : '') + duration.hours() + 'h ' + duration.minutes() + 'm ';
+}
+
 const timestampToMoment = (timestamp: number): Moment => {
     return moment.utc(timestamp).utcOffset('GMT-03:00');
 }
@@ -68,5 +74,6 @@ export {
     distanceDatasInHours,
     timestampToMoment,
     isSameMoment,
-    millisecondsToNextHour
+    millisecondsToNextHour,
+    distanceDatasString
 }
