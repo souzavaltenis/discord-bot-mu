@@ -21,7 +21,7 @@ export class AdicionarHorarioModal {
             .setCustomId(Ids.INPUT_NOME_BOSS)
             .setLabel("Qual boss?")
             .setPlaceholder("Ex: rei, fenix, relics, dbk, geno")
-            .setMinLength(3)
+            .setMinLength(1)
             .setMaxLength(20)
             .setRequired(true)
             .setStyle(TextInputStyle.Short);
@@ -63,16 +63,19 @@ export class AdicionarHorarioModal {
     }
 
     async action(interaction: ModalSubmitInteraction) {
-        const textInputNomeBoss: string = interaction.fields.getTextInputValue(Ids.INPUT_NOME_BOSS).trim().toLocaleLowerCase();
+        const textInputNomeBoss: string = interaction.fields.getTextInputValue(Ids.INPUT_NOME_BOSS)
+            .trim()
+            .toLocaleLowerCase()
+            .normalize("NFD").replace(/\p{Diacritic}/gu, "");
 
         let nomeDocBoss = "";
 
-        const valoresRei: string[] = ['k', 'rk', 'rey', 'rei', 'reu', 'rei kundun', 'reikundun', 'rey kundun', 'kundun'];
-        const valoresRelics: string[] = ['i', 'rl', 'rel','relics', 'illusion', 'relycs', 'relcs', 'relic', 'relicks', 'illusion of kundun'];
-        const valoresFenix: string[] = ['f','fenix', 'fenyx', 'febux', 'fenux', 'felix', 'phoenix', 'phoênix', 'fênix', 'fnix', 'fenx', 'phoenix of darkness'];
-        const valoresDbk: string[] = ['d', 'ebk', 'dbk', 'death', 'beam', 'death beam', 'db', 'dkb', 'dbl', 'deathbk', 'bk', 'death beam knigth'];
-        const valoresGeno: string[] = ['g','geno', 'gen', 'gem', 'genocider', 'gneo', 'gno', 'ge', 'genocid', 'genocider'];
-
+        const valoresRei: string[] = config().geral.valoresNomeBoss.rei;
+        const valoresRelics: string[] = config().geral.valoresNomeBoss.relics;
+        const valoresFenix: string[] = config().geral.valoresNomeBoss.fenix;
+        const valoresDbk: string[] = config().geral.valoresNomeBoss.dbk;
+        const valoresGeno: string[] = config().geral.valoresNomeBoss.geno;
+        
         switch (true) {
             case valoresRei.includes(textInputNomeBoss):    nomeDocBoss = config().documents.rei;       break;
             case valoresRelics.includes(textInputNomeBoss): nomeDocBoss = config().documents.relics;    break;
