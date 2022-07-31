@@ -19,6 +19,7 @@ import { BackupListaBoss } from "../../models/backup-lista-boss";
 import { getSelectMenuBackup } from "../selects/backups-selects";
 import { backupsBossSingleton } from "../../models/singleton/lista-backup-singleton";
 import { getEmbedAvisoHistorico } from "../embeds/aviso-historico-embed";
+import { autoUpdateUtil } from "../../utils/auto-update-utils";
 
 const mostrarHorarios = async (channel?: TextBasedChannel | null) => {
     const textChannel = channel || mainTextChannel();
@@ -64,6 +65,8 @@ const configCollectorButtons = async (message: Message, listaBoss: Boss[], butto
         const rowButtons: ActionRowBuilder<ButtonBuilder>[] = [];
         const rowSelects: ActionRowBuilder<SelectMenuBuilder>[] = [];
 
+        autoUpdateUtil.stopAutoUpdateTableProximos();
+
         switch(interactionMessage.customId) {
             // Button Todos
             case Ids.BUTTON_TABLE_BOSS: 
@@ -80,8 +83,12 @@ const configCollectorButtons = async (message: Message, listaBoss: Boss[], butto
             case Ids.BUTTON_ABRIR_PROXIMOS:
             case Ids.BUTTON_FECHAR_PROXIMOS:
                 const idButtonProximos: string = interactionMessage.customId === Ids.BUTTON_TABLE_PROXIMOS ? Ids.BUTTON_ABRIR_PROXIMOS : interactionMessage.customId;
-                embedSelecionada = getEmbedTabelaProximos(listaBoss, idButtonProximos);
+                const isAbrir: boolean = [Ids.BUTTON_TABLE_PROXIMOS, Ids.BUTTON_ABRIR_PROXIMOS].includes(idButtonProximos);
+
+                embedSelecionada = getEmbedTabelaProximos(isAbrir, listaBoss);
                 rowButtons.push(disableButtonProximos(getButtonsProximos(), idButtonProximos));
+
+                autoUpdateUtil.initAutoUpdateTableProximos();
                 break;
             
             // Button Rank
