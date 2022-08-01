@@ -133,6 +133,7 @@ export class Reset {
                     horarioInformado: momentToString(horarioReset),
                     timestampAcao: dataNowMoment().valueOf()
                 } as IBossInfoAdd);
+                await sleep(300);
             }
 
         } else if (opcaoSubCommand === 'geral') {
@@ -144,6 +145,7 @@ export class Reset {
                         horarioInformado: momentToString(horarioReset),
                         timestampAcao: dataNowMoment().valueOf()
                     } as IBossInfoAdd);
+                    await sleep(300);
                 }
             }
         }

@@ -18,7 +18,7 @@ const getEmbedTabelaProximos = (isAbrir: boolean, listaBoss?: Boss[]): EmbedBuil
         .setFooter({ text: config().mu.avisoFooter || textoFooter() })
         .setTimestamp();
 
-    listaBoss.forEach((boss: Boss) => {
+    listaBoss.forEach((boss: Boss, index: number, array: Boss[]) => {
         let infoBoss: string = tracos(38);
 
         sortBossPorHorario(boss.salas, isAbrir).forEach((horario: Moment, sala: number) => {
@@ -27,7 +27,7 @@ const getEmbedTabelaProximos = (isAbrir: boolean, listaBoss?: Boss[]): EmbedBuil
             infoBoss += `\nSala ${numbersToEmoji(sala)} ${underbold(isAbrir ? "abrirá" : "fechará")} em ${underbold(previsaoString)}`;
         });
 
-        infoBoss += '\n\u200B';
+        infoBoss += index < array.length - 1 ? '\n\u200B' : '';
 
         embedTabelaProximos.addFields([{ name: boss.nome, value: infoBoss }]);
     });
