@@ -1,5 +1,5 @@
 import { bold, underscore } from "@discordjs/builders";
-import { APIButtonComponentWithCustomId, ButtonBuilder, ButtonStyle, Interaction } from "discord.js";
+import { APIButtonComponentWithCustomId, ButtonBuilder, ButtonStyle, GuildMember, Interaction } from "discord.js";
 import { RecordMetadata } from "kafkajs";
 import { Moment } from "moment";
 import { config } from '../config/get-configs';
@@ -212,10 +212,13 @@ const textoFooter = (): string => {
     return dicaSelecionada;
 }
 
-
 const getIdButton = (button: ButtonBuilder): string => {
     if (button.data.style === ButtonStyle.Link) return '';
     return (button.data as Partial<APIButtonComponentWithCustomId>).custom_id || '';
+}
+
+const getNickMember = (interaction: Interaction): string => {
+    return interaction.member instanceof GuildMember ? interaction.member.nickname || '' : '';
 }
 
 export { 
@@ -233,5 +236,6 @@ export {
     sleep,
     textoFooter,
     getIdBossByDoc,
-    getIdButton
+    getIdButton,
+    getNickMember
 }

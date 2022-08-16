@@ -7,7 +7,7 @@ import { IBossInfoAdd } from '../models/interface/boss-info-add';
 import { getEmbedAddBoss } from '../templates/embeds/adicionar-boss-embed';
 import { mostrarHorarios } from '../templates/messages/tabela-horario-boss';
 import { dataNowMoment, dataNowString, distanceDatasInMinutes, momentToString, stringToMoment } from '../utils/data-utils';
-import { sendLogErroInput } from '../utils/geral-utils';
+import { getNickMember, sendLogErroInput } from '../utils/geral-utils';
 
 export class Anotar {
     data = new SlashCommandBuilder()
@@ -38,7 +38,7 @@ export class Anotar {
 
             return option;
         })
-        .addStringOption(option => option.setName('foi_ontem').setDescription('Esse horário foi ontem?').addChoices({ name: 'Não', value: 'N' }, { name: 'Sim', value: 'S' }).setRequired(true));
+        .addStringOption(option => option.setName('foi_ontem').setDescription('Esse horário foi ontem?').addChoices({ name: 'Não', value: 'N' }, { name: 'Sim', value: 'S' }));
 
     async execute(interaction: ChatInputCommandInteraction): Promise<void> {
 
@@ -81,7 +81,7 @@ export class Anotar {
         } as IBossInfoAdd;
 
         await adicionarHorarioBoss(bossInfo).then(async () => {
-            const embedAddBoss: EmbedBuilder = getEmbedAddBoss(bossDoc, horarioMoment, salaBoss, interaction.user.username);
+            const embedAddBoss: EmbedBuilder = getEmbedAddBoss(bossDoc, horarioMoment, salaBoss, getNickMember(interaction));
 
             await interaction.reply({ embeds: [embedAddBoss] });
             await adicionarAnotacaoHorario(interaction.user, bossInfo.timestampAcao);
