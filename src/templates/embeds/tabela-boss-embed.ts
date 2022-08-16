@@ -1,14 +1,11 @@
 import { APIEmbedField, bold, EmbedBuilder } from "discord.js";
 import { config } from "../../config/get-configs";
 import { Boss } from "../../models/boss";
-import { autoUpdateUtil } from "../../utils/auto-update-utils";
 import { formatBoss } from "../../utils/boss-utils";
 import { timestampToMoment } from "../../utils/data-utils";
 import { textoFooter } from "../../utils/geral-utils";
 
 const getEmbedTabelaBoss = (listaBoss: Boss[], timestampBackup?: number): EmbedBuilder => {
-    autoUpdateUtil.stopAutoUpdateTableProximos();
-    
     const fieldsBoss: APIEmbedField[] = listaBoss.map((b => { 
         return { name: b.nome, value: formatBoss(b) } as APIEmbedField
     }));

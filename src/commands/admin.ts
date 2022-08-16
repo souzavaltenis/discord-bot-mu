@@ -12,6 +12,7 @@ import { Boss } from "../models/boss";
 import { ListBossSingleton } from "../models/singleton/list-boss-singleton";
 import { sendLogErroInput } from "../utils/geral-utils";
 import { TimeoutSingleton } from "../models/singleton/timeout-singleton";
+import { autoUpdatesProximos } from "../utils/auto-update-utils";
 
 export class Admin {
     data = new SlashCommandBuilder()
@@ -91,6 +92,7 @@ export class Admin {
                 .then(async (m: Message) => {
                     const buttons: ButtonBuilder[] = getButtonsTabela();
                     const rowButtons = disableButton(buttons, Ids.BUTTON_TABLE_BOSS);
+                    autoUpdatesProximos.get(m.id)?.stopAutoUpdateTableProximos();
                     await m.edit({ embeds: [getEmbedTabelaBoss(listaBoss)], components: [rowButtons] });
                 })
                 .catch(e => console.log(e));

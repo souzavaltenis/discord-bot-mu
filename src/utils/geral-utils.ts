@@ -218,7 +218,10 @@ const getIdButton = (button: ButtonBuilder): string => {
 }
 
 const getNickMember = (interaction: Interaction): string => {
-    return interaction.member instanceof GuildMember ? interaction.member.nickname || '' : '';
+    const nickMember: string = interaction.member instanceof GuildMember ? interaction.member.nickname || '' : '';
+    const nickUser: string = interaction.user.username || '';
+
+    return nickMember || nickUser;
 }
 
 export { 

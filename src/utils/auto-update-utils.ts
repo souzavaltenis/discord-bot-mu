@@ -1,13 +1,20 @@
 import { EmbedBuilder, Message, TextChannel } from "discord.js";
-import { config } from "../config/get-configs";
 import { client } from "../index";
 import { Ids } from "../models/ids";
 import { getEmbedTabelaProximos } from "../templates/embeds/tabela-proximos-embed";
 
 class AutoUpdateUtil {
 
+    idChannel: string;
+    idMessage: string;
     idSetIntervalTableProximos?: NodeJS.Timer;
-    secondsIntervalUpdate: number = 10;
+    secondsIntervalUpdate: number;
+
+    constructor(idChannel: string, idMessage: string, secondsIntervalUpdate: number = 5) {
+        this.idChannel = idChannel;
+        this.idMessage = idMessage;
+        this.secondsIntervalUpdate = secondsIntervalUpdate;
+    }
 
     initAutoUpdateTableProximos = () => {
         this.stopAutoUpdateTableProximos();
@@ -21,12 +28,12 @@ class AutoUpdateUtil {
     }
 
     updateTableProximos = async (): Promise<void> => {
-        const lastMessage: Message | undefined = await this.getMessageUpdated(config().channels.textHorarios, config().geral.idLastMessageBoss);
-        const isTableProximosVaiAbrir: boolean = this.isEmbedTableProximosVaiAbrir(lastMessage);
+        const message: Message | undefined = await this.getMessageUpdated(this.idChannel, this.idMessage);
+        const isTableProximosVaiAbrir: boolean = this.isEmbedTableProximosVaiAbrir(message);
     
         const embedTableProximos: EmbedBuilder = getEmbedTabelaProximos(isTableProximosVaiAbrir);
         
-        await lastMessage?.edit({
+        await message?.edit({
             embeds: [embedTableProximos]
         });
     }
@@ -51,4 +58,9 @@ class AutoUpdateUtil {
 
 }
 
-export const autoUpdateUtil = new AutoUpdateUtil();
+const autoUpdatesProximos = new Map<string, AutoUpdateUtil>();
+
+export {
+    AutoUpdateUtil,
+    autoUpdatesProximos,
+}

@@ -18,6 +18,7 @@ import { Client as ClientStatcord} from 'statcord.js';
 import { client } from '../index';
 import { mostrarHorarios } from '../templates/messages/tabela-horario-boss';
 import { initBackupListaBoss } from './backup-utils';
+import { mainTextChannel } from './channels-utils';
 
 const setEvents = (): void => {
     const statcord = new ClientStatcord({ client: client, key: config().bot.keyStatcord });
@@ -34,7 +35,7 @@ const setEvents = (): void => {
             await deployCommands(client, guild);
         });
 
-        await mostrarHorarios();
+        await mostrarHorarios(mainTextChannel());
         await statcord.autopost();
 
         initBackupListaBoss();

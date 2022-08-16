@@ -13,16 +13,14 @@ import { config } from "../../config/get-configs";
 import { getLogsGeralString } from "../../utils/geral-utils";
 import { getEmbedTabelaRank } from "../embeds/tabela-rank-embed";
 import { ListBossSingleton } from "../../models/singleton/list-boss-singleton";
-import { mainTextChannel } from "../../utils/channels-utils";
 import { getButtonsProximos } from "../buttons/proximos-buttons";
 import { BackupListaBoss } from "../../models/backup-lista-boss";
 import { getSelectMenuBackup } from "../selects/backups-selects";
 import { backupsBossSingleton } from "../../models/singleton/lista-backup-singleton";
 import { getEmbedAvisoHistorico } from "../embeds/aviso-historico-embed";
-import { autoUpdateUtil } from "../../utils/auto-update-utils";
+import { autoUpdatesProximos, AutoUpdateUtil } from "../../utils/auto-update-utils";
 
-const mostrarHorarios = async (channel?: TextBasedChannel | null) => {
-    const textChannel = channel || mainTextChannel();
+const mostrarHorarios = async (textChannel: TextBasedChannel | undefined | null) => {
     
     await consultarHorarioBoss().then(async (listaBoss: Boss[]) => {
 
@@ -40,7 +38,11 @@ const mostrarHorarios = async (channel?: TextBasedChannel | null) => {
 
                 if (idLastMessageBoss) {
                     await textChannel.messages.fetch(idLastMessageBoss)
-                        .then(async m => await m.delete())
+                        .then(async m => {
+                            autoUpdatesProximos.get(m.id)?.stopAutoUpdateTableProximos();
+                            autoUpdatesProximos.delete(m.id);
+                            await m.delete();
+                        })
                         .catch(e => console.log(e));
                 }
 
@@ -56,6 +58,7 @@ const mostrarHorarios = async (channel?: TextBasedChannel | null) => {
 
 const configCollectorButtons = async (message: Message, listaBoss: Boss[], buttons: ButtonBuilder[]) => {
     const collectorButtons = message.createMessageComponentCollector({ filter: (i: Interaction) => i.isButton(), time: 1000 * 60 * 60 * 4 });
+    autoUpdatesProximos.set(message.id, new AutoUpdateUtil(message.channelId, message.id));
 
     collectorButtons.on("collect", async (interactionMessage: MessageComponentInteraction) => {
         await interactionMessage.deferUpdate();
@@ -65,7 +68,7 @@ const configCollectorButtons = async (message: Message, listaBoss: Boss[], butto
         const rowButtons: ActionRowBuilder<ButtonBuilder>[] = [];
         const rowSelects: ActionRowBuilder<SelectMenuBuilder>[] = [];
 
-        autoUpdateUtil.stopAutoUpdateTableProximos();
+        autoUpdatesProximos.get(message.id)?.stopAutoUpdateTableProximos();
 
         switch(interactionMessage.customId) {
             // Button Todos
@@ -88,7 +91,7 @@ const configCollectorButtons = async (message: Message, listaBoss: Boss[], butto
                 embedSelecionada = getEmbedTabelaProximos(isAbrir, listaBoss);
                 rowButtons.push(disableButtonProximos(getButtonsProximos(), idButtonProximos));
 
-                autoUpdateUtil.initAutoUpdateTableProximos();
+                autoUpdatesProximos.get(message.id)?.initAutoUpdateTableProximos();
                 break;
             
             // Button Rank

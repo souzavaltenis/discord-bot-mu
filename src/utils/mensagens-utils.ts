@@ -8,6 +8,7 @@ import { ListBossSingleton } from "../models/singleton/list-boss-singleton";
 import { getButtonsTabela } from "../templates/buttons/style-tabela-buttons";
 import { getEmbedTabelaBoss } from "../templates/embeds/tabela-boss-embed";
 import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
+import { autoUpdatesProximos } from "./auto-update-utils";
 import { atualizarStatusBot } from "./boss-utils";
 import { disableButton } from "./buttons-utils";
 import { mainTextChannel } from "./channels-utils";
@@ -76,6 +77,7 @@ const verificarAtualizacaoMessage = async (): Promise<void> => {
         .then(async (message: Message | null) => {
             if (!message) return;
             const rowButtons = disableButton(getButtonsTabela(), Ids.BUTTON_TABLE_BOSS);
+            autoUpdatesProximos.get(message.id)?.stopAutoUpdateTableProximos();
             await message.edit({ embeds: [getEmbedTabelaBoss(listaBoss)], components: [rowButtons] });
         });
 }
