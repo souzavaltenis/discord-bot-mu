@@ -10,7 +10,7 @@ class AutoUpdateUtil {
     idSetIntervalTableProximos?: NodeJS.Timer;
     secondsIntervalUpdate: number;
 
-    constructor(idChannel: string, idMessage: string, secondsIntervalUpdate: number = 5) {
+    constructor(idChannel: string, idMessage: string, secondsIntervalUpdate: number = 3) {
         this.idChannel = idChannel;
         this.idMessage = idMessage;
         this.secondsIntervalUpdate = secondsIntervalUpdate;
