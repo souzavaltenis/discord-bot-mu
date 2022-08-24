@@ -15,7 +15,7 @@ const getEmbedTabelaProximos = (isAbrir: boolean, listaBoss?: Boss[]): EmbedBuil
         .setColor("DarkBlue")
         .setTitle(`Próximos Horários que ${isAbrir ? "Abrirão ✅" : "Fecharão ❌"}`)
         .setDescription(`\u200B`)
-        .setFooter({ text: config().mu.avisoFooter || textoFooter() })
+        .setFooter({ text: config().mu.avisoFooter || textoFooter(false) })
         .setTimestamp();
 
     listaBoss.forEach((boss: Boss, index: number, array: Boss[]) => {

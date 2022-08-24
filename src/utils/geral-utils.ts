@@ -198,7 +198,7 @@ const sleep = async (ms: number): Promise<void> => {
     return new Promise<void>(resolve => setTimeout(resolve, ms));
 }
 
-const textoFooter = (): string => {
+const textoFooter = (isIncrement: boolean = true): string => {
     const textosFooter: string[] = config().dicasFooter;
 
     if (geralSingleton.indexDicaFooter > textosFooter.length - 1) {
@@ -207,7 +207,9 @@ const textoFooter = (): string => {
 
     const dicaSelecionada: string = '\u200B\n' + textosFooter[geralSingleton.indexDicaFooter].replace(/\\n/g, '\n');
 
-    geralSingleton.indexDicaFooter++;
+    if (isIncrement) {
+        geralSingleton.indexDicaFooter++;
+    }
 
     return dicaSelecionada;
 }
