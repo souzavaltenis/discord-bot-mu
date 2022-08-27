@@ -6,6 +6,7 @@ export class Ids {
     static INPUT_PERGUNTA_ONTEM: string = "is-ontem";
     static BUTTON_TABLE_BOSS: string = "style-table-boss";
     static BUTTON_TABLE_SALA: string = "style-table-sala";
+    static BUTTON_TABLE_VENCIDOS: string = "style-table-vencidos";
     static BUTTON_TABLE_ABERTOS: string = "style-table-abertos";
     static BUTTON_TABLE_PROXIMOS: string = "style-table-proximos";
     static BUTTON_TABLE_RANK: string = "style-table-rank";

@@ -9,10 +9,10 @@ const getButtonsTabela = (): ButtonBuilder[] => {
         .setLabel('Todos')
         .setStyle(ButtonStyle.Secondary);
 
-    const buttonTableSala = new ButtonBuilder()
-        .setCustomId(Ids.BUTTON_TABLE_SALA)
-        .setEmoji('💢')
-        .setLabel('Salas')
+    const buttonTableVencidos = new ButtonBuilder()
+        .setCustomId(Ids.BUTTON_TABLE_VENCIDOS)
+        .setEmoji('❌')
+        .setLabel('Vencidos')
         .setStyle(ButtonStyle.Secondary);
 
     const buttonTableProximos = new ButtonBuilder()
@@ -33,7 +33,7 @@ const getButtonsTabela = (): ButtonBuilder[] => {
         .setLabel('Histórico')
         .setStyle(ButtonStyle.Secondary);
 
-    return [buttonTableBoss, buttonTableSala, buttonTableProximos, buttonTableRank, buttonTableHistorico];
+    return [buttonTableBoss, buttonTableVencidos, buttonTableProximos, buttonTableRank, buttonTableHistorico];
 }
 
 export { getButtonsTabela }

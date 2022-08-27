@@ -4,7 +4,6 @@ import { consultarBackupsListaBoss, consultarHorarioBoss, sincronizarConfigsBot 
 import { agendarAvisos } from "../../utils/avisos-utils";
 import { Ids } from "../../models/ids";
 import { getEmbedTabelaBoss } from "../embeds/tabela-boss-embed";
-import { getEmbedTabelaSala } from "../embeds/tabela-sala-embed";
 import { getButtonsTabela } from "../buttons/style-tabela-buttons";
 import { disableButton, disableButtonProximos } from "../../utils/buttons-utils";
 import { getEmbedTabelaProximos } from "../embeds/tabela-proximos-embed";
@@ -19,6 +18,7 @@ import { getSelectMenuBackup } from "../selects/backups-selects";
 import { backupsBossSingleton } from "../../models/singleton/lista-backup-singleton";
 import { getEmbedAvisoHistorico } from "../embeds/aviso-historico-embed";
 import { autoUpdatesProximos, AutoUpdateUtil } from "../../utils/auto-update-utils";
+import { getEmbedTabelaVencidos } from "../embeds/tabela-vencidos-embed";
 
 const mostrarHorarios = async (textChannel: TextBasedChannel | undefined | null) => {
     
@@ -77,8 +77,8 @@ const configCollectorButtons = async (message: Message, listaBoss: Boss[], butto
                 break;
 
             // Button Salas
-            case Ids.BUTTON_TABLE_SALA: 
-                embedSelecionada = getEmbedTabelaSala(listaBoss); 
+            case Ids.BUTTON_TABLE_VENCIDOS: 
+                embedSelecionada = getEmbedTabelaVencidos(listaBoss); 
                 break;
 
             // Button Proximos
