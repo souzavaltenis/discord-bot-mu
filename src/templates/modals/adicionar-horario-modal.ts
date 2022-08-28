@@ -94,7 +94,7 @@ export class AdicionarHorarioModal {
             return;
         }
 
-        const textInputSalaBoss: string = interaction.fields.getTextInputValue(Ids.INPUT_SALA_BOSS);
+        const textInputSalaBoss: string = interaction.fields.getTextInputValue(Ids.INPUT_SALA_BOSS).replace(/\D/g, '');
         
         const salaBoss = parseInt(textInputSalaBoss);
         const salasConhecidas = config().mu.salasPermitidas;
