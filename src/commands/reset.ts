@@ -1,18 +1,18 @@
-import { bold, SlashCommandBuilder } from "@discordjs/builders";
-import { Interaction, ActionRowBuilder, ButtonBuilder, MessageComponentInteraction, EmbedBuilder, ChatInputCommandInteraction, InteractionResponse } from "discord.js";
+import { SlashCommandBuilder } from "@discordjs/builders";
+import { ActionRowBuilder, bold, ButtonBuilder, ChatInputCommandInteraction, EmbedBuilder, Interaction, InteractionResponse, MessageComponentInteraction } from "discord.js";
 import { Moment } from "moment";
+import { realizarBackupHorarios, adicionarHorarioBoss, sincronizarConfigsBot } from "../db/db";
+import { Ids } from "../models/ids";
+import { IBossInfoAdd } from "../models/interface/boss-info-add";
 import { sendMessageKafka } from "../services/kafka/kafka-producer";
 import { getButtonsSimNao } from "../templates/buttons/sim-nao-buttons";
+import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
 import { dataNowMoment, dataNowString, distanceDatasInMinutes, momentToString, stringToMoment } from "../utils/data-utils";
 import { getLogsGeralString, sendLogErroInput, sleep } from "../utils/geral-utils";
-import { config } from '../config/get-configs';
-import { Ids } from "../models/ids";
-import { adicionarHorarioBoss, realizarBackupHorarios, sincronizarConfigsBot } from "../db/db";
-import { IBossInfoAdd } from "../models/interface/boss-info-add";
-import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
+import { config } from "../config/get-configs";
 
-export class Reset {
-    data = new SlashCommandBuilder()
+export = {
+    data: new SlashCommandBuilder()
         .setName('reset')
         .setDescription('Informe horário que o servidor voltou')
         .addSubcommand(subcommand => {
@@ -33,9 +33,9 @@ export class Reset {
             .addStringOption(option => option.setName('foi_ontem').setDescription('Esse horário foi ontem?').addChoices({ name: 'Não', value: 'N' }, { name: 'Sim', value: 'S' }).setRequired(true));
 
             return subcommand;
-        });
-
-    async execute(interaction: ChatInputCommandInteraction): Promise<InteractionResponse<boolean> | undefined> {
+        }),
+        
+    execute: async (interaction: ChatInputCommandInteraction): Promise<InteractionResponse<boolean> | undefined> => {
         const opcaoSubCommand = interaction.options.getSubcommand();
 
         const horario: string = interaction.options.getString('horario') || '';
@@ -115,46 +115,46 @@ export class Reset {
             await interactionMessage.deferUpdate();
 
             if (interactionMessage.customId === Ids.BUTTON_SIM_RESET) {
-                await this.resetHorarios(interactionMessage, opcaoSubCommand, msgComando, horarioReset, sala); 
+                await resetHorarios(interactionMessage, opcaoSubCommand, msgComando, horarioReset, sala); 
             }
         });
-    }
 
-    async resetHorarios(interaction: MessageComponentInteraction, opcaoSubCommand: string, msgComando: string, horarioReset: Moment, sala: number): Promise<void> {
-        await realizarBackupHorarios(dataNowMoment(), `${interaction.user.tag} (${interaction.user.id})`, `${opcaoSubCommand}${sala ? sala : ''}`);
-
-        const docsBoss: string[] = Object.values(config().documents);
-
-        if (opcaoSubCommand === 'sala' && sala) {
-            for (const doc of docsBoss) {
-                await adicionarHorarioBoss({
-                    nomeDocBoss: doc,
-                    salaBoss: sala + '',
-                    horarioInformado: momentToString(horarioReset),
-                    timestampAcao: dataNowMoment().valueOf()
-                } as IBossInfoAdd);
-                await sleep(300);
-            }
-
-        } else if (opcaoSubCommand === 'geral') {
-            for (const doc of docsBoss) {
-                for (const salaPermitida of config().mu.salasPermitidas) {
+        async function resetHorarios(interaction: MessageComponentInteraction, opcaoSubCommand: string, msgComando: string, horarioReset: Moment, sala: number): Promise<void> {
+            await realizarBackupHorarios(dataNowMoment(), `${interaction.user.tag} (${interaction.user.id})`, `${opcaoSubCommand}${sala ? sala : ''}`);
+    
+            const docsBoss: string[] = Object.values(config().documents);
+    
+            if (opcaoSubCommand === 'sala' && sala) {
+                for (const doc of docsBoss) {
                     await adicionarHorarioBoss({
                         nomeDocBoss: doc,
-                        salaBoss: salaPermitida + '',
+                        salaBoss: sala + '',
                         horarioInformado: momentToString(horarioReset),
                         timestampAcao: dataNowMoment().valueOf()
                     } as IBossInfoAdd);
                     await sleep(300);
                 }
+    
+            } else if (opcaoSubCommand === 'geral') {
+                for (const doc of docsBoss) {
+                    for (const salaPermitida of config().mu.salasPermitidas) {
+                        await adicionarHorarioBoss({
+                            nomeDocBoss: doc,
+                            salaBoss: salaPermitida + '',
+                            horarioInformado: momentToString(horarioReset),
+                            timestampAcao: dataNowMoment().valueOf()
+                        } as IBossInfoAdd);
+                        await sleep(300);
+                    }
+                }
             }
+    
+            config().mu.isHorariosReset = opcaoSubCommand === 'geral';
+            
+            await sleep(3000);
+            await mostrarHorarios(interaction.channel);
+            await interaction.channel?.send({ content: `✅ Reset ${msgComando} para ${bold(horarioReset.format('HH:mm (DD/MM)'))} confirmado por ${interaction.user} foi concluído com sucesso!` });
+            await sincronizarConfigsBot();
         }
-
-        config().mu.isHorariosReset = opcaoSubCommand === 'geral';
-        
-        await sleep(3000);
-        await mostrarHorarios(interaction.channel);
-        await interaction.channel?.send({ content: `✅ Reset ${msgComando} para ${bold(horarioReset.format('HH:mm (DD/MM)'))} confirmado por ${interaction.user} foi concluído com sucesso!` });
-        await sincronizarConfigsBot();
     }
 }

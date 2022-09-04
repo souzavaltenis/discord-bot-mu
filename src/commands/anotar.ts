@@ -1,16 +1,16 @@
-import { bold, SlashCommandBuilder } from '@discordjs/builders';
-import { ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
-import { Moment } from 'moment';
-import { config } from '../config/get-configs';
-import { adicionarAnotacaoHorario, adicionarHorarioBoss } from '../db/db';
-import { IBossInfoAdd } from '../models/interface/boss-info-add';
-import { getEmbedAddBoss } from '../templates/embeds/adicionar-boss-embed';
-import { mostrarHorarios } from '../templates/messages/tabela-horario-boss';
-import { dataNowMoment, dataNowString, distanceDatasInMinutes, momentToString, stringToMoment } from '../utils/data-utils';
-import { getNickMember, sendLogErroInput } from '../utils/geral-utils';
+import { SlashCommandBuilder } from "@discordjs/builders";
+import { bold, ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
+import { Moment } from "moment";
+import { config } from "../config/get-configs";
+import { adicionarHorarioBoss, adicionarAnotacaoHorario } from "../db/db";
+import { IBossInfoAdd } from "../models/interface/boss-info-add";
+import { getEmbedAddBoss } from "../templates/embeds/adicionar-boss-embed";
+import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
+import { stringToMoment, dataNowString, distanceDatasInMinutes, dataNowMoment, momentToString } from "../utils/data-utils";
+import { sendLogErroInput, getNickMember } from "../utils/geral-utils";
 
-export class Anotar {
-    data = new SlashCommandBuilder()
+export = {
+    data: new SlashCommandBuilder()
         .setName('anotar')
         .setDescription('Adicione Horário de Boss!')
         .addStringOption(option => option.setName('horario').setDescription('Qual horário?').setRequired(true))
@@ -38,10 +38,9 @@ export class Anotar {
 
             return option;
         })
-        .addStringOption(option => option.setName('foi_ontem').setDescription('Esse horário foi ontem?').addChoices({ name: 'Não', value: 'N' }, { name: 'Sim', value: 'S' }));
-
-    async execute(interaction: ChatInputCommandInteraction): Promise<void> {
-
+        .addStringOption(option => option.setName('foi_ontem').setDescription('Esse horário foi ontem?').addChoices({ name: 'Não', value: 'N' }, { name: 'Sim', value: 'S' })),
+    
+    execute: async (interaction: ChatInputCommandInteraction): Promise<void> => {
         const horario: string = interaction.options.getString('horario') || '';
         const bossDoc: string = interaction.options.getString('boss') || '';
         const salaBoss: number = interaction.options.getNumber('sala') || 0;
@@ -75,7 +74,7 @@ export class Anotar {
 
         const bossInfo = {
             nomeDocBoss: bossDoc,
-            salaBoss: salaBoss+'',
+            salaBoss: salaBoss + '',
             horarioInformado: momentToString(horarioMoment),
             timestampAcao: dataNowMoment().valueOf()
         } as IBossInfoAdd;

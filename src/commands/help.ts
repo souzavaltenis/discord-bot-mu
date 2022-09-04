@@ -1,13 +1,12 @@
-import { bold, SlashCommandBuilder } from '@discordjs/builders';
-import { ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
+import { SlashCommandBuilder } from "@discordjs/builders";
+import { bold, ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
 
-export class Help {
-    data = new SlashCommandBuilder()
+export = {
+    data: new SlashCommandBuilder()
         .setName('help')
-        .setDescription('Veja como me utilizar');
-
-    async execute(interaction: ChatInputCommandInteraction): Promise<void> {
-
+        .setDescription('Veja como me utilizar'),
+        
+    execute: async (interaction: ChatInputCommandInteraction): Promise<void> => {
         const strComandos: string = `\u200B\n` +
             `${bold('/add')} Anota um horário com formulário\n` +
             `${bold('/anotar')} Anota um horário sem formulário\n` +
@@ -23,7 +22,7 @@ export class Help {
 
         const strBotoes: string = '\u200B\n' +
             `${bold('🔥 Todos')}: Visão dos horários por boss\n` +
-            `${bold('💢 Salas')}: Visão dos horários por cada sala\n` +
+            `${bold('❌ Vencidos')}: Previsão de horário dos boss vencidos\n` +
             `${bold('⏭ Próximos')}: Exibe os boss próximos de abrir/fechar\n` +
             `${bold('🏆 Rank')}: Rank Top 10 Geral, Semanal e Diário de quem está anotando horários\n` +
             `${bold('💾 Histórico')}: Histórico da tabela nas últimas 24hrs com intervalo de 1hr\n\u200B`;

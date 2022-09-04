@@ -1,21 +1,21 @@
-import { bold, SlashCommandBuilder } from "@discordjs/builders";
-import { ChatInputCommandInteraction, Interaction, InteractionResponse, MessageComponentInteraction } from "discord.js";
-import { config } from '../config/get-configs';
+import { SlashCommandBuilder } from "@discordjs/builders";
+import { bold, ChatInputCommandInteraction, Interaction, InteractionResponse, MessageComponentInteraction } from "discord.js";
 import { adicionarSala, removerSala, sincronizarConfigsBot } from "../db/db";
 import { Ids } from "../models/ids";
 import { sendMessageKafka } from "../services/kafka/kafka-producer";
 import { getButtonsSimNaoSala } from "../templates/buttons/sim-nao-buttons-sala";
 import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
-import { getLogsGeralString, sendLogErroInput } from "../utils/geral-utils";
+import { sendLogErroInput, getLogsGeralString } from "../utils/geral-utils";
+import { config } from "../config/get-configs";
 
-export class Sala {
-    data = new SlashCommandBuilder()
+export = {
+    data: new SlashCommandBuilder()
         .setName('sala')
         .setDescription('Gerenciar salas')
         .addSubcommand(subcommand => {
             subcommand
                 .setName('adicionar')
-                .setDescription('Adiciona uma sala')
+                .setDescription('Adicionar uma sala')
                 .addNumberOption(option => option.setName('sala').setDescription('Qual sala?').setRequired(true).setMinValue(1).setMaxValue(20));
             return subcommand;
         })
@@ -25,9 +25,9 @@ export class Sala {
                 .setDescription('Remover uma sala')
                 .addNumberOption(option => option.setName('sala').setDescription('Qual sala?').setRequired(true).setMinValue(1).setMaxValue(20));
             return subcommand;
-        });
-
-    async execute(interaction: ChatInputCommandInteraction): Promise<InteractionResponse<boolean> | undefined> {
+        }),
+        
+    execute: async (interaction: ChatInputCommandInteraction): Promise<InteractionResponse<boolean> | undefined> => {
         const opcaoSubCommand = interaction.options.getSubcommand();
         const sala: number = interaction.options.getNumber('sala', true);
 
