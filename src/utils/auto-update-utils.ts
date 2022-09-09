@@ -9,8 +9,9 @@ class AutoUpdateUtil {
     idMessage: string;
     idSetIntervalTableProximos?: NodeJS.Timer;
     secondsIntervalUpdate: number;
+    isStop: boolean = false;
 
-    constructor(idChannel: string, idMessage: string, secondsIntervalUpdate: number = 3) {
+    constructor(idChannel: string, idMessage: string, secondsIntervalUpdate: number = 5) {
         this.idChannel = idChannel;
         this.idMessage = idMessage;
         this.secondsIntervalUpdate = secondsIntervalUpdate;
@@ -18,16 +19,20 @@ class AutoUpdateUtil {
 
     initAutoUpdateTableProximos = () => {
         this.stopAutoUpdateTableProximos();
+        this.isStop = false;
         this.idSetIntervalTableProximos = setInterval(async () => await this.updateTableProximos(), this.secondsIntervalUpdate * 1000);
     }
 
     stopAutoUpdateTableProximos = () => {
         if (this.idSetIntervalTableProximos) {
+            this.isStop = true;
             clearInterval(this.idSetIntervalTableProximos);
         }
     }
 
     updateTableProximos = async (): Promise<void> => {
+        if (this.isStop) return;
+
         const message: Message | undefined = await this.getMessageUpdated(this.idChannel, this.idMessage);
         const isTableProximosVaiAbrir: boolean = this.isEmbedTableProximosVaiAbrir(message);
     
