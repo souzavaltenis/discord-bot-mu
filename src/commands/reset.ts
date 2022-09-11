@@ -10,8 +10,10 @@ import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
 import { dataNowMoment, dataNowString, distanceDatasInMinutes, momentToString, stringToMoment } from "../utils/data-utils";
 import { getLogsGeralString, sendLogErroInput, sleep } from "../utils/geral-utils";
 import { config } from "../config/get-configs";
+import { CategoryCommand } from "../models/enum/category-command";
 
 export = {
+    category: CategoryCommand.BOSS,
     data: new SlashCommandBuilder()
         .setName('reset')
         .setDescription('Informe horário que o servidor voltou')

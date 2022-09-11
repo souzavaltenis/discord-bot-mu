@@ -13,8 +13,10 @@ import { getEmbedTabelaBoss } from "../templates/embeds/tabela-boss-embed";
 import { autoUpdatesProximos } from "../utils/auto-update-utils";
 import { disableButton } from "../utils/buttons-utils";
 import { sendLogErroInput } from "../utils/geral-utils";
+import { CategoryCommand } from "../models/enum/category-command";
 
 export = {
+    category: CategoryCommand.ADM,
     data: new SlashCommandBuilder()
         .setName('admin')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)

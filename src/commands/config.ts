@@ -2,10 +2,12 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
 import { config } from "../config/get-configs";
 import { sincronizarConfigsBot } from "../db/db";
+import { CategoryCommand } from "../models/enum/category-command";
 import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
 import { underbold } from "../utils/geral-utils";
 
 export = {
+    category: CategoryCommand.BOSS,
     data: new SlashCommandBuilder()
         .setName('config')
         .setDescription('Realize configurações no bot')

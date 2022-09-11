@@ -7,8 +7,10 @@ import { getButtonsSimNaoSala } from "../templates/buttons/sim-nao-buttons-sala"
 import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
 import { sendLogErroInput, getLogsGeralString } from "../utils/geral-utils";
 import { config } from "../config/get-configs";
+import { CategoryCommand } from "../models/enum/category-command";
 
 export = {
+    category: CategoryCommand.BOSS,
     data: new SlashCommandBuilder()
         .setName('sala')
         .setDescription('Gerenciar salas')

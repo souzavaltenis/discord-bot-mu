@@ -1,7 +1,9 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { bold, ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
+import { CategoryCommand } from "../models/enum/category-command";
 
 export = {
+    category: CategoryCommand.GERAL,
     data: new SlashCommandBuilder()
         .setName('help')
         .setDescription('Veja como me utilizar'),

@@ -1,9 +1,11 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { channelMention, ChatInputCommandInteraction } from "discord.js";
 import { config } from "../config/get-configs";
+import { CategoryCommand } from "../models/enum/category-command";
 import { SorteioModal } from "../templates/modals/sorteio-modal";
 
 export = {
+    category: CategoryCommand.GERAL,
     data: new SlashCommandBuilder()
         .setName('sorteio')
         .setDescription('Realize sorteio de itens'),

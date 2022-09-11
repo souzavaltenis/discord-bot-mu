@@ -3,6 +3,7 @@ import { bold, ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
 import { Moment } from "moment";
 import { config } from "../config/get-configs";
 import { adicionarHorarioBoss, adicionarAnotacaoHorario } from "../db/db";
+import { CategoryCommand } from "../models/enum/category-command";
 import { IBossInfoAdd } from "../models/interface/boss-info-add";
 import { getEmbedAddBoss } from "../templates/embeds/adicionar-boss-embed";
 import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
@@ -10,6 +11,7 @@ import { stringToMoment, dataNowString, distanceDatasInMinutes, dataNowMoment, m
 import { sendLogErroInput, getNickMember } from "../utils/geral-utils";
 
 export = {
+    category: CategoryCommand.BOSS,
     data: new SlashCommandBuilder()
         .setName('anotar')
         .setDescription('Adicione Horário de Boss!')

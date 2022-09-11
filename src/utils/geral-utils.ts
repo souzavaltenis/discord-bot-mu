@@ -4,11 +4,13 @@ import { RecordMetadata } from "kafkajs";
 import { Moment } from "moment";
 import { config } from '../config/get-configs';
 import { Boss } from "../models/boss";
+import { CategoryCommand } from "../models/enum/category-command";
 import { TypeLog } from "../models/enum/type-log";
 import { ILogsErrosInputKafka } from "../models/interface/kafka/logs-erros-input-kafka";
 import { ILogsGeralKafka } from "../models/interface/kafka/logs-geral-kafka";
 import { IParamsLogsGeral } from "../models/interface/params-logs-geral";
 import { SalaBoss } from "../models/sala-boss";
+import { commands } from "../models/singleton/commands-singleton";
 import { geralSingleton } from "../models/singleton/geral-singleton";
 import { sendMessageKafka } from "../services/kafka/kafka-producer";
 import { vaiAbrirBoss } from "./boss-utils";
@@ -236,6 +238,10 @@ const getNickMember = (interaction: Interaction): string => {
     return nickMember || nickUser;
 }
 
+const getNameCommandsByCategory = (category: CategoryCommand): string[] => {
+    return Array.from(commands).filter(c => c[1].category === category).map(c => c[1].data.name)
+}
+
 export { 
     tracos, 
     numberToEmoji, 
@@ -253,5 +259,6 @@ export {
     getIdBossByDoc,
     getIdButton,
     getNickMember,
-    getRandomNumber
+    getRandomNumber,
+    getNameCommandsByCategory
 }
