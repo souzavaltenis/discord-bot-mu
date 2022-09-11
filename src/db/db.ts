@@ -9,11 +9,12 @@ import { Boss } from "../models/boss";
 import { IBossInfoAdd } from "../models/interface/boss-info-add";
 import { ConfigBotSingleton } from "../models/singleton/config-bot-singleton";
 import { Usuario } from "../models/usuario";
-import { dataNowMoment, dataNowString, isSameMoment } from "../utils/data-utils";
+import { dataNowMoment, dataNowString, isSameMoment, timestampToMoment } from "../utils/data-utils";
 import { botIsProd, bdIsProd, config } from "../config/get-configs";
 import { usuariosSingleton } from "../models/singleton/usuarios-singleton";
 import { BackupListaBoss } from "../models/backup-lista-boss";
-import { bossConverter, backupListaBossConverter, configConverter } from "./converters";
+import { bossConverter, backupListaBossConverter, configConverter, sorteioConverter } from "./converters";
+import { Sorteio } from "../models/sorteio";
 
 const appFirebase = initializeApp(firebaseConfig);
 const db = getFirestore(appFirebase);
@@ -171,6 +172,12 @@ const consultarBackupsListaBoss = async (): Promise<BackupListaBoss[]> => {
     return listaBoss;
 }
 
+const salvarSorteio = async (sorteio: Sorteio): Promise<void> => {
+    const nameDoc: string = timestampToMoment(sorteio.timestamp).format("DD-MM-YY HH:mm:ss") + ` (${sorteio.criador}) `;
+    const refDocSorteio = doc(db, config().collections.sorteios, nameDoc).withConverter(sorteioConverter);
+    await setDoc(refDocSorteio, Object.assign(sorteio));
+}
+
 export {
     carregarConfiguracoes,
     carregarDadosBot,
@@ -183,5 +190,6 @@ export {
     consultarUsuarios,
     realizarBackupHorarios,
     adicionarBackupListaBoss,
-    consultarBackupsListaBoss
+    consultarBackupsListaBoss,
+    salvarSorteio
 };

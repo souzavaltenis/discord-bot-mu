@@ -4,6 +4,8 @@ import { Moment } from "moment";
 import { BackupListaBoss } from "../models/backup-lista-boss";
 import { Boss } from "../models/boss";
 import { ConfigBot } from "../models/config-bot";
+import { IGanhador } from "../models/interface/ganhador-interface";
+import { Sorteio } from "../models/sorteio";
 import { momentToString, stringToMoment } from "../utils/data-utils";
 
 const bossConverter = {
@@ -71,8 +73,25 @@ const configConverter = {
     }
 };
 
+const sorteioConverter = {
+    toFirestore(sorteio: WithFieldValue<Sorteio>): DocumentData {
+        return JSON.parse(JSON.stringify(sorteio));
+    },
+    fromFirestore(snapshot: QueryDocumentSnapshot, options: SnapshotOptions): Sorteio {
+        const data = snapshot.data(options);
+        return new Sorteio(
+            data.timestamp, 
+            data.participantes, 
+            data.premios, 
+            data.ganhadores as IGanhador[],
+            data.criador
+        );
+    }
+};
+
 export {
     bossConverter,
     backupListaBossConverter,
-    configConverter
+    configConverter,
+    sorteioConverter
 }

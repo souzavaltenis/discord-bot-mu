@@ -3,13 +3,15 @@ import { Ids } from '../../models/ids';
 import { getNickMember, getRandomNumber } from '../../utils/geral-utils';
 import { IGanhador } from '../../models/interface/ganhador-interface';
 import { getEmbedResultadoSorteio } from '../embeds/resultado-sorteio-embed';
+import { Sorteio } from '../../models/sorteio';
+import { salvarSorteio } from '../../db/db';
 
 export class SorteioModal {
 
     getModal(): ModalBuilder {
         const modalSorteio = new ModalBuilder()
             .setCustomId(Ids.MODAL_SORTEIO_DROPS)
-            .setTitle('Sorteio de Drops');
+            .setTitle('Sorteio de Itens');
         
         const participantesInput = new TextInputBuilder()
             .setCustomId(Ids.INPUT_PARTICIPANTES_SORTEIO)
@@ -51,6 +53,15 @@ export class SorteioModal {
             });
         });
 
-        await modalInteraction.reply({ embeds: [getEmbedResultadoSorteio(getNickMember(modalInteraction), participantes, premios, ganhadores)] });
+        const sorteio = new Sorteio(
+            new Date().valueOf(), 
+            participantes, 
+            premios, 
+            ganhadores, 
+            getNickMember(modalInteraction)
+        );
+
+        await salvarSorteio(sorteio);
+        await modalInteraction.reply({ embeds: [getEmbedResultadoSorteio(sorteio)] });
     }
 }
