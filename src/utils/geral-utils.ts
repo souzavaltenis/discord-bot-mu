@@ -71,6 +71,16 @@ const getIdBossByDoc = (nomeDocBoss: string): number => {
     }
 }
 
+const getRandomNumber = (min: number, max: number, excludes: number[]): number => {
+    let randomNumber: number;
+
+    do {
+        randomNumber = Math.floor(min + (Math.random() * (max - min + 1)));
+    } while (excludes.includes(randomNumber));
+
+    return randomNumber;
+}
+
 const formatInfosInputs = (nomeDocBoss: string, salaBoss: number, horarioInformado: Moment): string => {
     const nomeBoss: string = getNomeBossByDoc(nomeDocBoss);
     const infoHorario: string = horarioInformado.format('HH:mm');
@@ -242,5 +252,6 @@ export {
     textoFooter,
     getIdBossByDoc,
     getIdButton,
-    getNickMember
+    getNickMember,
+    getRandomNumber
 }

@@ -18,4 +18,7 @@ export class Ids {
     static BUTTON_ABRIR_PROXIMOS: string = "ira-abrir-proximos";
     static BUTTON_FECHAR_PROXIMOS: string = "ira-fechar-proximos";
     static SELECT_MENU_BACKUP: string = "select-backup";
+    static MODAL_SORTEIO_DROPS: string = "modal-sorteio-drops";
+    static INPUT_PARTICIPANTES_SORTEIO: string = "participantes-modal-sorteio";
+    static INPUT_PREMIOS_SORTEIO: string = "premios-modal-sorteio";
 }

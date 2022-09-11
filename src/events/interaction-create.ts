@@ -6,6 +6,7 @@ import { sendMessageKafka } from "../services/kafka/kafka-producer";
 import { Ids } from "../models/ids";
 import { AdicionarHorarioModal } from "../templates/modals/adicionar-horario-modal";
 import { commands } from "../models/singleton/commands-singleton";
+import { SorteioModal } from "../templates/modals/sorteio-modal";
 
 export = {
     name: 'interactionCreate',
@@ -39,6 +40,7 @@ export = {
         if (interaction.type === InteractionType.ModalSubmit) {
             switch (interaction.customId) {
                 case Ids.MODAL_ADICIONAR_HORARIO_BOSS: await new AdicionarHorarioModal().action(interaction); break;
+                case Ids.MODAL_SORTEIO_DROPS: await new SorteioModal().action(interaction); break;
             }
         }
         

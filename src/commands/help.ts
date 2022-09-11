@@ -16,6 +16,7 @@ export = {
             `${bold('/config horario')} Defina o intervalo inicial e final dos boss \n` +
             `${bold('/sala adicionar')} Adiciona uma nova sala\n` +
             `${bold('/sala remover')} Remove uma sala existente\n` +
+            `${bold('/sorteio')} Realize o sorteio de drops dos boss\n` +
             `${bold('/help')} Exibe essa ajuda\n\u200B`;
 
         const strIcones: string = '\u200B\n✅ aberto\n❌ vencido\n💤 irá abrir\n\u200B';
