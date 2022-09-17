@@ -28,7 +28,7 @@ export = {
             await sendMessageKafka(config().kafka.topicLogsGeralBot, getLogsGeralString({ cmdInteraction: interaction }));
             await statcord.postCommand(interaction.commandName, interaction.user.id);
 
-            if (interaction.commandType === ApplicationCommandType.ChatInput) {
+            if ([ApplicationCommandType.ChatInput, ApplicationCommandType.Message].includes(interaction.commandType)) {
                 const command = commands.get(interaction.commandName);
 
                 if (command) {

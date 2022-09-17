@@ -6,13 +6,13 @@ const getButtonsProximos = (): ButtonBuilder[] => {
     const buttonProximoAbrir = new ButtonBuilder()
         .setCustomId(Ids.BUTTON_ABRIR_PROXIMOS)
         .setEmoji('✅')
-        .setLabel('Vai Abrir')
+        .setLabel('A Abrir')
         .setStyle(ButtonStyle.Success);
 
     const buttonProximoFechar = new ButtonBuilder()
         .setCustomId(Ids.BUTTON_FECHAR_PROXIMOS)
         .setEmoji('🏴‍☠️')
-        .setLabel('Vai Fechar')
+        .setLabel('A Fechar')
         .setStyle(ButtonStyle.Danger);
 
     return [buttonProximoAbrir, buttonProximoFechar];

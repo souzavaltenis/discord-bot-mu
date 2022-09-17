@@ -85,7 +85,8 @@ const configCollectorButtons = async (message: Message, listaBoss: Boss[], butto
             case Ids.BUTTON_TABLE_PROXIMOS:
             case Ids.BUTTON_ABRIR_PROXIMOS:
             case Ids.BUTTON_FECHAR_PROXIMOS:
-                const idButtonProximos: string = interactionMessage.customId === Ids.BUTTON_TABLE_PROXIMOS ? Ids.BUTTON_ABRIR_PROXIMOS : interactionMessage.customId;
+                const initButton: string = Ids.BUTTON_FECHAR_PROXIMOS;
+                const idButtonProximos: string = interactionMessage.customId === Ids.BUTTON_TABLE_PROXIMOS ? initButton : interactionMessage.customId;
                 const isAbrir: boolean = [Ids.BUTTON_TABLE_PROXIMOS, Ids.BUTTON_ABRIR_PROXIMOS].includes(idButtonProximos);
 
                 embedSelecionada = getEmbedTabelaProximos(isAbrir, listaBoss);

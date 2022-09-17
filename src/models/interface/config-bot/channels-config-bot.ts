@@ -3,4 +3,5 @@ export interface IChannelsConfigBot {
     textSorteios: string;
     voiceAfk: string;
     voiceHorarios: string;
+    voiceBC: string;
 }

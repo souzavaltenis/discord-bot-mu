@@ -20,7 +20,11 @@ class AutoUpdateUtil {
     initAutoUpdateTableProximos = () => {
         this.stopAutoUpdateTableProximos();
         this.isStop = false;
-        this.idSetIntervalTableProximos = setInterval(async () => await this.updateTableProximos(), this.secondsIntervalUpdate * 1000);
+        this.idSetIntervalTableProximos = setInterval(async () => {
+            if (!this.isStop) {
+                await this.updateTableProximos();
+            }
+        }, this.secondsIntervalUpdate * 1000);
     }
 
     stopAutoUpdateTableProximos = () => {
