@@ -13,7 +13,7 @@ const getEmbedTabelaProximos = (isAbrir: boolean, listaBoss?: Boss[]): EmbedBuil
 
     const embedTabelaProximos = new EmbedBuilder()
         .setColor("DarkBlue")
-        .setTitle(`Próximos Horários que ${isAbrir ? "Abrirão ✅" : "Fecharão ❌"}`)
+        .setTitle(`Próximos Horários que vão ${isAbrir ? underbold("ABRIR ✅") : underbold("FECHAR ❌")}`)
         .setDescription(`\u200B`)
         .setFooter({ text: config().mu.avisoFooter || textoFooter(false) })
         .setTimestamp();
@@ -23,8 +23,8 @@ const getEmbedTabelaProximos = (isAbrir: boolean, listaBoss?: Boss[]): EmbedBuil
 
         sortBossPorHorario(boss.salas, isAbrir).forEach((horario: Moment, sala: number) => {
             const tempoRestante = isAbrir ? previsaoParaAbrir(horario) : previsaoParaFechar(horario);
-            const previsaoString: string = tempoRestante.hours() + 'h ' + tempoRestante.minutes() + 'm ' + tempoRestante.seconds() + 's';
-            infoBoss += `\nSala ${numbersToEmoji(sala)} ${underbold(isAbrir ? "abrirá" : "fechará")} em ${underbold(previsaoString)}`;
+            const previsaoString: string = underbold(tempoRestante.hours() + 'h') + ' ' + underbold(tempoRestante.minutes() + 'm') + ' ' + underbold(tempoRestante.seconds() + 's');
+            infoBoss += `\nSala ${numbersToEmoji(sala)} ${underbold(isAbrir ? "abre" : "fecha")} em ${previsaoString}`;
         });
 
         infoBoss += index < array.length - 1 ? '\n\u200B' : '';
