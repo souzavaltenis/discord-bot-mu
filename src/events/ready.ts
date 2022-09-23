@@ -6,7 +6,6 @@ import { dataNowString } from "../utils/data-utils";
 import { getLogsGeralString } from "../utils/geral-utils";
 import { initBackupListaBoss } from "../utils/backup-utils";
 import { Client } from "discord.js";
-import { statcord } from "../index";
 
 export = {
     name: 'ready',
@@ -15,7 +14,6 @@ export = {
 
         await sendMessageKafka(config().kafka.topicLogsGeralBot, getLogsGeralString({ client: client }));
         await mostrarHorarios(mainTextChannel());
-        await statcord.autopost();
 
         initBackupListaBoss();
     }

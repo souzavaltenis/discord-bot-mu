@@ -23,7 +23,7 @@ const getEmbedTabelaProximos = (isAbrir: boolean, listaBoss?: Boss[]): EmbedBuil
 
         sortBossPorHorario(boss.salas, isAbrir).forEach((horario: Moment, sala: number) => {
             const tempoRestante = isAbrir ? previsaoParaAbrir(horario) : previsaoParaFechar(horario);
-            const previsaoString: string = underbold(tempoRestante.hours() + 'h') + ' ' + underbold(tempoRestante.minutes() + 'm') + ' ' + underbold(tempoRestante.seconds() + 's');
+            const previsaoString: string = underbold(tempoRestante.hours() + 'h') + ' ' + underbold(tempoRestante.minutes() + 'm');
             infoBoss += `\nSala ${numbersToEmoji(sala)} ${underbold(isAbrir ? "abre" : "fecha")} em ${previsaoString}`;
         });
 

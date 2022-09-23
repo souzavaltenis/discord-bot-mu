@@ -17,7 +17,6 @@ import { BackupListaBoss } from "../../models/backup-lista-boss";
 import { getSelectMenuBackup } from "../selects/backups-selects";
 import { backupsBossSingleton } from "../../models/singleton/lista-backup-singleton";
 import { getEmbedAvisoHistorico } from "../embeds/aviso-historico-embed";
-import { autoUpdatesProximos, AutoUpdateUtil } from "../../utils/auto-update-utils";
 import { getEmbedTabelaVencidos } from "../embeds/tabela-vencidos-embed";
 
 const mostrarHorarios = async (textChannel: TextBasedChannel | undefined | null) => {
@@ -39,8 +38,6 @@ const mostrarHorarios = async (textChannel: TextBasedChannel | undefined | null)
                 if (idLastMessageBoss) {
                     await textChannel.messages.fetch(idLastMessageBoss)
                         .then(async m => {
-                            autoUpdatesProximos.get(m.id)?.stopAutoUpdateTableProximos();
-                            autoUpdatesProximos.delete(m.id);
                             await m.delete();
                         })
                         .catch(e => console.log(e));
@@ -58,7 +55,6 @@ const mostrarHorarios = async (textChannel: TextBasedChannel | undefined | null)
 
 const configCollectorButtons = async (message: Message, listaBoss: Boss[], buttons: ButtonBuilder[]) => {
     const collectorButtons = message.createMessageComponentCollector({ filter: (i: Interaction) => i.isButton(), time: 1000 * 60 * 60 * 4 });
-    autoUpdatesProximos.set(message.id, new AutoUpdateUtil(message.channelId, message.id));
 
     collectorButtons.on("collect", async (interactionMessage: MessageComponentInteraction) => {
         await interactionMessage.deferUpdate();
@@ -68,12 +64,10 @@ const configCollectorButtons = async (message: Message, listaBoss: Boss[], butto
         const rowButtons: ActionRowBuilder<ButtonBuilder>[] = [];
         const rowSelects: ActionRowBuilder<SelectMenuBuilder>[] = [];
 
-        autoUpdatesProximos.get(message.id)?.stopAutoUpdateTableProximos();
-
         switch(interactionMessage.customId) {
             // Button Todos
             case Ids.BUTTON_TABLE_BOSS: 
-                embedSelecionada = getEmbedTabelaBoss(listaBoss); 
+                embedSelecionada = getEmbedTabelaBoss(listaBoss);
                 break;
 
             // Button Salas
@@ -91,8 +85,6 @@ const configCollectorButtons = async (message: Message, listaBoss: Boss[], butto
 
                 embedSelecionada = getEmbedTabelaProximos(isAbrir, listaBoss);
                 rowButtons.push(disableButtonProximos(getButtonsProximos(), idButtonProximos));
-
-                autoUpdatesProximos.get(message.id)?.initAutoUpdateTableProximos();
                 break;
             
             // Button Rank

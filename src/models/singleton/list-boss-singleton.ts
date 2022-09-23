@@ -11,7 +11,7 @@ export class ListBossSingleton {
 
     static getInstance(): ListBossSingleton {
         if (!this.instance) {
-          this.instance = new this([] as Boss[]);
+            this.instance = new this([] as Boss[]);
         }
         return this.instance;
     }

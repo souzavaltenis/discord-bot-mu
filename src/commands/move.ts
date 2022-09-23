@@ -7,7 +7,7 @@ import { CategoryCommand } from "../models/enum/category-command";
 export = {
     category: CategoryCommand.GERAL,
     data: new ContextMenuCommandBuilder()
-        .setName('move')
+        .setName('Mover Sala BOSS')
         .setType(ApplicationCommandType.Message),
         
     execute: async (interaction: ChatInputCommandInteraction): Promise<void> => {

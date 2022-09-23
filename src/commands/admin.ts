@@ -10,7 +10,6 @@ import { ListBossSingleton } from "../models/singleton/list-boss-singleton";
 import { TimeoutSingleton } from "../models/singleton/timeout-singleton";
 import { getButtonsTabela } from "../templates/buttons/style-tabela-buttons";
 import { getEmbedTabelaBoss } from "../templates/embeds/tabela-boss-embed";
-import { autoUpdatesProximos } from "../utils/auto-update-utils";
 import { disableButton } from "../utils/buttons-utils";
 import { sendLogErroInput } from "../utils/geral-utils";
 import { CategoryCommand } from "../models/enum/category-command";
@@ -93,7 +92,6 @@ export = {
                     .then(async (m: Message) => {
                         const buttons: ButtonBuilder[] = getButtonsTabela();
                         const rowButtons = disableButton(buttons, Ids.BUTTON_TABLE_BOSS);
-                        autoUpdatesProximos.get(m.id)?.stopAutoUpdateTableProximos();
                         await m.edit({ embeds: [getEmbedTabelaBoss(listaBoss)], components: [rowButtons] });
                     })
                     .catch(e => console.log(e));

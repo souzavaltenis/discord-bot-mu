@@ -1,5 +1,4 @@
 import { ApplicationCommandType, channelMention, Interaction, InteractionType } from "discord.js";
-import { statcord } from "../index";
 import { config } from "../config/get-configs";
 import { getLogsGeralString, getNameCommandsByCategory, sendLogErroInput } from "../utils/geral-utils";
 import { sendMessageKafka } from "../services/kafka/kafka-producer";
@@ -26,7 +25,6 @@ export = {
             }
 
             await sendMessageKafka(config().kafka.topicLogsGeralBot, getLogsGeralString({ cmdInteraction: interaction }));
-            await statcord.postCommand(interaction.commandName, interaction.user.id);
 
             if ([ApplicationCommandType.ChatInput, ApplicationCommandType.Message].includes(interaction.commandType)) {
                 const command = commands.get(interaction.commandName);
