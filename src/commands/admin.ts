@@ -41,6 +41,12 @@ export = {
             subcommand.setName('refresh')
                 .setDescription('Carrega as configurações mais atualizadas do banco de dados');
             return subcommand;
+        })
+        .addSubcommand(subcommand => {
+            subcommand.setName('apagar-msgs')
+                .setDescription('Delete mensagens de um canal')
+                .addIntegerOption(option => option.setName('qtd_msgs').setDescription('Informe a quantidade').setRequired(true));
+            return subcommand;
         }),
         
     execute: async (interaction: ChatInputCommandInteraction): Promise<InteractionResponse<boolean> | undefined> => {
@@ -60,6 +66,7 @@ export = {
             case "aviso_footer": await subCommandAvisoFooter(interaction); break;
             case "timeouts": await subCommandTimeouts(interaction); break;
             case "refresh": await subCommandRefresh(interaction); break;
+            case "apagar-msgs": await subCommandApagarMsgs(interaction); break;
         }
 
         async function subCommandSay(interaction: ChatInputCommandInteraction): Promise<void> {
@@ -127,6 +134,23 @@ export = {
                 content: "As configurações mais atualizadas do banco de dados foram carregadas",
                 ephemeral: true 
             });
+        }
+
+        async function subCommandApagarMsgs(interaction: ChatInputCommandInteraction): Promise<InteractionResponse<boolean> | undefined> {
+
+            const quantidade: number = interaction.options.getInteger('qtd_msgs', true);
+        
+            if (isNaN(quantidade) || quantidade < 0 || quantidade > 100) {
+                return await interaction.reply("Informe uma quantidade entre 0 e 100");
+            }
+            
+            if (!(interaction.channel instanceof TextChannel)) {
+                return await interaction.reply("Tipo de canal não válido");
+            }
+    
+            await interaction.channel.bulkDelete(quantidade, true)
+                .then((x) => interaction.reply({ content: `${x.size} mensagens foram deletadas com sucesso`, ephemeral: true }))
+                .catch(() => interaction.reply({ content: `Não foi possível deletar as mensagens`, ephemeral: true }));
         }
     }
 }
