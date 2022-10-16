@@ -29,8 +29,9 @@ const mostrarHorarios = async (textChannel: TextBasedChannel | undefined | null)
 
         const buttons: ButtonBuilder[] = getButtonsTabela();
         const rowButtons: ActionRowBuilder<ButtonBuilder> = disableButton(buttons, Ids.BUTTON_TABLE_BOSS);
+        const textoEspacos: string = '\u200b\n\u200b\u200b\n\u200b\n\u200b';
 
-        await textChannel?.send({ embeds: [getEmbedTabelaBoss(listaBoss)], components: [rowButtons] }).then(async (message: Message) => {
+        await textChannel?.send({ content: textoEspacos, embeds: [getEmbedTabelaBoss(listaBoss)], components: [rowButtons] }).then(async (message: Message) => {
 
             if (message.channelId === config().channels.textHorarios) {
                 const idLastMessageBoss: string = config().geral.idLastMessageBoss;
