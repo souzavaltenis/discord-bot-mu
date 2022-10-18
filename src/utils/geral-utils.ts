@@ -12,6 +12,7 @@ import { IParamsLogsGeral } from "../models/interface/params-logs-geral";
 import { SalaBoss } from "../models/sala-boss";
 import { commands } from "../models/singleton/commands-singleton";
 import { geralSingleton } from "../models/singleton/geral-singleton";
+import { intervalUpdate } from "../models/singleton/interval-singleton";
 import { sendMessageKafka } from "../services/kafka/kafka-producer";
 import { vaiAbrirBoss } from "./boss-utils";
 import { dataNowMoment } from "./data-utils";
@@ -242,6 +243,13 @@ const getNameCommandsByCategory = (category: CategoryCommand): string[] => {
     return Array.from(commands).filter(c => c[1].category === category).map(c => c[1].data.name)
 }
 
+const limparIntervalUpdate = () => {
+    if (intervalUpdate.intervalId) {
+        clearInterval(intervalUpdate.intervalId);
+        intervalUpdate.intervalId = undefined;
+    }
+}
+
 export { 
     tracos, 
     numberToEmoji, 
@@ -260,5 +268,6 @@ export {
     getIdButton,
     getNickMember,
     getRandomNumber,
-    getNameCommandsByCategory
+    getNameCommandsByCategory,
+    limparIntervalUpdate
 }

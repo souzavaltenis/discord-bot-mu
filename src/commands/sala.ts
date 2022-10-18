@@ -5,7 +5,7 @@ import { Ids } from "../models/ids";
 import { sendMessageKafka } from "../services/kafka/kafka-producer";
 import { getButtonsSimNaoSala } from "../templates/buttons/sim-nao-buttons-sala";
 import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
-import { sendLogErroInput, getLogsGeralString } from "../utils/geral-utils";
+import { sendLogErroInput, getLogsGeralString, limparIntervalUpdate } from "../utils/geral-utils";
 import { config } from "../config/get-configs";
 import { CategoryCommand } from "../models/enum/category-command";
 
@@ -94,7 +94,8 @@ export = {
                         msgBotoes = `❌ Exclusão sala ${sala} foi cancelada por ${interactionMessage.user}`;
                         break;
                 }
-
+                
+                limparIntervalUpdate();
                 await message?.edit({content: msgBotoes, components: [] });
                 await interactionMessage.deferUpdate();
 

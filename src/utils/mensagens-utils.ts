@@ -12,7 +12,7 @@ import { atualizarStatusBot } from "./boss-utils";
 import { disableButton } from "./buttons-utils";
 import { mainTextChannel } from "./channels-utils";
 import { dataNowString } from "./data-utils";
-import { numbersToEmoji, underbold } from "./geral-utils";
+import { limparIntervalUpdate, numbersToEmoji, underbold } from "./geral-utils";
 
 const mensagemAvisoAbertura = async (nomeBoss: string, salaBoss: number): Promise<void> => {
     const emebedAvisoAbertura = new EmbedBuilder()
@@ -59,6 +59,7 @@ const apagarUltimoAviso = async (): Promise<void> => {
             .catch(() => null)
             .then(async (m: Message | null) => {
                 if (!m) return;
+                limparIntervalUpdate();
                 await m.delete();
             });
     }
@@ -76,6 +77,7 @@ const verificarAtualizacaoMessage = async (): Promise<void> => {
         .then(async (message: Message | null) => {
             if (!message) return;
             const rowButtons = disableButton(getButtonsTabela(), Ids.BUTTON_TABLE_BOSS);
+            limparIntervalUpdate();
             await message.edit({ embeds: [getEmbedTabelaBoss(listaBoss)], components: [rowButtons] });
         });
 }

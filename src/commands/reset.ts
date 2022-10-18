@@ -8,7 +8,7 @@ import { sendMessageKafka } from "../services/kafka/kafka-producer";
 import { getButtonsSimNao } from "../templates/buttons/sim-nao-buttons";
 import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
 import { dataNowMoment, dataNowString, distanceDatasInMinutes, momentToString, stringToMoment } from "../utils/data-utils";
-import { getLogsGeralString, sendLogErroInput, sleep } from "../utils/geral-utils";
+import { getLogsGeralString, limparIntervalUpdate, sendLogErroInput, sleep } from "../utils/geral-utils";
 import { config } from "../config/get-configs";
 import { CategoryCommand } from "../models/enum/category-command";
 
@@ -112,7 +112,8 @@ export = {
                     msgBotoes = `❌ Reset ${msgComando} foi cancelado por ${interactionMessage.user}`;
                     break;
             }
-
+            
+            limparIntervalUpdate();
             await message?.edit({content: msgBotoes, components: [] });
             await interactionMessage.deferUpdate();
 

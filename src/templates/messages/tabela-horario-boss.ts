@@ -9,7 +9,7 @@ import { disableButton, disableButtonProximos } from "../../utils/buttons-utils"
 import { getEmbedTabelaProximos } from "../embeds/tabela-proximos-embed";
 import { sendMessageKafka } from "../../services/kafka/kafka-producer";
 import { config } from "../../config/get-configs";
-import { getLogsGeralString } from "../../utils/geral-utils";
+import { getLogsGeralString, limparIntervalUpdate } from "../../utils/geral-utils";
 import { getEmbedTabelaRank } from "../embeds/tabela-rank-embed";
 import { ListBossSingleton } from "../../models/singleton/list-boss-singleton";
 import { getButtonsProximos } from "../buttons/proximos-buttons";
@@ -18,6 +18,7 @@ import { getSelectMenuBackup } from "../selects/backups-selects";
 import { backupsBossSingleton } from "../../models/singleton/lista-backup-singleton";
 import { getEmbedAvisoHistorico } from "../embeds/aviso-historico-embed";
 import { getEmbedTabelaVencidos } from "../embeds/tabela-vencidos-embed";
+import { intervalUpdate } from "../../models/singleton/interval-singleton";
 
 const mostrarHorarios = async (textChannel: TextBasedChannel | undefined | null) => {
     
@@ -39,6 +40,7 @@ const mostrarHorarios = async (textChannel: TextBasedChannel | undefined | null)
                 if (idLastMessageBoss) {
                     await textChannel.messages.fetch(idLastMessageBoss)
                         .then(async m => {
+                            limparIntervalUpdate();
                             await m.delete();
                         })
                         .catch(e => console.log(e));
@@ -65,6 +67,10 @@ const configCollectorButtons = async (message: Message, listaBoss: Boss[], butto
         const rowButtons: ActionRowBuilder<ButtonBuilder>[] = [];
         const rowSelects: ActionRowBuilder<SelectMenuBuilder>[] = [];
 
+        limparIntervalUpdate();
+
+        let isProximoAbrir: boolean | undefined;
+
         switch(interactionMessage.customId) {
             // Button Todos
             case Ids.BUTTON_TABLE_BOSS: 
@@ -83,6 +89,7 @@ const configCollectorButtons = async (message: Message, listaBoss: Boss[], butto
                 const initButton: string = Ids.BUTTON_FECHAR_PROXIMOS;
                 const idButtonProximos: string = interactionMessage.customId === Ids.BUTTON_TABLE_PROXIMOS ? initButton : interactionMessage.customId;
                 const isAbrir: boolean = [Ids.BUTTON_TABLE_PROXIMOS, Ids.BUTTON_ABRIR_PROXIMOS].includes(idButtonProximos);
+                isProximoAbrir = isAbrir;
 
                 embedSelecionada = getEmbedTabelaProximos(isAbrir, listaBoss);
                 rowButtons.push(disableButtonProximos(getButtonsProximos(), idButtonProximos));
@@ -103,10 +110,10 @@ const configCollectorButtons = async (message: Message, listaBoss: Boss[], butto
 
         rowButtons.push(disableButton(buttons, interactionMessage.customId));
 
-        message.edit({ 
+        await message.edit({ 
             embeds: embedSelecionada ? [embedSelecionada] : [], 
-            components: [...rowSelects, ...rowButtons] 
-        });
+            components: [...rowSelects, ...rowButtons]
+        }).then(async (m: Message) => await checkUpdateProximos(m, isProximoAbrir, 60));
     });
 };
 
@@ -125,6 +132,14 @@ const configCollectorSelects = async (message: Message): Promise<void> => {
             message.edit({ embeds: [getEmbedTabelaBoss(backupSelecionado.listaBoss, backupSelecionado.timestamp)] });
         }
     });
+}
+
+const checkUpdateProximos = async (message: Message, isAbrir: boolean | undefined, secondsInterval: number): Promise<void> => {
+    if (isAbrir === undefined) return;
+
+    intervalUpdate.intervalId = setInterval(async ()=> {
+        await message.edit({ embeds: [getEmbedTabelaProximos(isAbrir)] });
+    }, secondsInterval * 1000);
 }
 
 export { mostrarHorarios };

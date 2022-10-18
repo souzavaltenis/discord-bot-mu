@@ -11,7 +11,7 @@ import { TimeoutSingleton } from "../models/singleton/timeout-singleton";
 import { getButtonsTabela } from "../templates/buttons/style-tabela-buttons";
 import { getEmbedTabelaBoss } from "../templates/embeds/tabela-boss-embed";
 import { disableButton } from "../utils/buttons-utils";
-import { sendLogErroInput } from "../utils/geral-utils";
+import { limparIntervalUpdate, sendLogErroInput } from "../utils/geral-utils";
 import { CategoryCommand } from "../models/enum/category-command";
 
 export = {
@@ -99,6 +99,7 @@ export = {
                     .then(async (m: Message) => {
                         const buttons: ButtonBuilder[] = getButtonsTabela();
                         const rowButtons = disableButton(buttons, Ids.BUTTON_TABLE_BOSS);
+                        limparIntervalUpdate();
                         await m.edit({ embeds: [getEmbedTabelaBoss(listaBoss)], components: [rowButtons] });
                     })
                     .catch(e => console.log(e));
