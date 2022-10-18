@@ -1,5 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { ChatInputCommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
+import { version } from "../../package.json";
+import { client } from "../index";
 import { CategoryCommand } from "../models/enum/category-command";
 
 export = {
@@ -9,6 +11,14 @@ export = {
         .setDescription('Comando teste'),
         
     execute: async (interaction: ChatInputCommandInteraction): Promise<void> => {
-		await interaction.reply('Pong!');
+        const embedPong = new EmbedBuilder()
+            .setDescription('🏓 Pong!')
+            .setColor('DarkVividPink')
+            .setFooter({ text: `${client.ws.ping}ms | version ${version}` });
+
+        await interaction.reply({
+            embeds: [embedPong],
+            ephemeral: true
+        });
     }
 }
