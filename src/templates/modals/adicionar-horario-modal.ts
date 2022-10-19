@@ -142,7 +142,7 @@ export class AdicionarHorarioModal {
 
         const bossInfo = {
             nomeDocBoss: nomeDocBoss,
-            salaBoss: textInputSalaBoss,
+            salaBoss: salaBoss+'',
             horarioInformado: momentToString(horarioInformado),
             timestampAcao: dataNowMoment().valueOf()
         } as IBossInfoAdd;
