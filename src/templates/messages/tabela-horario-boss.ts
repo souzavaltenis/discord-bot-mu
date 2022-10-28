@@ -30,9 +30,8 @@ const mostrarHorarios = async (textChannel: TextBasedChannel | undefined | null)
 
         const buttons: ButtonBuilder[] = getButtonsTabela();
         const rowButtons: ActionRowBuilder<ButtonBuilder> = disableButton(buttons, Ids.BUTTON_TABLE_BOSS);
-        const textoEspacos: string = '\u200b\n\u200b\u200b\n\u200b\n\u200b';
 
-        await textChannel?.send({ content: textoEspacos, embeds: [getEmbedTabelaBoss(listaBoss)], components: [rowButtons] }).then(async (message: Message) => {
+        await textChannel?.send({ content: '\u200b\n'.repeat(10), embeds: [getEmbedTabelaBoss(listaBoss)], components: [rowButtons] }).then(async (message: Message) => {
 
             if (message.channelId === config().channels.textHorarios) {
                 const idLastMessageBoss: string = config().geral.idLastMessageBoss;
@@ -65,7 +64,8 @@ const configCollectorButtons = async (message: Message, listaBoss: Boss[], butto
 
         let embedSelecionada: EmbedBuilder | undefined;
         const rowButtons: ActionRowBuilder<ButtonBuilder>[] = [];
-        const rowSelects: ActionRowBuilder<SelectMenuBuilder>[] = [];
+        const rowSelects: ActionRowBuilder<SelectMenuBuilder>[] = []
+        const contentSpaces: string = '\u200b\n'.repeat(interactionMessage.customId === Ids.BUTTON_TABLE_BOSS ? 10 : 40);
 
         limparIntervalUpdate();
 
@@ -110,7 +110,8 @@ const configCollectorButtons = async (message: Message, listaBoss: Boss[], butto
 
         rowButtons.push(disableButton(buttons, interactionMessage.customId));
 
-        await message.edit({ 
+        await message.edit({
+            content: contentSpaces,
             embeds: embedSelecionada ? [embedSelecionada] : [], 
             components: [...rowSelects, ...rowButtons]
         }).then(async (m: Message) => await checkUpdateProximos(m, isProximoAbrir, 60));
