@@ -43,7 +43,7 @@ export = {
         .addStringOption(option => option.setName('foi_ontem').setDescription('Esse horário foi ontem?').addChoices({ name: 'Não', value: 'N' }, { name: 'Sim', value: 'S' })),
     
     execute: async (interaction: ChatInputCommandInteraction): Promise<void> => {
-        const horario: string = interaction.options.getString('horario') || '';
+        const horario: string = (interaction.options.getString('horario') || '').replace(';', ':');
         const bossDoc: string = interaction.options.getString('boss') || '';
         const salaBoss: number = interaction.options.getNumber('sala') || 0;
         const foiontem: string = interaction.options.getString('foi_ontem') || '';
