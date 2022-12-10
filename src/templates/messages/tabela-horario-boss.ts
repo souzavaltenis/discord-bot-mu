@@ -119,7 +119,7 @@ const configCollectorButtons = async (message: Message, listaBoss: Boss[], butto
 };
 
 const configCollectorSelects = async (message: Message): Promise<void> => {
-    const collectorSelects = message.createMessageComponentCollector({ filter: (i: Interaction) => i.isSelectMenu(), time: 1000 * 60 * 60 * 4 });
+    const collectorSelects = message.createMessageComponentCollector({ filter: (i: Interaction) => i.isStringSelectMenu(), time: 1000 * 60 * 60 * 4 });
 
     collectorSelects.on("collect", async (interaction: SelectMenuInteraction) => {
         await interaction.deferUpdate();
