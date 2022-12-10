@@ -99,7 +99,7 @@ export class AdicionarHorarioModal {
         const salaBoss = parseInt(textInputSalaBoss);
         const salasConhecidas = config().mu.salasPermitidas;
 
-        if (salaBoss === NaN || !salasConhecidas.includes(salaBoss)) {
+        if (Number.isNaN(salaBoss) || !salasConhecidas.includes(salaBoss)) {
             const msgErroSala: string = `${interaction.user} Sala (${bold(textInputSalaBoss)}) não é reconhecida! Use as salas ${salasConhecidas}.`;
             await sendLogErroInput(interaction, msgErroSala);
             await interaction.reply({

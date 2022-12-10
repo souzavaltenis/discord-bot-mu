@@ -1,6 +1,6 @@
 {
   "name": "bot-horarios-mu",
-  "version": "3.5.6",
+  "version": "3.6.0",
   "description": "",
   "main": "src/index.ts",
   "scripts": {
@@ -16,22 +16,22 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@discordjs/rest": "^1.1.0",
-    "discord-api-types": "^0.37.10",
-    "discord.js": "^14.4.0",
-    "firebase": "^9.10.0",
-    "kafkajs": "^2.2.0",
+    "@discordjs/rest": "^1.4.0",
+    "discord-api-types": "^0.37.21",
+    "discord.js": "^14.7.1",
+    "firebase": "^9.15.0",
+    "kafkajs": "^2.2.3",
     "moment": "^2.29.4"
   },
   "devDependencies": {
     "@tsconfig/node16": "^1.0.3",
-    "@types/node": "^18.7.18",
-    "@typescript-eslint/eslint-plugin": "^5.38.0",
-    "@typescript-eslint/parser": "^5.38.0",
+    "@types/node": "^18.11.12",
+    "@typescript-eslint/eslint-plugin": "^5.46.0",
+    "@typescript-eslint/parser": "^5.46.0",
     "bestzip": "^2.2.1",
-    "eslint": "^8.23.1",
+    "eslint": "^8.29.0",
     "rimraf": "^3.0.2",
     "ts-node": "^10.9.1",
-    "typescript": "^4.8.3"
+    "typescript": "^4.9.4"
   }
 }
