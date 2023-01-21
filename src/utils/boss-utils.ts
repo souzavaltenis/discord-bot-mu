@@ -11,7 +11,7 @@ import { client } from "../index";
 import { ActivityType } from "discord.js";
 
 const formatBoss = (boss: Boss, somenteAbertos?: boolean): string => {
-    let infoBoss: string = tracos(55) + '\n';
+    let infoBoss: string = tracos(50) + '\n';
     let haBossAbertos: boolean = false;
 
     boss.salas.forEach((horario: Moment, sala: number) => {

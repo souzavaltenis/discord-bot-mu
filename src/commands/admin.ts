@@ -3,7 +3,7 @@ import { PermissionFlagsBits } from "discord-api-types/v9";
 import { bold, ButtonBuilder, ChatInputCommandInteraction, codeBlock, EmbedBuilder, InteractionResponse, Message, TextChannel } from "discord.js";
 import { client } from "../index";
 import { config } from "../config/get-configs";
-import { carregarConfiguracoes, sincronizarConfigsBot } from "../db/db";
+import { adicionarHorarioBoss, carregarConfiguracoes, sincronizarConfigsBot } from "../db/db";
 import { Boss } from "../models/boss";
 import { Ids } from "../models/ids";
 import { ListBossSingleton } from "../models/singleton/list-boss-singleton";
@@ -11,8 +11,14 @@ import { TimeoutSingleton } from "../models/singleton/timeout-singleton";
 import { getButtonsTabela } from "../templates/buttons/style-tabela-buttons";
 import { getEmbedTabelaBoss } from "../templates/embeds/tabela-boss-embed";
 import { disableButton } from "../utils/buttons-utils";
-import { limparIntervalUpdate, sendLogErroInput } from "../utils/geral-utils";
+import { getNickMember, limparIntervalUpdate, sendLogErroInput } from "../utils/geral-utils";
 import { CategoryCommand } from "../models/enum/category-command";
+import { Moment } from "moment";
+import { dataNowMoment, dataNowString, momentToString, stringToMoment } from "../utils/data-utils";
+import { IBossInfoAdd } from "../models/interface/boss-info-add";
+import { getEmbedAddBoss } from "../templates/embeds/adicionar-boss-embed";
+import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
+import { mainTextChannel } from "../utils/channels-utils";
 
 export = {
     category: CategoryCommand.ADM,
@@ -47,6 +53,38 @@ export = {
                 .setDescription('Delete mensagens de um canal')
                 .addIntegerOption(option => option.setName('qtd_msgs').setDescription('Informe a quantidade').setRequired(true));
             return subcommand;
+        })
+        .addSubcommand(subcommand => {
+            subcommand.setName('anotar')
+                .setDescription('Adicione Horário de Boss!')
+                .addStringOption(option => option.setName('horario').setDescription('Qual horário?').setRequired(true))
+                .addStringOption(option => {
+                    option
+                    .setName('boss')
+                    .setDescription('Qual Boss?')
+                    .setRequired(true)
+                    .addChoices(
+                        { name: 'Rei Kundun', value: config().documents.rei },
+                        { name: 'Relics',     value: config().documents.relics },
+                        { name: 'Fenix',      value: config().documents.fenix },
+                        { name: 'Death Beam', value: config().documents.deathBeam },
+                        { name: 'Genocider',  value: config().documents.geno }
+                    );
+        
+                    return option;
+                })
+                .addNumberOption(option => {
+                    option.setName('sala').setDescription('Qual sala?').setRequired(true);
+        
+                    config().mu.salasPermitidas.forEach((sala: number) => {
+                        option.addChoices({ name: `Sala ${sala}`, value: sala});
+                    });
+        
+                    return option;
+                })
+                .addStringOption(option => option.setName('foi_ontem').setDescription('Esse horário foi ontem?').addChoices({ name: 'Não', value: 'N' }, { name: 'Sim', value: 'S' }));
+            
+            return subcommand;
         }),
         
     execute: async (interaction: ChatInputCommandInteraction): Promise<InteractionResponse<boolean> | undefined> => {
@@ -67,6 +105,7 @@ export = {
             case "timeouts": await subCommandTimeouts(interaction); break;
             case "refresh": await subCommandRefresh(interaction); break;
             case "apagar-msgs": await subCommandApagarMsgs(interaction); break;
+            case "anotar": await subCommandAnotar(interaction); break;
         }
 
         async function subCommandSay(interaction: ChatInputCommandInteraction): Promise<void> {
@@ -152,6 +191,42 @@ export = {
             await interaction.channel.bulkDelete(quantidade, true)
                 .then((x) => interaction.reply({ content: `${x.size} mensagens foram deletadas com sucesso`, ephemeral: true }))
                 .catch(() => interaction.reply({ content: `Não foi possível deletar as mensagens`, ephemeral: true }));
+        }
+
+        async function subCommandAnotar(interaction: ChatInputCommandInteraction): Promise<void> {
+            const horario: string = (interaction.options.getString('horario') || '').replace(';', ':');
+            const bossDoc: string = interaction.options.getString('boss') || '';
+            const salaBoss: number = interaction.options.getNumber('sala') || 0;
+            const foiontem: string = interaction.options.getString('foi_ontem') || '';
+
+            if (!(/^(?:[01][0-9]|2[0-3]):[0-5][0-9](?::[0-5][0-9])?$/).test(horario)) {
+                const msgErroHorario: string = `${interaction.user} Horário (${bold(horario)}) não é reconhecido! Use como exemplo: 15:46`;
+                await sendLogErroInput(interaction, msgErroHorario);
+                await interaction.reply({
+                    content: msgErroHorario,
+                    ephemeral: true
+                });
+                return;
+            }
+
+            const horarioMoment: Moment = stringToMoment(`${dataNowString('DD/MM/YYYY')} ${horario} -0300`)
+
+            if (foiontem === 'S') {
+                horarioMoment.subtract(1, 'day');
+            }
+
+            const bossInfo = {
+                nomeDocBoss: bossDoc,
+                salaBoss: salaBoss + '',
+                horarioInformado: momentToString(horarioMoment),
+                timestampAcao: dataNowMoment().valueOf()
+            } as IBossInfoAdd;
+
+            await adicionarHorarioBoss(bossInfo).then(async () => {
+                const embedAddBoss: EmbedBuilder = getEmbedAddBoss(bossDoc, horarioMoment, salaBoss, getNickMember(interaction));
+                await interaction.reply({ embeds: [embedAddBoss], ephemeral: true });
+                await mostrarHorarios(mainTextChannel());
+            });
         }
     }
 }
