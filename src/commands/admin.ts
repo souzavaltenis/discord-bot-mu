@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { PermissionFlagsBits } from "discord-api-types/v9";
-import { bold, ButtonBuilder, ChatInputCommandInteraction, codeBlock, EmbedBuilder, InteractionResponse, Message, TextChannel } from "discord.js";
+import { bold, ButtonBuilder, ChatInputCommandInteraction, codeBlock, Collection, EmbedBuilder, Guild, InteractionResponse, Message, OAuth2Guild, TextChannel, User } from "discord.js";
 import { client } from "../index";
 import { config } from "../config/get-configs";
 import { adicionarHorarioBoss, carregarConfiguracoes, sincronizarConfigsBot } from "../db/db";
@@ -14,11 +14,13 @@ import { disableButton } from "../utils/buttons-utils";
 import { getNickMember, limparIntervalUpdate, sendLogErroInput } from "../utils/geral-utils";
 import { CategoryCommand } from "../models/enum/category-command";
 import { Moment } from "moment";
-import { dataNowMoment, dataNowString, momentToString, stringToMoment } from "../utils/data-utils";
+import { dataNowMoment, dataNowString, momentToString, stringToMoment, timestampToMoment } from "../utils/data-utils";
 import { IBossInfoAdd } from "../models/interface/boss-info-add";
 import { getEmbedAddBoss } from "../templates/embeds/adicionar-boss-embed";
 import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
 import { mainTextChannel } from "../utils/channels-utils";
+import { IGuildInfos } from "../models/interface/guild-infos";
+import { getEmbedServidoresBot } from "../templates/embeds/servidores-bot-embed";
 
 export = {
     category: CategoryCommand.ADM,
@@ -85,10 +87,15 @@ export = {
                 .addStringOption(option => option.setName('foi_ontem').setDescription('Esse horário foi ontem?').addChoices({ name: 'Não', value: 'N' }, { name: 'Sim', value: 'S' }));
             
             return subcommand;
+        })
+        .addSubcommand(subcommand => {
+            subcommand.setName('servidores')
+                .setDescription('Exibe os servidores que estou presente');
+            return subcommand;
         }),
         
     execute: async (interaction: ChatInputCommandInteraction): Promise<InteractionResponse<boolean> | undefined> => {
-        if (interaction.user.id !== config().ownerId) {
+        if (!config().adminsIds.includes(interaction.user.id)) {
             const msgErroPermissao: string = `${interaction.user} Você não pode utilizar esse comando`;
             await sendLogErroInput(interaction, msgErroPermissao);
             return await interaction.reply({ 
@@ -106,6 +113,7 @@ export = {
             case "refresh": await subCommandRefresh(interaction); break;
             case "apagar-msgs": await subCommandApagarMsgs(interaction); break;
             case "anotar": await subCommandAnotar(interaction); break;
+            case "servidores": await subCommandServidores(interaction); break;
         }
 
         async function subCommandSay(interaction: ChatInputCommandInteraction): Promise<void> {
@@ -226,6 +234,36 @@ export = {
                 const embedAddBoss: EmbedBuilder = getEmbedAddBoss(bossDoc, horarioMoment, salaBoss, getNickMember(interaction));
                 await interaction.reply({ embeds: [embedAddBoss], ephemeral: true });
                 await mostrarHorarios(mainTextChannel());
+            });
+        }
+
+        async function subCommandServidores(interaction: ChatInputCommandInteraction): Promise<void> {
+            const guildsOAuth: Collection<string, OAuth2Guild> = await client.guilds.fetch();
+            const guildsIds: string[] = [...guildsOAuth.values()].map(g => g.id);
+
+            const guilds: IGuildInfos[] = [];
+
+            for (const guildId of guildsIds) {
+                const guild: Guild = await client.guilds.fetch(guildId);
+                const ownerGuild: User = await client.users.fetch(guild.ownerId);
+                
+                guilds.push({
+                    nomeGuild: guild.name,
+                    idGuild: guild.id,
+                    quantidadeMembros: guild.memberCount,
+                    dataEntradaBot: timestampToMoment(guild.joinedTimestamp),
+                    nomeOwnerGuild: ownerGuild.tag,
+                    idOwnerGuild: ownerGuild.id
+                });
+            }
+
+            guilds.sort((a, b) => a.dataEntradaBot.valueOf() - b.dataEntradaBot.valueOf());
+
+            const embed: EmbedBuilder = getEmbedServidoresBot(guilds);
+
+            await interaction.reply({ 
+                embeds: [embed],
+                ephemeral: true 
             });
         }
     }

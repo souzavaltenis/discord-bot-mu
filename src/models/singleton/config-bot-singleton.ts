@@ -29,7 +29,8 @@ export class ConfigBotSingleton {
                 {} as IGeralConfigBot,
                 {} as IMuConfigBot,
                 {} as IKafkaConfigBot,
-                ''
+                '',
+                []
             ));
         }
         return this.instance;

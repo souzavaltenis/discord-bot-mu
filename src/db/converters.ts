@@ -68,7 +68,8 @@ const configConverter = {
             data.geral,
             data.mu, 
             data.kafka, 
-            data.ownerId
+            data.ownerId,
+            data.adminsIds
         );
     }
 };

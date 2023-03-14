@@ -18,7 +18,8 @@ export class ConfigBot {
         public geral: IGeralConfigBot,
         public mu: IMuConfigBot,
         public kafka: IKafkaConfigBot,
-        public ownerId: string
+        public ownerId: string,
+        public adminsIds: string[]
     ) {
         this.bot = bot;
         this.cargos = cargos;
@@ -29,5 +30,6 @@ export class ConfigBot {
         this.mu = mu;
         this.kafka = kafka;
         this.ownerId = ownerId;
+        this.adminsIds = adminsIds;
     }
 }
