@@ -11,7 +11,7 @@ import { TimeoutSingleton } from "../models/singleton/timeout-singleton";
 import { getButtonsTabela } from "../templates/buttons/style-tabela-buttons";
 import { getEmbedTabelaBoss } from "../templates/embeds/tabela-boss-embed";
 import { disableButton } from "../utils/buttons-utils";
-import { getNickMember, limparIntervalUpdate, sendLogErroInput } from "../utils/geral-utils";
+import { getIdButton, getNickMember, limparIntervalUpdate, sendLogErroInput } from "../utils/geral-utils";
 import { CategoryCommand } from "../models/enum/category-command";
 import { Moment } from "moment";
 import { dataNowMoment, dataNowString, momentToString, stringToMoment, timestampToMoment } from "../utils/data-utils";
@@ -92,6 +92,38 @@ export = {
             subcommand.setName('servidores')
                 .setDescription('Exibe os servidores que estou presente');
             return subcommand;
+        })
+        .addSubcommand(subcommand => {
+            subcommand.setName('botoes')
+                .setDescription('Ativar/desativar botões na tabela de horários')
+                .addStringOption(option => {
+                    option
+                        .setName('id_botao')
+                        .setDescription('Qual botão?')
+                        .setRequired(true);
+
+                    const botoesTabelaHorarios: ButtonBuilder[] = getButtonsTabela();
+
+                    botoesTabelaHorarios.forEach((botao: ButtonBuilder) => {
+                        option.addChoices({ name: botao.data.label || '', value: getIdButton(botao) });
+                    });
+
+                    return option;
+                })
+                .addStringOption(option => {
+                    option
+                        .setName('acao_botao')
+                        .setDescription('Qual ação?')
+                        .setRequired(true)
+                        .addChoices(
+                            { name: 'Ativar', value: 'S' },
+                            { name: 'Desativar', value: 'N' }
+                        );
+
+                    return option;
+                });
+            
+            return subcommand;
         }),
         
     execute: async (interaction: ChatInputCommandInteraction): Promise<InteractionResponse<boolean> | undefined> => {
@@ -104,7 +136,7 @@ export = {
             });
         }
 
-        const opcaoSubCommand = interaction.options.getSubcommand();
+        const opcaoSubCommand: string = interaction.options.getSubcommand();
 
         switch(opcaoSubCommand) {
             case "say": await subCommandSay(interaction); break;
@@ -114,6 +146,7 @@ export = {
             case "apagar-msgs": await subCommandApagarMsgs(interaction); break;
             case "anotar": await subCommandAnotar(interaction); break;
             case "servidores": await subCommandServidores(interaction); break;
+            case "botoes": await subCommandBotoes(interaction); break;
         }
 
         async function subCommandSay(interaction: ChatInputCommandInteraction): Promise<void> {
@@ -263,6 +296,20 @@ export = {
 
             await interaction.reply({ 
                 embeds: [embed],
+                ephemeral: true 
+            });
+        }
+        
+        async function subCommandBotoes(interaction: ChatInputCommandInteraction): Promise<void> {
+            const idBotao: string = interaction.options.getString('id_botao', true);
+            const acaoBotao: string = interaction.options.getString('acao_botao', true);
+
+            config().configButtons.set(idBotao, acaoBotao === 'S');
+
+            await sincronizarConfigsBot();
+            await mostrarHorarios(mainTextChannel());
+            await interaction.reply({
+                content: 'Botão atualizado com sucesso!',
                 ephemeral: true 
             });
         }

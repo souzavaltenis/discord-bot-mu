@@ -1,10 +1,10 @@
-import { ActionRowBuilder, SelectMenuBuilder } from "discord.js";
+import { ActionRowBuilder, StringSelectMenuBuilder } from "discord.js";
 import { BackupListaBoss } from "../../models/backup-lista-boss";
 import { Ids } from "../../models/ids";
 import { timestampToMoment } from "../../utils/data-utils";
 
-const getSelectMenuBackup = (listaBackup: BackupListaBoss[]): ActionRowBuilder<SelectMenuBuilder> => {
-    const menu = new SelectMenuBuilder()
+const getSelectMenuBackup = (listaBackup: BackupListaBoss[]): ActionRowBuilder<StringSelectMenuBuilder> => {
+    const menu = new StringSelectMenuBuilder()
         .setCustomId(Ids.SELECT_MENU_BACKUP)
         .setPlaceholder('Clique aqui e selecione um backup');
 
@@ -15,7 +15,7 @@ const getSelectMenuBackup = (listaBackup: BackupListaBoss[]): ActionRowBuilder<S
         })
     });
 
-    return new ActionRowBuilder<SelectMenuBuilder>().addComponents(menu);
+    return new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(menu);
 }
 
 export { getSelectMenuBackup }

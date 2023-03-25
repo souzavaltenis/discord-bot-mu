@@ -30,7 +30,8 @@ export class ConfigBotSingleton {
                 {} as IMuConfigBot,
                 {} as IKafkaConfigBot,
                 '',
-                []
+                [],
+                new Map<string, boolean>()
             ));
         }
         return this.instance;

@@ -1,4 +1,4 @@
-import { Interaction, Message, ActionRowBuilder, ButtonBuilder, MessageComponentInteraction, EmbedBuilder, SelectMenuInteraction, TextBasedChannel, SelectMenuBuilder } from "discord.js";
+import { Interaction, Message, ActionRowBuilder, ButtonBuilder, MessageComponentInteraction, EmbedBuilder, TextBasedChannel, StringSelectMenuBuilder, StringSelectMenuInteraction } from "discord.js";
 import { Boss } from "../../models/boss";
 import { consultarBackupsListaBoss, consultarHorarioBoss, sincronizarConfigsBot } from "../../db/db";
 import { agendarAvisos } from "../../utils/avisos-utils";
@@ -9,7 +9,7 @@ import { disableButton, disableButtonProximos } from "../../utils/buttons-utils"
 import { getEmbedTabelaProximos } from "../embeds/tabela-proximos-embed";
 import { sendMessageKafka } from "../../services/kafka/kafka-producer";
 import { config } from "../../config/get-configs";
-import { getLogsGeralString, limparIntervalUpdate } from "../../utils/geral-utils";
+import { getIdButton, getLogsGeralString, limparIntervalUpdate } from "../../utils/geral-utils";
 import { getEmbedTabelaRank } from "../embeds/tabela-rank-embed";
 import { ListBossSingleton } from "../../models/singleton/list-boss-singleton";
 import { getButtonsProximos } from "../buttons/proximos-buttons";
@@ -27,11 +27,18 @@ const mostrarHorarios = async (textChannel: TextBasedChannel | undefined | null)
         ListBossSingleton.getInstance().boss = listaBoss;
 
         agendarAvisos(listaBoss);
+        
+        const buttons: ButtonBuilder[] = getButtonsTabela().filter((button: ButtonBuilder) => {
+            return config().configButtons.get(getIdButton(button));
+        });
 
-        const buttons: ButtonBuilder[] = getButtonsTabela();
         const rowButtons: ActionRowBuilder<ButtonBuilder> = disableButton(buttons, Ids.BUTTON_TABLE_BOSS);
 
-        await textChannel?.send({ content: '\u200b\n'.repeat(10), embeds: [getEmbedTabelaBoss(listaBoss)], components: [rowButtons] }).then(async (message: Message) => {
+        await textChannel?.send({
+            content: '\u200b\n'.repeat(10),
+            embeds: [getEmbedTabelaBoss(listaBoss)],
+            components: buttons.length > 0 ? [rowButtons] : undefined
+        }).then(async (message: Message) => {
 
             if (message.channelId === config().channels.textHorarios) {
                 const idLastMessageBoss: string = config().geral.idLastMessageBoss;
@@ -64,7 +71,7 @@ const configCollectorButtons = async (message: Message, listaBoss: Boss[], butto
 
         let embedSelecionada: EmbedBuilder | undefined;
         const rowButtons: ActionRowBuilder<ButtonBuilder>[] = [];
-        const rowSelects: ActionRowBuilder<SelectMenuBuilder>[] = []
+        const rowSelects: ActionRowBuilder<StringSelectMenuBuilder>[] = []
         const contentSpaces: string = '\u200b\n'.repeat(interactionMessage.customId === Ids.BUTTON_TABLE_BOSS ? 10 : 40);
 
         limparIntervalUpdate();
@@ -113,15 +120,17 @@ const configCollectorButtons = async (message: Message, listaBoss: Boss[], butto
         await message.edit({
             content: contentSpaces,
             embeds: embedSelecionada ? [embedSelecionada] : [], 
-            components: [...rowSelects, ...rowButtons]
-        }).then(async (m: Message) => await checkUpdateProximos(m, isProximoAbrir, 60));
+            components: buttons.length > 0 ? [...rowSelects, ...rowButtons] : undefined
+        }).then(async (m: Message) => {
+            await checkUpdateProximos(m, isProximoAbrir, 60)
+        });
     });
 };
 
 const configCollectorSelects = async (message: Message): Promise<void> => {
     const collectorSelects = message.createMessageComponentCollector({ filter: (i: Interaction) => i.isStringSelectMenu(), time: 1000 * 60 * 60 * 4 });
 
-    collectorSelects.on("collect", async (interaction: SelectMenuInteraction) => {
+    collectorSelects.on("collect", async (interaction: StringSelectMenuInteraction) => {
         await interaction.deferUpdate();
 
         if (interaction.customId === Ids.SELECT_MENU_BACKUP) {

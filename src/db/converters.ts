@@ -53,6 +53,7 @@ const configConverter = {
 
         delete configObj["collections"];
         delete configObj["documents"];
+        configObj["configButtons"] = Object.fromEntries((configBot.configButtons as Map<string, boolean>));
 
         return configObj;
     },
@@ -69,7 +70,8 @@ const configConverter = {
             data.mu, 
             data.kafka, 
             data.ownerId,
-            data.adminsIds
+            data.adminsIds,
+            new Map<string, boolean>(Object.entries(data.configButtons))
         );
     }
 };
