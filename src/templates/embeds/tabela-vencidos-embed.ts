@@ -16,7 +16,7 @@ const getEmbedTabelaVencidos = (listaBoss: Boss[]): EmbedBuilder => {
         .setTimestamp();
 
     listaBoss.forEach(boss => {
-        let info: string = tracos(55) + '\n';
+        let info: string = tracos(50) + '\n';
         let existeVencido: boolean = false;
 
         boss.salas.forEach((horario: Moment, sala: number) => {

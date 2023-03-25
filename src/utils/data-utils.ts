@@ -34,7 +34,27 @@ const distanceDatasInHours = (x: Moment, y: Moment): number => {
 const distanceDatasString = (x: Moment, y: Moment): string => {
     const diff = x.diff(y);
     const duration = moment.duration(diff);
-    return (duration.days() > 0 ? duration.days() + 'd ' : '') + duration.hours() + 'h ' + duration.minutes() + 'm ';
+
+    let textDistance: string = '';
+
+    const days = duration.days();
+    const hours = duration.hours();
+    const minutes = duration.minutes();
+    const seconds = duration.seconds();
+
+    if (days > 0)
+        textDistance += days + 'd ';
+
+    if (hours > 0 || days > 0)
+        textDistance += hours + 'h ';
+    
+    if (minutes > 0 || hours > 0 || days > 0)
+        textDistance += minutes + 'm ';
+
+    if (seconds > 0 || minutes > 0 || hours > 0 || days > 0)
+        textDistance += seconds + 's';
+
+    return textDistance;
 }
 
 const timestampToMoment = (timestamp: number): Moment => {
