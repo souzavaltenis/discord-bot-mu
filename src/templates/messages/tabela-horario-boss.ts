@@ -9,7 +9,7 @@ import { disableButton, disableButtonProximos } from "../../utils/buttons-utils"
 import { getEmbedTabelaProximos } from "../embeds/tabela-proximos-embed";
 import { sendMessageKafka } from "../../services/kafka/kafka-producer";
 import { config } from "../../config/get-configs";
-import { getIdButton, getLogsGeralString, limparIntervalUpdate } from "../../utils/geral-utils";
+import { getLogsGeralString, limparIntervalUpdate } from "../../utils/geral-utils";
 import { getEmbedTabelaRank } from "../embeds/tabela-rank-embed";
 import { ListBossSingleton } from "../../models/singleton/list-boss-singleton";
 import { getButtonsProximos } from "../buttons/proximos-buttons";
@@ -28,9 +28,7 @@ const mostrarHorarios = async (textChannel: TextBasedChannel | undefined | null)
 
         agendarAvisos(listaBoss);
         
-        const buttons: ButtonBuilder[] = getButtonsTabela().filter((button: ButtonBuilder) => {
-            return config().configButtons.get(getIdButton(button));
-        });
+        const buttons: ButtonBuilder[] = getButtonsTabela();
 
         const rowButtons: ActionRowBuilder<ButtonBuilder> = disableButton(buttons, Ids.BUTTON_TABLE_BOSS);
 
@@ -84,7 +82,7 @@ const configCollectorButtons = async (message: Message, listaBoss: Boss[], butto
                 embedSelecionada = getEmbedTabelaBoss(listaBoss);
                 break;
 
-            // Button Salas
+            // Button Vencidos
             case Ids.BUTTON_TABLE_VENCIDOS: 
                 embedSelecionada = getEmbedTabelaVencidos(listaBoss); 
                 break;

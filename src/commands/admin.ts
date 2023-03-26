@@ -102,7 +102,7 @@ export = {
                         .setDescription('Qual botão?')
                         .setRequired(true);
 
-                    const botoesTabelaHorarios: ButtonBuilder[] = getButtonsTabela();
+                    const botoesTabelaHorarios: ButtonBuilder[] = getButtonsTabela(true);
 
                     botoesTabelaHorarios.forEach((botao: ButtonBuilder) => {
                         option.addChoices({ name: botao.data.label || '', value: getIdButton(botao) });

@@ -1,7 +1,9 @@
 import { ButtonBuilder, ButtonStyle } from "discord.js";
+import { config } from "../../config/get-configs";
 import { Ids } from "../../models/ids";
+import { getIdButton } from "../../utils/geral-utils";
 
-const getButtonsTabela = (): ButtonBuilder[] => {
+const getButtonsTabela = (getAll?: boolean): ButtonBuilder[] => {
 
     const buttonTableBoss = new ButtonBuilder()
         .setCustomId(Ids.BUTTON_TABLE_BOSS)
@@ -33,7 +35,11 @@ const getButtonsTabela = (): ButtonBuilder[] => {
         .setLabel('Histórico')
         .setStyle(ButtonStyle.Secondary);
 
-    return [buttonTableBoss, buttonTableVencidos, buttonTableProximos, buttonTableRank, buttonTableHistorico];
+    const allButtons: ButtonBuilder[] = [buttonTableBoss, buttonTableVencidos, buttonTableProximos, buttonTableRank, buttonTableHistorico];
+
+    return getAll
+        ? allButtons
+        : allButtons.filter((button: ButtonBuilder) => config().configButtons.get(getIdButton(button)));
 }
 
 export { getButtonsTabela }
