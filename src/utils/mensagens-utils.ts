@@ -60,7 +60,7 @@ const apagarUltimoAviso = async (): Promise<void> => {
             .then(async (m: Message | null) => {
                 if (!m) return;
                 limparIntervalUpdate();
-                await m.delete();
+                await m.delete().catch(() => null);
             });
     }
 }
