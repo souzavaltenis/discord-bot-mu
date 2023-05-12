@@ -5,7 +5,7 @@ import { agendarAvisos } from "../../utils/avisos-utils";
 import { Ids } from "../../models/ids";
 import { getEmbedTabelaBoss } from "../embeds/tabela-boss-embed";
 import { getButtonsTabela } from "../buttons/style-tabela-buttons";
-import { disableButton, disableButtonProximos } from "../../utils/buttons-utils";
+import { disableButton, disableSubButton } from "../../utils/buttons-utils";
 import { getEmbedTabelaProximos } from "../embeds/tabela-proximos-embed";
 import { sendMessageKafka } from "../../services/kafka/kafka-producer";
 import { config } from "../../config/get-configs";
@@ -19,6 +19,7 @@ import { backupsBossSingleton } from "../../models/singleton/lista-backup-single
 import { getEmbedAvisoHistorico } from "../embeds/aviso-historico-embed";
 import { getEmbedTabelaVencidos } from "../embeds/tabela-vencidos-embed";
 import { intervalUpdate } from "../../models/singleton/interval-singleton";
+import { getButtonsRank } from "../buttons/rank-buttons";
 
 const mostrarHorarios = async (textChannel: TextBasedChannel | undefined | null) => {
     
@@ -91,18 +92,24 @@ const configCollectorButtons = async (message: Message, listaBoss: Boss[], butto
             case Ids.BUTTON_TABLE_PROXIMOS:
             case Ids.BUTTON_ABRIR_PROXIMOS:
             case Ids.BUTTON_FECHAR_PROXIMOS:
-                const initButton: string = Ids.BUTTON_FECHAR_PROXIMOS;
-                const idButtonProximos: string = interactionMessage.customId === Ids.BUTTON_TABLE_PROXIMOS ? initButton : interactionMessage.customId;
+                const initButtonProximos: string = Ids.BUTTON_FECHAR_PROXIMOS;
+                const idButtonProximos: string = interactionMessage.customId === Ids.BUTTON_TABLE_PROXIMOS ? initButtonProximos : interactionMessage.customId;
                 const isAbrir: boolean = [Ids.BUTTON_TABLE_PROXIMOS, Ids.BUTTON_ABRIR_PROXIMOS].includes(idButtonProximos);
                 isProximoAbrir = isAbrir;
 
                 embedSelecionada = getEmbedTabelaProximos(isAbrir, listaBoss);
-                rowButtons.push(disableButtonProximos(getButtonsProximos(), idButtonProximos));
+                rowButtons.push(disableSubButton(getButtonsProximos(), idButtonProximos));
                 break;
             
             // Button Rank
             case Ids.BUTTON_TABLE_RANK:
-                embedSelecionada = getEmbedTabelaRank(); 
+            case Ids.BUTTON_TABLE_RANK_NEW:
+            case Ids.BUTTON_TABLE_RANK_OLD:
+                const initButtonRank: string = Ids.BUTTON_TABLE_RANK_NEW;
+                const idButtonRank: string = interactionMessage.customId === Ids.BUTTON_TABLE_RANK ? initButtonRank : interactionMessage.customId;
+                const isNewRank: boolean = [Ids.BUTTON_TABLE_RANK, Ids.BUTTON_TABLE_RANK_NEW].includes(idButtonRank);
+                embedSelecionada = getEmbedTabelaRank(isNewRank); 
+                rowButtons.push(disableSubButton(getButtonsRank(), idButtonRank));
                 break;
 
             // Button Histórico

@@ -5,8 +5,8 @@ import { getIdButton } from "./geral-utils";
 const disableButton = (buttons: ButtonBuilder[], idToDisable: string): ActionRowBuilder<ButtonBuilder> => {
     buttons.forEach((button: ButtonBuilder) => {
         const isSelected: boolean = getIdButton(button) === idToDisable 
-            || (getIdButton(button) === Ids.BUTTON_TABLE_PROXIMOS 
-            && [Ids.BUTTON_ABRIR_PROXIMOS, Ids.BUTTON_FECHAR_PROXIMOS, Ids.BUTTON_TABLE_PROXIMOS].includes(idToDisable));
+            || (getIdButton(button) === Ids.BUTTON_TABLE_PROXIMOS && [Ids.BUTTON_ABRIR_PROXIMOS, Ids.BUTTON_FECHAR_PROXIMOS, Ids.BUTTON_TABLE_PROXIMOS].includes(idToDisable))
+            || (getIdButton(button) === Ids.BUTTON_TABLE_RANK && [Ids.BUTTON_TABLE_RANK, Ids.BUTTON_TABLE_RANK_NEW, Ids.BUTTON_TABLE_RANK_OLD].includes(idToDisable));
 
         button.setDisabled(isSelected);
         button.setStyle(isSelected ? ButtonStyle.Primary : ButtonStyle.Secondary);
@@ -15,7 +15,7 @@ const disableButton = (buttons: ButtonBuilder[], idToDisable: string): ActionRow
     return new ActionRowBuilder<ButtonBuilder>().setComponents(buttons);
 }
 
-const disableButtonProximos = (buttons: ButtonBuilder[], idToDisable: string): ActionRowBuilder<ButtonBuilder> => {
+const disableSubButton = (buttons: ButtonBuilder[], idToDisable: string): ActionRowBuilder<ButtonBuilder> => {
     buttons.forEach((button: ButtonBuilder) => {
         const isSelected: boolean = getIdButton(button) === idToDisable;
         button.setDisabled(isSelected);
@@ -24,4 +24,7 @@ const disableButtonProximos = (buttons: ButtonBuilder[], idToDisable: string): A
     return new ActionRowBuilder<ButtonBuilder>().setComponents(buttons);
 }
 
-export { disableButton, disableButtonProximos }
+export {
+    disableButton,
+    disableSubButton
+}

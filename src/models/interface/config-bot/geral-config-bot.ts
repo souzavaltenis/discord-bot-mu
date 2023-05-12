@@ -4,4 +4,5 @@ export interface IGeralConfigBot {
     idLastMessageBoss: string;
     idLastMessageBossAlert: string;
     valoresNomeBoss: IValoresNomeBoss;
+    dateNewRank: string;
 }

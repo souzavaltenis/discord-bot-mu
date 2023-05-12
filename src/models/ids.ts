@@ -21,4 +21,6 @@ export class Ids {
     static MODAL_SORTEIO_DROPS: string = "modal-sorteio-drops";
     static INPUT_PARTICIPANTES_SORTEIO: string = "participantes-modal-sorteio";
     static INPUT_PREMIOS_SORTEIO: string = "premios-modal-sorteio";
+    static BUTTON_TABLE_RANK_OLD: string = "style-table-rank-old";
+    static BUTTON_TABLE_RANK_NEW: string = "style-table-rank-new";
 }
