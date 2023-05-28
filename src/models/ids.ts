@@ -23,4 +23,5 @@ export class Ids {
     static INPUT_PREMIOS_SORTEIO: string = "premios-modal-sorteio";
     static BUTTON_TABLE_RANK_OLD: string = "style-table-rank-old";
     static BUTTON_TABLE_RANK_NEW: string = "style-table-rank-new";
+    static BUTTON_TABLE_ADD_HORARIO: string = "style-table-add-horario";
 }

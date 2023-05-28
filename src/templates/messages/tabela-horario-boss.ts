@@ -20,6 +20,7 @@ import { getEmbedAvisoHistorico } from "../embeds/aviso-historico-embed";
 import { getEmbedTabelaVencidos } from "../embeds/tabela-vencidos-embed";
 import { intervalUpdate } from "../../models/singleton/interval-singleton";
 import { getButtonsRank } from "../buttons/rank-buttons";
+import { AdicionarHorarioModal } from "../modals/adicionar-horario-modal";
 
 const mostrarHorarios = async (textChannel: TextBasedChannel | undefined | null) => {
     
@@ -65,7 +66,10 @@ const configCollectorButtons = async (message: Message, listaBoss: Boss[], butto
     const collectorButtons = message.createMessageComponentCollector({ filter: (i: Interaction) => i.isButton(), time: 1000 * 60 * 60 * 4 });
 
     collectorButtons.on("collect", async (interactionMessage: MessageComponentInteraction) => {
-        await interactionMessage.deferUpdate();
+        if (interactionMessage.customId !== Ids.BUTTON_TABLE_ADD_HORARIO) {
+            await interactionMessage.deferUpdate();
+        }
+        
         sendMessageKafka(config().kafka.topicLogsGeralBot, getLogsGeralString({ msgInteraction: interactionMessage }));
 
         let embedSelecionada: EmbedBuilder | undefined;
@@ -117,6 +121,12 @@ const configCollectorButtons = async (message: Message, listaBoss: Boss[], butto
                 embedSelecionada = getEmbedAvisoHistorico();
                 backupsBossSingleton.backups = await consultarBackupsListaBoss();
                 rowSelects.push(getSelectMenuBackup(backupsBossSingleton.backups));
+                break;
+            
+            // Button Adicionar
+            case Ids.BUTTON_TABLE_ADD_HORARIO:
+                embedSelecionada = getEmbedTabelaBoss(listaBoss);
+                interactionMessage.showModal(new AdicionarHorarioModal().getModal());
                 break;
         }
 
