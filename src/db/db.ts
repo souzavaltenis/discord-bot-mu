@@ -9,12 +9,13 @@ import { Boss } from "../models/boss";
 import { IBossInfoAdd } from "../models/interface/boss-info-add";
 import { ConfigBotSingleton } from "../models/singleton/config-bot-singleton";
 import { Usuario } from "../models/usuario";
-import { dataNowMoment, dataNowString, isSameMoment, timestampToMoment } from "../utils/data-utils";
+import { dataNowMoment, dataNowString, isSameMoment, stringToMoment, timestampToMoment } from "../utils/data-utils";
 import { botIsProd, bdIsProd, config } from "../config/get-configs";
 import { usuariosSingleton } from "../models/singleton/usuarios-singleton";
 import { BackupListaBoss } from "../models/backup-lista-boss";
 import { bossConverter, backupListaBossConverter, configConverter, sorteioConverter } from "./converters";
 import { Sorteio } from "../models/sorteio";
+import { TypeTimestamp } from "../models/enum/type-timestamp";
 
 const appFirebase = initializeApp(firebaseConfig);
 const db = getFirestore(appFirebase);
@@ -116,15 +117,25 @@ const consultarUsuarios = async(): Promise<void> => {
 
     const listaUsuariosSnap: QuerySnapshot<DocumentData> = await getDocs(collectionUsuariosRef);
     const dataNow: Moment = dataNowMoment();
+
+    const timestampNewRankMoment: number = stringToMoment(config().geral.dateNewRank).valueOf();
     
     usuariosSingleton.usuarios = listaUsuariosSnap.docs
         .map(docUser => docUser.data())
         .map(user => {
             const timestamps: number[] = (user.timestampsAnotacoes as number[] || [] as number[])
                 .map((timestamp: number) => {
-                    const isOld: boolean = !isSameMoment(dataNow, timestamp, 'week') && !isSameMoment(dataNow, timestamp, 'day');
-                    return isOld ? 0 : timestamp;
-                })
+
+                    switch (true) {
+                        case timestamp <= timestampNewRankMoment:
+                            return TypeTimestamp.OLD_TIMESTAMP_RANK;
+                        case !isSameMoment(dataNow, timestamp, 'week') && !isSameMoment(dataNow, timestamp, 'day'):
+                            return TypeTimestamp.NEW_TIMESTAMP_DATED;
+                        default:
+                            return timestamp;
+                    }
+
+                });
             return new Usuario(user.id || 0, user.name || '', timestamps);
         });
 }

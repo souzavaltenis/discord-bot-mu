@@ -8,6 +8,7 @@ import { config } from "../../config/get-configs";
 import { usuariosSingleton } from '../../models/singleton/usuarios-singleton';
 import { Moment } from "moment";
 import { stringToMoment } from "../../utils/data-utils";
+import { TypeTimestamp } from "../../models/enum/type-timestamp";
 
 let dataNow: Moment;
 
@@ -34,7 +35,7 @@ const getEmbedTabelaRank = (isNewRank: boolean): EmbedBuilder => {
     // Removendo anotações de cada usuário para atender regra de anotações antigas ou novas baseado em dateNewRankTimestamp
     usuariosGeral.forEach((usuario: Usuario) => {
         usuario.timestampsAnotacoes = usuario.timestampsAnotacoes.filter((timestamp: number) => {
-            return isNewRank ? timestamp > dateNewRankTimestamp : timestamp < dateNewRankTimestamp;
+            return isNewRank ? (timestamp === TypeTimestamp.NEW_TIMESTAMP_DATED || timestamp > dateNewRankTimestamp) : (timestamp === TypeTimestamp.OLD_TIMESTAMP_RANK);
         });
     });
 
