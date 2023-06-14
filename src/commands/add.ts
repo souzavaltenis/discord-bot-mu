@@ -6,7 +6,7 @@ import { AdicionarHorarioModal } from "../templates/modals/adicionar-horario-mod
 export = {
     category: CategoryCommand.BOSS,
     data: new SlashCommandBuilder()
-        .setName('add')
+        .setName('boss')
         .setDescription('Adicione Horário de Boss!'),
         
     execute: async (interaction: ChatInputCommandInteraction): Promise<void> => {
