@@ -9,6 +9,7 @@ import { Moment } from 'moment';
 import { getNickMember, sendLogErroInput } from '../../utils/geral-utils';
 import { IBossInfoAdd } from '../../models/interface/boss-info-add';
 import { getEmbedAddBoss } from '../embeds/adicionar-boss-embed';
+import { usuariosSingleton } from '../../models/singleton/usuarios-singleton';
 
 export class AdicionarHorarioModal {
 
@@ -148,10 +149,10 @@ export class AdicionarHorarioModal {
         } as IBossInfoAdd;
 
         adicionarHorarioBoss(bossInfo).then(async () => {
-            const embedAddBoss: EmbedBuilder = getEmbedAddBoss(nomeDocBoss, horarioInformado, salaBoss, getNickMember(interaction));
-
-            await interaction.reply({ embeds: [embedAddBoss] });
             await adicionarAnotacaoHorario(interaction.user, bossInfo.timestampAcao);
+            const quantidadeAnotacoesUsuario = usuariosSingleton.usuarios.find(u => u.id === interaction.user.id)?.timestampsAnotacoes?.length || 0;
+            const embedAddBoss: EmbedBuilder = getEmbedAddBoss(nomeDocBoss, horarioInformado, salaBoss, getNickMember(interaction), quantidadeAnotacoesUsuario);
+            await interaction.reply({ embeds: [embedAddBoss] });
             await mostrarHorarios(interaction.channel);
         });
     }

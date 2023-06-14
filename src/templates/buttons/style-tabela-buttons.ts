@@ -34,8 +34,21 @@ const getButtonsTabela = (getAll?: boolean): ButtonBuilder[] => {
         .setEmoji('💾')
         .setLabel('Histórico')
         .setStyle(ButtonStyle.Secondary);
+    
+    const buttonAddHorario = new ButtonBuilder()
+        .setCustomId(Ids.BUTTON_TABLE_ADD_HORARIO)
+        .setEmoji('➕')
+        .setLabel('Add')
+        .setStyle(ButtonStyle.Success);
 
-    const allButtons: ButtonBuilder[] = [buttonTableBoss, buttonTableVencidos, buttonTableProximos, buttonTableRank, buttonTableHistorico];
+    const allButtons: ButtonBuilder[] = [
+        buttonAddHorario,
+        buttonTableBoss,
+        buttonTableVencidos,
+        buttonTableProximos,
+        buttonTableRank,
+        buttonTableHistorico
+    ];
 
     return getAll
         ? allButtons
