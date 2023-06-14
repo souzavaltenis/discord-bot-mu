@@ -107,13 +107,14 @@ const configCollectorButtons = async (message: Message, listaBoss: Boss[], butto
             
             // Button Rank
             case Ids.BUTTON_TABLE_RANK:
-            case Ids.BUTTON_TABLE_RANK_NEW:
-            case Ids.BUTTON_TABLE_RANK_OLD:
-                const initButtonRank: string = Ids.BUTTON_TABLE_RANK_NEW;
-                const idButtonRank: string = interactionMessage.customId === Ids.BUTTON_TABLE_RANK ? initButtonRank : interactionMessage.customId;
-                const isNewRank: boolean = [Ids.BUTTON_TABLE_RANK, Ids.BUTTON_TABLE_RANK_NEW].includes(idButtonRank);
-                embedSelecionada = getEmbedTabelaRank(isNewRank); 
-                rowButtons.push(disableSubButton(getButtonsRank(), idButtonRank));
+            // case Ids.BUTTON_TABLE_RANK_NEW:
+            // case Ids.BUTTON_TABLE_RANK_OLD:
+                // const initButtonRank: string = Ids.BUTTON_TABLE_RANK_NEW;
+                // const idButtonRank: string = interactionMessage.customId === Ids.BUTTON_TABLE_RANK ? initButtonRank : interactionMessage.customId;
+                // const isNewRank: boolean = [Ids.BUTTON_TABLE_RANK, Ids.BUTTON_TABLE_RANK_NEW].includes(idButtonRank);
+                // embedSelecionada = getEmbedTabelaRank(isNewRank); 
+                embedSelecionada = getEmbedTabelaRank(); 
+                // rowButtons.push(disableSubButton(getButtonsRank(), idButtonRank));
                 break;
 
             // Button Histórico

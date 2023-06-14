@@ -12,32 +12,33 @@ import { TypeTimestamp } from "../../models/enum/type-timestamp";
 
 let dataNow: Moment;
 
-const getEmbedTabelaRank = (isNewRank: boolean): EmbedBuilder => {
+const getEmbedTabelaRank = (isNewRank?: boolean): EmbedBuilder => {
     dataNow = dataNowMoment();
     const usuariosGeral: Usuario[] = usuariosSingleton.usuarios.map((usuario: Usuario) => ({...usuario}));
 
-    const dateNewRankMoment: Moment = stringToMoment(config().geral.dateNewRank);
-    const dateNewRankTimestamp: number = dateNewRankMoment.valueOf();
-    const dateNewRankStr: string = dateNewRankMoment.format('DD/MM/YYYY');
+    // const dateNewRankMoment: Moment = stringToMoment(config().geral.dateNewRank);
+    // const dateNewRankTimestamp: number = dateNewRankMoment.valueOf();
+    // const dateNewRankStr: string = dateNewRankMoment.format('DD/MM/YYYY');
 
-    const descriptionNewRank: string = `Período: ${dateNewRankStr} até Hoje...\n\u200B`;
-    const descriptionOldRank: string = `Período: 09/06/2022 até ${dateNewRankStr}\n\u200B`;
+    // const descriptionNewRank: string = `Período: ${dateNewRankStr} até Hoje...\n\u200B`;
+    // const descriptionOldRank: string = `Período: 09/06/2022 até ${dateNewRankStr}\n\u200B`;
 
     const embedTabelaRank = new EmbedBuilder()
         .setColor("DarkBlue")
-        .setTitle(`Rank ${isNewRank ? '' : '>>>Antigo<<<'} Anotações 🏆`)
-        .setDescription(isNewRank ? descriptionNewRank : descriptionOldRank)
+        .setTitle(`Rank Anotações 🏆`)
+        // .setTitle(`Rank ${isNewRank ? '' : '>>>Antigo<<<'} Anotações 🏆`)
+        // .setDescription(isNewRank ? descriptionNewRank : descriptionOldRank)
         .setFooter({ text: config().mu.avisoFooter || textoFooter() })
         .setTimestamp();
 
     const limitUsers: number = isNewRank ? 10 : 20;
 
     // Removendo anotações de cada usuário para atender regra de anotações antigas ou novas baseado em dateNewRankTimestamp
-    usuariosGeral.forEach((usuario: Usuario) => {
-        usuario.timestampsAnotacoes = usuario.timestampsAnotacoes.filter((timestamp: number) => {
-            return isNewRank ? (timestamp === TypeTimestamp.NEW_TIMESTAMP_DATED || timestamp > dateNewRankTimestamp) : (timestamp === TypeTimestamp.OLD_TIMESTAMP_RANK);
-        });
-    });
+    // usuariosGeral.forEach((usuario: Usuario) => {
+    //     usuario.timestampsAnotacoes = usuario.timestampsAnotacoes.filter((timestamp: number) => {
+    //         return isNewRank ? (timestamp === TypeTimestamp.NEW_TIMESTAMP_DATED || timestamp > dateNewRankTimestamp) : (timestamp === TypeTimestamp.OLD_TIMESTAMP_RANK);
+    //     });
+    // });
 
     // Geral
     usuariosGeral.sort((a: Usuario, b: Usuario) => {
@@ -48,7 +49,7 @@ const getEmbedTabelaRank = (isNewRank: boolean): EmbedBuilder => {
     addFieldsRank('', usuariosGeral, embedTabelaRank, limitUsers);
 
     // Semanal e Diário apenas para o rank novo
-    if (isNewRank) {
+    // if (isNewRank) {
         // Semanal
         const usuariosSemanal = sortUsuariosPorTempo(usuariosGeral, 'week').slice(0, limitUsers);
         addFieldsRank('week', usuariosSemanal, embedTabelaRank, limitUsers);
@@ -56,7 +57,7 @@ const getEmbedTabelaRank = (isNewRank: boolean): EmbedBuilder => {
         // Dia
         const usuariosDia = sortUsuariosPorTempo(usuariosGeral, 'day').slice(0, limitUsers);
         addFieldsRank('day', usuariosDia, embedTabelaRank, limitUsers);
-    }
+    // }
 
     return embedTabelaRank;
 }
