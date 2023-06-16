@@ -211,6 +211,7 @@ export = {
     
         async function subCommandRefresh(interaction: ChatInputCommandInteraction): Promise<void> {
             await carregarConfiguracoes();
+            await mostrarHorarios(mainTextChannel());
             await interaction.reply({ 
                 content: "As configurações mais atualizadas do banco de dados foram carregadas",
                 ephemeral: true 

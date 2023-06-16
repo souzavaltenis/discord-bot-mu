@@ -19,7 +19,6 @@ import { backupsBossSingleton } from "../../models/singleton/lista-backup-single
 import { getEmbedAvisoHistorico } from "../embeds/aviso-historico-embed";
 import { getEmbedTabelaVencidos } from "../embeds/tabela-vencidos-embed";
 import { intervalUpdate } from "../../models/singleton/interval-singleton";
-import { getButtonsRank } from "../buttons/rank-buttons";
 import { AdicionarHorarioModal } from "../modals/adicionar-horario-modal";
 
 const mostrarHorarios = async (textChannel: TextBasedChannel | undefined | null) => {

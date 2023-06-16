@@ -31,7 +31,8 @@ const getEmbedTabelaRank = (isNewRank?: boolean): EmbedBuilder => {
         .setFooter({ text: config().mu.avisoFooter || textoFooter() })
         .setTimestamp();
 
-    const limitUsers: number = isNewRank ? 10 : 20;
+    // const limitUsers: number = isNewRank ? 10 : 20;
+    const limitUsers: number = 10;
 
     // Removendo anotações de cada usuário para atender regra de anotações antigas ou novas baseado em dateNewRankTimestamp
     // usuariosGeral.forEach((usuario: Usuario) => {
