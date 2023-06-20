@@ -1,23 +1,23 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, EmbedBuilder, Message, StringSelectMenuBuilder } from "discord.js";
-import { Boss } from "../../models/boss";
-import { config } from "../../config/get-configs";
-import { consultarBackupsListaBoss } from "../../db/db";
-import { Ids } from "../../models/ids";
-import { intervalUpdate } from "../../models/singleton/interval-singleton";
-import { ListBossSingleton } from "../../models/singleton/list-boss-singleton";
-import { backupsBossSingleton } from "../../models/singleton/lista-backup-singleton";
-import { sendMessageKafka } from "../../services/kafka/kafka-producer";
-import { getButtonsProximos } from "../../templates/buttons/proximos-buttons";
-import { getButtonsTabela } from "../../templates/buttons/style-tabela-buttons";
-import { getEmbedAvisoHistorico } from "../../templates/embeds/aviso-historico-embed";
-import { getEmbedTabelaBoss } from "../../templates/embeds/tabela-boss-embed";
-import { getEmbedTabelaProximos } from "../../templates/embeds/tabela-proximos-embed";
-import { getEmbedTabelaRank } from "../../templates/embeds/tabela-rank-embed";
-import { getEmbedTabelaVencidos } from "../../templates/embeds/tabela-vencidos-embed";
-import { AdicionarHorarioModal } from "../../templates/modals/adicionar-horario-modal";
-import { getSelectMenuBackup } from "../../templates/selects/backups-selects";
-import { disableSubButton, disableButton } from "../../utils/buttons-utils";
-import { getLogsGeralString, limparIntervalUpdate } from "../../utils/geral-utils";
+import { Boss } from "../models/boss";
+import { config } from "../config/get-configs";
+import { consultarBackupsListaBoss } from "../db/db";
+import { Ids } from "../models/ids";
+import { intervalUpdate } from "../models/singleton/interval-singleton";
+import { ListBossSingleton } from "../models/singleton/list-boss-singleton";
+import { backupsBossSingleton } from "../models/singleton/lista-backup-singleton";
+import { sendMessageKafka } from "../services/kafka/kafka-producer";
+import { getButtonsProximos } from "../templates/buttons/proximos-buttons";
+import { getButtonsTabela } from "../templates/buttons/style-tabela-buttons";
+import { getEmbedAvisoHistorico } from "../templates/embeds/aviso-historico-embed";
+import { getEmbedTabelaBoss } from "../templates/embeds/tabela-boss-embed";
+import { getEmbedTabelaProximos } from "../templates/embeds/tabela-proximos-embed";
+import { getEmbedTabelaRank } from "../templates/embeds/tabela-rank-embed";
+import { getEmbedTabelaVencidos } from "../templates/embeds/tabela-vencidos-embed";
+import { AdicionarHorarioModal } from "../templates/modals/adicionar-horario-modal";
+import { getSelectMenuBackup } from "../templates/selects/backups-selects";
+import { disableSubButton, disableButton } from "../utils/buttons-utils";
+import { getLogsGeralString, limparIntervalUpdate } from "../utils/geral-utils";
 
 export = {
     name: 'ButtonInteraction',

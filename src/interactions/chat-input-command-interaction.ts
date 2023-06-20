@@ -1,9 +1,9 @@
 import { ChatInputCommandInteraction, channelMention, ApplicationCommandType } from "discord.js";
-import { config } from "../../config/get-configs";
-import { CategoryCommand } from "../../models/enum/category-command";
-import { commands } from "../../models/singleton/commands-singleton";
-import { sendMessageKafka } from "../../services/kafka/kafka-producer";
-import { getNameCommandsByCategory, sendLogErroInput, getLogsGeralString } from "../../utils/geral-utils";
+import { config } from "../config/get-configs";
+import { CategoryCommand } from "../models/enum/category-command";
+import { commands } from "../models/singleton/commands-singleton";
+import { sendMessageKafka } from "../services/kafka/kafka-producer";
+import { getNameCommandsByCategory, sendLogErroInput, getLogsGeralString } from "../utils/geral-utils";
 
 export = {
     name: 'ChatInputCommandInteraction',

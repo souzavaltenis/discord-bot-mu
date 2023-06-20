@@ -1,8 +1,8 @@
 import { StringSelectMenuInteraction } from "discord.js";
-import { Ids } from "../../models/ids";
-import { BackupListaBoss } from "../../models/backup-lista-boss";
-import { backupsBossSingleton } from "../../models/singleton/lista-backup-singleton";
-import { getEmbedTabelaBoss } from "../../templates/embeds/tabela-boss-embed";
+import { Ids } from "../models/ids";
+import { BackupListaBoss } from "../models/backup-lista-boss";
+import { backupsBossSingleton } from "../models/singleton/lista-backup-singleton";
+import { getEmbedTabelaBoss } from "../templates/embeds/tabela-boss-embed";
 
 export = {
     name: 'StringSelectMenuInteraction',

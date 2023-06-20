@@ -1,7 +1,7 @@
 import { ModalSubmitInteraction } from "discord.js";
-import { Ids } from "../../models/ids";
-import { AdicionarHorarioModal } from "../../templates/modals/adicionar-horario-modal";
-import { SorteioModal } from "../../templates/modals/sorteio-modal";
+import { Ids } from "../models/ids";
+import { AdicionarHorarioModal } from "../templates/modals/adicionar-horario-modal";
+import { SorteioModal } from "../templates/modals/sorteio-modal";
 
 export = {
     name: 'ModalSubmitInteraction',
