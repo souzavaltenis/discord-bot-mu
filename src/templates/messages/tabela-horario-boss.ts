@@ -20,12 +20,12 @@ const mostrarHorarios = async (textChannel: TextBasedChannel | undefined | null)
         
         const buttons: ButtonBuilder[] = getButtonsTabela();
 
-        const rowButtons: ActionRowBuilder<ButtonBuilder> = disableButton(buttons, Ids.BUTTON_TABLE_BOSS);
+        const rowButtons: ActionRowBuilder<ButtonBuilder>[] = disableButton(buttons, Ids.BUTTON_TABLE_BOSS);
 
         await textChannel?.send({
             content: '\u200b\n'.repeat(10),
             embeds: [getEmbedTabelaBoss(listaBoss)],
-            components: buttons.length > 0 ? [rowButtons] : undefined
+            components: buttons.length > 0 ? [...rowButtons] : undefined
         }).then(async (message: Message) => {
 
             if (message.channelId === config().channels.textHorarios) {

@@ -250,6 +250,16 @@ const limparIntervalUpdate = () => {
     }
 }
 
+function chunkArray<T>(array: T[], size: number): T[][] {
+    return array.reduce((acc: T[][], value: T, i: number) => {
+        if (i % size === 0) {
+            acc.push(array.slice(i, i + size));
+        }
+    
+        return acc;
+    }, []);
+}
+
 export { 
     tracos, 
     numberToEmoji, 
@@ -269,5 +279,6 @@ export {
     getNickMember,
     getRandomNumber,
     getNameCommandsByCategory,
-    limparIntervalUpdate
+    limparIntervalUpdate,
+    chunkArray
 }

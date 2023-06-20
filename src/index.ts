@@ -14,9 +14,9 @@ const client = new Client({
 });
 
 loadData().then(async () => {
-    await loadInteractions();
     await loadCommands();
     await loadEvents();
+    await loadInteractions();
     await client.login(config().bot.token);
     await deployCommands();
 

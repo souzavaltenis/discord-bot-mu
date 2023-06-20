@@ -1,8 +1,8 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 import { Ids } from "../models/ids";
-import { getIdButton } from "./geral-utils";
+import { chunkArray, getIdButton } from "./geral-utils";
 
-const disableButton = (buttons: ButtonBuilder[], idToDisable: string): ActionRowBuilder<ButtonBuilder> => {
+const disableButton = (buttons: ButtonBuilder[], idToDisable: string): ActionRowBuilder<ButtonBuilder>[] => {
     if (idToDisable === Ids.BUTTON_TABLE_ADD_HORARIO) {
         idToDisable = Ids.BUTTON_TABLE_BOSS;
     }
@@ -22,7 +22,13 @@ const disableButton = (buttons: ButtonBuilder[], idToDisable: string): ActionRow
         button.setStyle(isSelected ? ButtonStyle.Primary : ButtonStyle.Secondary);
     });
 
-    return new ActionRowBuilder<ButtonBuilder>().setComponents(buttons);
+    const chunkButtons: ButtonBuilder[][] = chunkArray<ButtonBuilder>(buttons, 5);
+
+    const rowsButtons: ActionRowBuilder<ButtonBuilder>[] = chunkButtons.map((buttonsChunk: ButtonBuilder[]) => {
+        return new ActionRowBuilder<ButtonBuilder>().setComponents(buttonsChunk);
+    });
+
+    return rowsButtons;
 }
 
 const disableSubButton = (buttons: ButtonBuilder[], idToDisable: string): ActionRowBuilder<ButtonBuilder> => {

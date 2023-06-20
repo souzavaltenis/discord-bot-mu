@@ -12,6 +12,8 @@ const loadInteractions = async (): Promise<void> => {
         const interaction: IBaseHandlerInteraction = await import(filePath) as IBaseHandlerInteraction;
         interactions.set(interaction.name, interaction);
     }
+
+    console.log(`✅ Interações carregadas: ${files.length}`);
 }
 
 export {

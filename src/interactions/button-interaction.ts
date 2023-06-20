@@ -90,7 +90,7 @@ export = {
                 break;
         }
 
-        rowButtons.push(disableButton(buttons, interaction.customId));
+        rowButtons.push(...disableButton(buttons, interaction.customId));
 
         await interaction.message.edit({
             content: contentSpaces,

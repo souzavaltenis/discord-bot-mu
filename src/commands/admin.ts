@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { PermissionFlagsBits } from "discord-api-types/v9";
-import { bold, ButtonBuilder, ChatInputCommandInteraction, codeBlock, Collection, EmbedBuilder, Guild, InteractionResponse, Message, OAuth2Guild, TextChannel, User } from "discord.js";
+import { ActionRowBuilder, bold, ButtonBuilder, ChatInputCommandInteraction, codeBlock, Collection, EmbedBuilder, Guild, InteractionResponse, Message, OAuth2Guild, TextChannel, User } from "discord.js";
 import { client } from "../index";
 import { config } from "../config/get-configs";
 import { adicionarHorarioBoss, carregarConfiguracoes, sincronizarConfigsBot } from "../db/db";
@@ -178,9 +178,9 @@ export = {
                 await textChannel.messages.fetch(idLastMessageBoss)
                     .then(async (m: Message) => {
                         const buttons: ButtonBuilder[] = getButtonsTabela();
-                        const rowButtons = disableButton(buttons, Ids.BUTTON_TABLE_BOSS);
+                        const rowButtons: ActionRowBuilder<ButtonBuilder>[] = disableButton(buttons, Ids.BUTTON_TABLE_BOSS);
                         limparIntervalUpdate();
-                        await m.edit({ embeds: [getEmbedTabelaBoss(listaBoss)], components: [rowButtons] });
+                        await m.edit({ embeds: [getEmbedTabelaBoss(listaBoss)], components: [...rowButtons] });
                     })
                     .catch(e => console.log(e));
             }

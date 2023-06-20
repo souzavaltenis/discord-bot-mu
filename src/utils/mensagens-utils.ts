@@ -1,5 +1,5 @@
 import { bold } from "@discordjs/builders";
-import { EmbedBuilder, Message, TextChannel } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, EmbedBuilder, Message, TextChannel } from "discord.js";
 import { config } from "../config/get-configs";
 import { sincronizarConfigsBot } from "../db/db";
 import { Boss } from "../models/boss";
@@ -76,9 +76,9 @@ const verificarAtualizacaoMessage = async (): Promise<void> => {
         .catch(() => null)
         .then(async (message: Message | null) => {
             if (!message) return;
-            const rowButtons = disableButton(getButtonsTabela(), Ids.BUTTON_TABLE_BOSS);
+            const rowButtons: ActionRowBuilder<ButtonBuilder>[] = disableButton(getButtonsTabela(), Ids.BUTTON_TABLE_BOSS);
             limparIntervalUpdate();
-            await message.edit({ embeds: [getEmbedTabelaBoss(listaBoss)], components: [rowButtons] });
+            await message.edit({ embeds: [getEmbedTabelaBoss(listaBoss)], components: [...rowButtons] });
         });
 }
 
