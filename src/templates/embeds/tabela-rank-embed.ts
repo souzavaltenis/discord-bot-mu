@@ -25,7 +25,7 @@ const getEmbedTabelaRank = (isNewRank?: boolean): EmbedBuilder => {
 
     const embedTabelaRank = new EmbedBuilder()
         .setColor("DarkBlue")
-        .setTitle(`Rank Anotações 🏆`)
+        .setTitle(`Rank de Anotações 🏆`)
         // .setTitle(`Rank ${isNewRank ? '' : '>>>Antigo<<<'} Anotações 🏆`)
         // .setDescription(isNewRank ? descriptionNewRank : descriptionOldRank)
         .setFooter({ text: config().mu.avisoFooter || textoFooter() })
