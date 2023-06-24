@@ -26,7 +26,7 @@ const getButtonsTabela = (getAll?: boolean): ButtonBuilder[] => {
     const buttonTableRank = new ButtonBuilder()
         .setCustomId(Ids.BUTTON_TABLE_RANK)
         .setEmoji('🏆')
-        .setLabel('Rank')
+        .setLabel('Ranks')
         .setStyle(ButtonStyle.Secondary);
 
     const buttonTableHistorico = new ButtonBuilder()
