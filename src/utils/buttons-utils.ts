@@ -16,7 +16,7 @@ const disableButton = (buttons: ButtonBuilder[], idToDisable: string): ActionRow
 
         const isSelected: boolean = idButton === idToDisable 
             || (idButton === Ids.BUTTON_TABLE_PROXIMOS && [Ids.BUTTON_ABRIR_PROXIMOS, Ids.BUTTON_FECHAR_PROXIMOS, Ids.BUTTON_TABLE_PROXIMOS].includes(idToDisable))
-            || (idButton === Ids.BUTTON_TABLE_RANK && [Ids.BUTTON_TABLE_RANK, Ids.BUTTON_TABLE_RANK_NEW, Ids.BUTTON_TABLE_RANK_OLD].includes(idToDisable));
+            || (idButton === Ids.BUTTON_TABLE_RANK && [Ids.BUTTON_TABLE_RANK, Ids.BUTTON_TABLE_RANK_ANOTACOES, Ids.BUTTON_TABLE_RANK_ONLINE].includes(idToDisable));
 
         button.setDisabled(isSelected);
         button.setStyle(isSelected ? ButtonStyle.Primary : ButtonStyle.Secondary);
@@ -35,6 +35,7 @@ const disableSubButton = (buttons: ButtonBuilder[], idToDisable: string): Action
     buttons.forEach((button: ButtonBuilder) => {
         const isSelected: boolean = getIdButton(button) === idToDisable;
         button.setDisabled(isSelected);
+        button.setStyle(isSelected ? ButtonStyle.Primary : ButtonStyle.Secondary);
     });
 
     return new ActionRowBuilder<ButtonBuilder>().setComponents(buttons);

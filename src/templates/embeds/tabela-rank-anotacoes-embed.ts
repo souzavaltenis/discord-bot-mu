@@ -3,41 +3,24 @@ import { EmbedBuilder } from "discord.js";
 import { Usuario } from "../../models/usuario";
 import { bold } from "@discordjs/builders";
 import { dataNowMoment, isSameMoment } from "../../utils/data-utils";
-import { textoFooter } from "../../utils/geral-utils";
 import { config } from "../../config/get-configs";
 import { usuariosSingleton } from '../../models/singleton/usuarios-singleton';
 import { Moment } from "moment";
+import { getTextPositionRank } from "../../utils/geral-utils";
 
 let dataNow: Moment;
 
-const getEmbedTabelaRank = (): EmbedBuilder => {
+const getEmbedTabelaRankAnotacoes = (): EmbedBuilder => {
     dataNow = dataNowMoment();
     const usuariosGeral: Usuario[] = usuariosSingleton.usuarios.map((usuario: Usuario) => ({...usuario}));
-
-    // const dateNewRankMoment: Moment = stringToMoment(config().geral.dateNewRank);
-    // const dateNewRankTimestamp: number = dateNewRankMoment.valueOf();
-    // const dateNewRankStr: string = dateNewRankMoment.format('DD/MM/YYYY');
-
-    // const descriptionNewRank: string = `Período: ${dateNewRankStr} até Hoje...\n\u200B`;
-    // const descriptionOldRank: string = `Período: 09/06/2022 até ${dateNewRankStr}\n\u200B`;
 
     const embedTabelaRank = new EmbedBuilder()
         .setColor("DarkBlue")
         .setTitle(`Rank de Anotações 🏆`)
-        // .setTitle(`Rank ${isNewRank ? '' : '>>>Antigo<<<'} Anotações 🏆`)
-        // .setDescription(isNewRank ? descriptionNewRank : descriptionOldRank)
-        .setFooter({ text: config().mu.avisoFooter || textoFooter() })
+        .setFooter({ text: config().mu.avisoFooter || 'Rank iniciado em 14/06/23' })
         .setTimestamp();
 
-    // const limitUsers: number = isNewRank ? 10 : 20;
     const limitUsers: number = 10;
-
-    // Removendo anotações de cada usuário para atender regra de anotações antigas ou novas baseado em dateNewRankTimestamp
-    // usuariosGeral.forEach((usuario: Usuario) => {
-    //     usuario.timestampsAnotacoes = usuario.timestampsAnotacoes.filter((timestamp: number) => {
-    //         return isNewRank ? (timestamp === TypeTimestamp.NEW_TIMESTAMP_DATED || timestamp > dateNewRankTimestamp) : (timestamp === TypeTimestamp.OLD_TIMESTAMP_RANK);
-    //     });
-    // });
 
     // Geral
     usuariosGeral.sort((a: Usuario, b: Usuario) => {
@@ -47,43 +30,34 @@ const getEmbedTabelaRank = (): EmbedBuilder => {
     });
     addFieldsRank('', usuariosGeral, embedTabelaRank, limitUsers);
 
-    // Semanal e Diário apenas para o rank novo
-    // if (isNewRank) {
-        // Semanal
-        const usuariosSemanal = sortUsuariosPorTempo(usuariosGeral, 'week').slice(0, limitUsers);
-        addFieldsRank('week', usuariosSemanal, embedTabelaRank, limitUsers);
+    // Semana
+    const usuariosSemanal = sortUsuariosPorTempo(usuariosGeral, 'week').slice(0, limitUsers);
+    addFieldsRank('week', usuariosSemanal, embedTabelaRank, limitUsers);
 
-        // Dia
-        const usuariosDia = sortUsuariosPorTempo(usuariosGeral, 'day').slice(0, limitUsers);
-        addFieldsRank('day', usuariosDia, embedTabelaRank, limitUsers);
-    // }
+    // Dia
+    const usuariosDia = sortUsuariosPorTempo(usuariosGeral, 'day').slice(0, limitUsers);
+    addFieldsRank('day', usuariosDia, embedTabelaRank, limitUsers);
 
     return embedTabelaRank;
 }
 
 const addFieldsRank = (type: string, usuarios: Usuario[], embed: EmbedBuilder, limitUsers: number): void => {
-    let msgUsuario = '\u200B\n';
+    let msgUsuario: string = '\u200B\n';
+    let positionRank: number = 0;
 
-    usuarios.slice(0, limitUsers).forEach((usuario, index) => {
+    usuarios.slice(0, limitUsers).forEach((usuario) => {
         const quantidadeAnotacoes: number = type ? calcularHorariosPorTempo(usuario.timestampsAnotacoes, type) : usuario.timestampsAnotacoes.length;
         if (quantidadeAnotacoes === 0) return;
         const userName: string = usuario.name.split("#")[0];
-        const isTop3: boolean = index < 3;
-        msgUsuario += `${getTextPosition(index)} ${isTop3 ? bold(userName) : userName}` +
+        const isTop3: boolean = positionRank < 3;
+        msgUsuario += `${getTextPositionRank(positionRank)} ${isTop3 ? bold(userName) : userName}` +
             `  ${bold('→')}  ` +
             `( ${isTop3 ? bold(quantidadeAnotacoes + '') : quantidadeAnotacoes} ${quantidadeAnotacoes > 1 ? 'anotações' : 'anotação'} )\n`;
+
+        positionRank++;
     });
 
     embed.addFields([{ name: getTitleFieldByType(type), value: msgUsuario + '\u200B' || '\u200B' }]);
-}
-
-const getTextPosition = (index: number): string => {
-    switch (index) {
-        case 0: return '🥇';
-        case 1: return '🥈';
-        case 2: return '🥉';
-        default: return `${index+1}${bold('°')}`;
-    }
 }
 
 const getTitleFieldByType = (type: string): string => {
@@ -122,4 +96,6 @@ const calcularHorariosPorTempo = (timestampsAnotacoes: number[], type: string): 
     return quantidadeHorarios;
 }
 
-export { getEmbedTabelaRank }
+export {
+    getEmbedTabelaRankAnotacoes
+}

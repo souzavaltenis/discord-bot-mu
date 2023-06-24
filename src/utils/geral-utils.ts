@@ -260,6 +260,15 @@ function chunkArray<T>(array: T[], size: number): T[][] {
     }, []);
 }
 
+const getTextPositionRank = (index: number): string => {
+    switch (index) {
+        case 0: return '🥇';
+        case 1: return '🥈';
+        case 2: return '🥉';
+        default: return `${index+1}${bold('°')}`;
+    }
+}
+
 export { 
     tracos, 
     numberToEmoji, 
@@ -280,5 +289,6 @@ export {
     getRandomNumber,
     getNameCommandsByCategory,
     limparIntervalUpdate,
-    chunkArray
+    chunkArray,
+    getTextPositionRank
 }

@@ -3,19 +3,19 @@ import { Ids } from "../../models/ids";
 
 const getButtonsRank = (): ButtonBuilder[] => {
 
-    const buttonNewRank = new ButtonBuilder()
-        .setCustomId(Ids.BUTTON_TABLE_RANK_NEW)
-        .setEmoji('📌')
-        .setLabel('Novo')
+    const buttonRankAnotacoes = new ButtonBuilder()
+        .setCustomId(Ids.BUTTON_TABLE_RANK_ANOTACOES)
+        .setEmoji('✏️')
+        .setLabel('Anotacões')
         .setStyle(ButtonStyle.Secondary);
 
-    const buttonOldRank = new ButtonBuilder()
-        .setCustomId(Ids.BUTTON_TABLE_RANK_OLD)
-        .setEmoji('⌛')
-        .setLabel('Acessar Antigo')
+    const buttonRankOnline = new ButtonBuilder()
+        .setCustomId(Ids.BUTTON_TABLE_RANK_ONLINE)
+        .setEmoji('⏳')
+        .setLabel('Tempo Online')
         .setStyle(ButtonStyle.Secondary);
 
-    return [buttonNewRank, buttonOldRank];
+    return [buttonRankAnotacoes, buttonRankOnline];
 }
 
 export { getButtonsRank }

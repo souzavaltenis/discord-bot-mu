@@ -12,12 +12,14 @@ import { getButtonsTabela } from "../templates/buttons/style-tabela-buttons";
 import { getEmbedAvisoHistorico } from "../templates/embeds/aviso-historico-embed";
 import { getEmbedTabelaBoss } from "../templates/embeds/tabela-boss-embed";
 import { getEmbedTabelaProximos } from "../templates/embeds/tabela-proximos-embed";
-import { getEmbedTabelaRank } from "../templates/embeds/tabela-rank-embed";
 import { getEmbedTabelaVencidos } from "../templates/embeds/tabela-vencidos-embed";
 import { AdicionarHorarioModal } from "../templates/modals/adicionar-horario-modal";
 import { getSelectMenuBackup } from "../templates/selects/backups-selects";
 import { disableSubButton, disableButton } from "../utils/buttons-utils";
 import { getLogsGeralString, limparIntervalUpdate } from "../utils/geral-utils";
+import { getEmbedTabelaRankAnotacoes } from "../templates/embeds/tabela-rank-anotacoes-embed";
+import { getEmbedTabelaRankOnline } from "../templates/embeds/tabela-rank-online-embed";
+import { getButtonsRank } from "../templates/buttons/rank-buttons";
 
 export = {
     name: 'ButtonInteraction',
@@ -66,14 +68,13 @@ export = {
             
             // Button Rank
             case Ids.BUTTON_TABLE_RANK:
-            // case Ids.BUTTON_TABLE_RANK_NEW:
-            // case Ids.BUTTON_TABLE_RANK_OLD:
-                // const initButtonRank: string = Ids.BUTTON_TABLE_RANK_NEW;
-                // const idButtonRank: string = interactionMessage.customId === Ids.BUTTON_TABLE_RANK ? initButtonRank : interactionMessage.customId;
-                // const isNewRank: boolean = [Ids.BUTTON_TABLE_RANK, Ids.BUTTON_TABLE_RANK_NEW].includes(idButtonRank);
-                // embedSelecionada = getEmbedTabelaRank(isNewRank); 
-                embedSelecionada = getEmbedTabelaRank(); 
-                // rowButtons.push(disableSubButton(getButtonsRank(), idButtonRank));
+            case Ids.BUTTON_TABLE_RANK_ANOTACOES:
+            case Ids.BUTTON_TABLE_RANK_ONLINE:
+                const initButtonRank: string = Ids.BUTTON_TABLE_RANK_ANOTACOES;
+                const idButtonRank: string = interaction.customId === Ids.BUTTON_TABLE_RANK ? initButtonRank : interaction.customId;
+                const isRankAnotacoes: boolean = [Ids.BUTTON_TABLE_RANK, Ids.BUTTON_TABLE_RANK_ANOTACOES].includes(idButtonRank);
+                embedSelecionada = isRankAnotacoes ? getEmbedTabelaRankAnotacoes() : getEmbedTabelaRankOnline();
+                rowButtons.push(disableSubButton(getButtonsRank(), idButtonRank));
                 break;
 
             // Button Histórico
