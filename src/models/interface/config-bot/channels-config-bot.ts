@@ -4,4 +4,5 @@ export interface IChannelsConfigBot {
     voiceAfk: string;
     voiceHorarios: string;
     voiceBC: string;
+    textLogInOut: string;
 }

@@ -8,4 +8,13 @@ const mainTextChannel = (): TextChannel | undefined => {
     return channel as TextChannel;
 };
 
-export { mainTextChannel }
+const logInOutTextChannel = (): TextChannel | undefined => {
+    const channel = client.channels.cache.get(config().channels.textLogInOut);
+    if (!channel || channel.type !== ChannelType.GuildText) return undefined;
+    return channel as TextChannel;
+}; 
+
+export {
+    mainTextChannel,
+    logInOutTextChannel
+}

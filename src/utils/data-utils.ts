@@ -31,30 +31,33 @@ const distanceDatasInHours = (x: Moment, y: Moment): number => {
     return moment.duration(diff).asHours();
 }
 
-const distanceDatasString = (x: Moment, y: Moment): string => {
-    const diff = x.diff(y);
-    const duration = moment.duration(diff);
-
-    let textDistance: string = '';
-
+const formatTimestamp = (timestamp: number): string => {
+    let textTimestamp: string = '';
+    
+    const duration = moment.duration(timestamp);
     const days = duration.days();
     const hours = duration.hours();
     const minutes = duration.minutes();
     const seconds = duration.seconds();
 
     if (days > 0)
-        textDistance += days + 'd ';
+        textTimestamp += days + 'd ';
 
     if (hours > 0 || days > 0)
-        textDistance += hours + 'h ';
+        textTimestamp += hours + 'h ';
     
     if (minutes > 0 || hours > 0 || days > 0)
-        textDistance += minutes + 'm ';
+        textTimestamp += minutes + 'm ';
 
     if (seconds > 0 || minutes > 0 || hours > 0 || days > 0)
-        textDistance += seconds + 's';
+        textTimestamp += seconds + 's';
 
-    return textDistance;
+    return textTimestamp;
+}
+
+const distanceDatasString = (x: Moment, y: Moment): string => {
+    const diff = x.diff(y);
+    return formatTimestamp(diff);
 }
 
 const timestampToMoment = (timestamp: number): Moment => {
@@ -87,5 +90,6 @@ export {
     timestampToMoment,
     isSameMoment,
     millisecondsToNextHour,
-    distanceDatasString
+    distanceDatasString,
+    formatTimestamp
 }

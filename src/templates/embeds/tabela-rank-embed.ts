@@ -7,12 +7,10 @@ import { textoFooter } from "../../utils/geral-utils";
 import { config } from "../../config/get-configs";
 import { usuariosSingleton } from '../../models/singleton/usuarios-singleton';
 import { Moment } from "moment";
-import { stringToMoment } from "../../utils/data-utils";
-import { TypeTimestamp } from "../../models/enum/type-timestamp";
 
 let dataNow: Moment;
 
-const getEmbedTabelaRank = (isNewRank?: boolean): EmbedBuilder => {
+const getEmbedTabelaRank = (): EmbedBuilder => {
     dataNow = dataNowMoment();
     const usuariosGeral: Usuario[] = usuariosSingleton.usuarios.map((usuario: Usuario) => ({...usuario}));
 

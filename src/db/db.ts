@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { User } from "discord.js";
 import { initializeApp } from "firebase/app";
-import { doc, getFirestore, DocumentData, updateDoc, getDocs, collection, arrayUnion, orderBy, query, setDoc, QuerySnapshot, getDoc, deleteField, limit } from "firebase/firestore";
+import { doc, getFirestore, DocumentData, updateDoc, getDocs, collection, arrayUnion, orderBy, query, setDoc, QuerySnapshot, getDoc, deleteField, limit, increment, DocumentReference } from "firebase/firestore";
 import { Moment } from "moment";
 import { firebaseConfig, collectionConfig, documentConfigProd, documentConfigTest } from '../config/config.json';
 import { Boss } from "../models/boss";
@@ -16,6 +16,8 @@ import { BackupListaBoss } from "../models/backup-lista-boss";
 import { bossConverter, backupListaBossConverter, configConverter, sorteioConverter } from "./converters";
 import { Sorteio } from "../models/sorteio";
 import { TypeTimestamp } from "../models/enum/type-timestamp";
+import { client } from "..";
+import { InfoMember } from "../models/info-member";
 
 const appFirebase = initializeApp(firebaseConfig);
 const db = getFirestore(appFirebase);
@@ -102,11 +104,44 @@ const adicionarAnotacaoHorario = async (user: User, timestampAcao: number): Prom
                 usuariosSingleton.usuarios.push({
                     id: user.id,
                     name: user.tag,
-                    timestampsAnotacoes: [timestampAcao]
+                    timestampsAnotacoes: [timestampAcao],
+                    totalTimeOnline: 0
                 });
             } else if (indexUsuario > -1) {
                 usuariosSingleton.usuarios[indexUsuario].timestampsAnotacoes.push(timestampAcao);
             }
+        }
+
+    });
+}
+
+const adicionarTempoUsuario = async (infoMember: InfoMember): Promise<void> => {
+    if (!infoMember.id || !infoMember.timeOnline) return;
+
+    const user: User = await client.users.fetch(infoMember.id);
+    const userRef: DocumentReference<DocumentData> = doc(db, config().collections.usuarios, user.id);
+    
+    await setDoc(userRef, {
+        id: user.id,
+        name: user.tag,
+        totalTimeOnline: increment(infoMember.timeOnline)
+    }, { merge: true }).then(() => {
+
+        if (usuariosSingleton.usuarios.length === 0) {
+            return;
+        }
+
+        const indexUsuario: number = usuariosSingleton.usuarios.findIndex(u => u.id === user.id);
+
+        if (indexUsuario === -1) {
+            usuariosSingleton.usuarios.push({
+                id: user.id,
+                name: user.tag,
+                timestampsAnotacoes: [],
+                totalTimeOnline: infoMember.timeOnline
+            });
+        } else if (indexUsuario > -1) {
+            usuariosSingleton.usuarios[indexUsuario].totalTimeOnline += infoMember.timeOnline;
         }
 
     });
@@ -125,7 +160,6 @@ const consultarUsuarios = async(): Promise<void> => {
         .map(user => {
             const timestamps: number[] = (user.timestampsAnotacoes as number[] || [] as number[])
                 .map((timestamp: number) => {
-
                     switch (true) {
                         case timestamp <= timestampNewRankMoment:
                             return TypeTimestamp.OLD_TIMESTAMP_RANK;
@@ -134,9 +168,9 @@ const consultarUsuarios = async(): Promise<void> => {
                         default:
                             return timestamp;
                     }
-
                 });
-            return new Usuario(user.id || 0, user.name || '', timestamps);
+
+            return new Usuario(user.id || 0, user.name || '', timestamps, user.totalTimeOnline || 0);
         });
 }
 
@@ -202,5 +236,6 @@ export {
     realizarBackupHorarios,
     adicionarBackupListaBoss,
     consultarBackupsListaBoss,
-    salvarSorteio
+    salvarSorteio,
+    adicionarTempoUsuario
 };
