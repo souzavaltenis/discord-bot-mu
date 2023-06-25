@@ -9,8 +9,10 @@ import { logInOutTextChannel, mainTextChannel } from "../utils/channels-utils";
 export = {
     name: 'voiceStateUpdate',
     execute: async (oldState: VoiceState, newState: VoiceState) => {
-        // Coleta apenas os eventos vinculados ao servidor do canal de texto principal
-        if (![oldState.guild.id, newState.guild.id].includes(mainTextChannel()?.guildId || '')) {
+        const isMainGuild: boolean = [oldState.guild.id, newState.guild.id].includes(mainTextChannel()?.guildId || '');
+        const isBot: boolean = oldState.member?.user.bot ?? newState.member?.user.bot ?? false;
+
+        if (!isMainGuild || isBot) {
             return;
         }
 
