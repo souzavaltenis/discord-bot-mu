@@ -6,7 +6,7 @@ import { dataNowMoment, isSameMoment } from "../../utils/data-utils";
 import { config } from "../../config/get-configs";
 import { usuariosSingleton } from '../../models/singleton/usuarios-singleton';
 import { Moment } from "moment";
-import { getTextPositionRank } from "../../utils/geral-utils";
+import { escapeDiscordText, getTextPositionRank } from "../../utils/geral-utils";
 
 let dataNow: Moment;
 
@@ -49,7 +49,7 @@ const addFieldsRank = (type: string, usuarios: Usuario[], embed: EmbedBuilder, l
         const quantidadeAnotacoes: number = type ? calcularHorariosPorTempo(usuario.timestampsAnotacoes, type) : usuario.timestampsAnotacoes.length;
         if (quantidadeAnotacoes === 0) return;
         const isTop3: boolean = positionRank < 3;
-        msgUsuario += `${getTextPositionRank(positionRank)} ${usuario.name}` +
+        msgUsuario += `${getTextPositionRank(positionRank)} ${escapeDiscordText(usuario.name)}` +
             `  ${bold('→')}  ` +
             `( ${isTop3 ? bold(quantidadeAnotacoes + '') : quantidadeAnotacoes} ${quantidadeAnotacoes > 1 ? 'anotações' : 'anotação'} )\n`;
 

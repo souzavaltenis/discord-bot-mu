@@ -5,7 +5,7 @@ import { bold } from "@discordjs/builders";
 import { formatTimestamp } from "../../utils/data-utils";
 import { config } from "../../config/get-configs";
 import { usuariosSingleton } from '../../models/singleton/usuarios-singleton';
-import { getTextPositionRank } from "../../utils/geral-utils";
+import { escapeDiscordText, getTextPositionRank } from "../../utils/geral-utils";
 
 const getEmbedTabelaRankOnline = (): EmbedBuilder => {
     const usuariosGeral: Usuario[] = usuariosSingleton.usuarios.map((usuario: Usuario) => ({...usuario}));
@@ -16,7 +16,7 @@ const getEmbedTabelaRankOnline = (): EmbedBuilder => {
         .setFooter({ text: config().mu.avisoFooter || 'Rank iniciado em 24/06/23' })
         .setTimestamp();
 
-    const limitUsers: number = 20;
+    const limitUsers: number = 30;
 
     usuariosGeral.sort((a: Usuario, b: Usuario) => {
         return a.totalTimeOnline < b.totalTimeOnline ? 1 : -1;
@@ -30,7 +30,7 @@ const getEmbedTabelaRankOnline = (): EmbedBuilder => {
         const isTop3: boolean = positionRank < 3;
         const textTotalTimeOnline: string = formatTimestamp(usuario.totalTimeOnline);
         
-        textRankOnline += `${getTextPositionRank(positionRank)} ${usuario.name}` +
+        textRankOnline += `${getTextPositionRank(positionRank)} ${escapeDiscordText(usuario.name)}` +
             `  ${bold('→')}  ` +
             `( ${isTop3 ? bold(textTotalTimeOnline + '') : textTotalTimeOnline} )\n`;
 

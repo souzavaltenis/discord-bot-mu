@@ -276,6 +276,10 @@ const getNickGuildMember = (member: GuildMember | null): string => {
     return nickMember || nickUser;
 }
 
+const escapeDiscordText = (nick: string): string => {
+    return nick.replace(/([\_\~\*\>\|])/g, '\\$1');
+}
+
 export { 
     tracos, 
     numberToEmoji, 
@@ -298,5 +302,6 @@ export {
     limparIntervalUpdate,
     chunkArray,
     getTextPositionRank,
-    getNickGuildMember
+    getNickGuildMember,
+    escapeDiscordText
 }
