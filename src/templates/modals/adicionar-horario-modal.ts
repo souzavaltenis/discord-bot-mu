@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ModalBuilder, TextInputBuilder, ModalSubmitInteraction, EmbedBuilder, TextInputStyle, ModalActionRowComponentBuilder } from 'discord.js';
+import { ActionRowBuilder, ModalBuilder, TextInputBuilder, ModalSubmitInteraction, EmbedBuilder, TextInputStyle, ModalActionRowComponentBuilder, GuildMember } from 'discord.js';
 import { Ids } from '../../models/ids';
 import { adicionarAnotacaoHorario, adicionarHorarioBoss } from '../../db/db';
 import { mostrarHorarios } from '../messages/tabela-horario-boss';
@@ -149,9 +149,11 @@ export class AdicionarHorarioModal {
         } as IBossInfoAdd;
 
         adicionarHorarioBoss(bossInfo).then(async () => {
-            await adicionarAnotacaoHorario(interaction.user, bossInfo.timestampAcao);
+            await adicionarAnotacaoHorario(interaction.member as GuildMember, bossInfo.timestampAcao);
+
             const quantidadeAnotacoesUsuario = usuariosSingleton.usuarios.find(u => u.id === interaction.user.id)?.timestampsAnotacoes?.length || 0;
             const embedAddBoss: EmbedBuilder = getEmbedAddBoss(nomeDocBoss, horarioInformado, salaBoss, getNickMember(interaction), quantidadeAnotacoesUsuario);
+            
             await interaction.reply({ embeds: [embedAddBoss] });
             await mostrarHorarios(interaction.channel);
         });

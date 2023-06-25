@@ -5,6 +5,7 @@ import { geralSingleton } from "../models/singleton/geral-singleton";
 import { InfoMember } from "../models/info-member";
 import { adicionarTempoUsuario } from "../db/db";
 import { logInOutTextChannel, mainTextChannel } from "../utils/channels-utils";
+import { getNickGuildMember } from "../utils/geral-utils";
 
 export = {
     name: 'voiceStateUpdate',
@@ -17,6 +18,7 @@ export = {
         }
 
         const idUser: string = oldState.member?.id || newState.member?.id || '';
+        const nickUser: string = getNickGuildMember(oldState.member) || getNickGuildMember(newState.member);
         const isExit: boolean = oldState.channelId !== null && (newState.channelId === null || (newState.channelId !== null && newState.channelId !== oldState.channelId));
         const isEnter: boolean = newState.channelId !== null;
         const timestampNow: number = new Date().valueOf();
@@ -25,7 +27,7 @@ export = {
         let infoMember: InfoMember | undefined = geralSingleton.infoMember.get(idUser);
 
         if (infoMember === undefined) {
-            infoMember = new InfoMember(idUser, 0, 0);
+            infoMember = new InfoMember(idUser, nickUser, 0, 0);
         }
 
         if (isExit) {
@@ -36,7 +38,7 @@ export = {
                 await adicionarTempoUsuario(infoMember);
             }
 
-            let messageExit: string = `[${timestampNowStr}]: ${oldState.member?.displayName} saiu de ${channelMention(oldState.channelId || '')}`;
+            let messageExit: string = `[${timestampNowStr}]: ${nickUser} saiu de ${channelMention(oldState.channelId || '')}`;
             
             if (infoMember.timeOnline) {
                 messageExit += ` (Ficou ${formatTimestamp(infoMember.timeOnline)})`;
@@ -51,7 +53,7 @@ export = {
                 infoMember.lastConnect = timestampNow;
             }
 
-            await logInOutTextChannel()?.send({ content: `[${timestampNowStr}]: ${newState.member?.displayName} entrou em ${channelMention(newState.channelId || '')}` });
+            await logInOutTextChannel()?.send({ content: `[${timestampNowStr}]: ${nickUser} entrou em ${channelMention(newState.channelId || '')}` });
         }
 
         geralSingleton.infoMember.set(idUser, infoMember);

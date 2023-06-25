@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { User } from "discord.js";
+import { GuildMember } from "discord.js";
 import { initializeApp } from "firebase/app";
 import { doc, getFirestore, DocumentData, updateDoc, getDocs, collection, arrayUnion, orderBy, query, setDoc, QuerySnapshot, getDoc, deleteField, limit, increment, DocumentReference } from "firebase/firestore";
 import { Moment } from "moment";
@@ -16,8 +16,8 @@ import { BackupListaBoss } from "../models/backup-lista-boss";
 import { bossConverter, backupListaBossConverter, configConverter, sorteioConverter } from "./converters";
 import { Sorteio } from "../models/sorteio";
 import { TypeTimestamp } from "../models/enum/type-timestamp";
-import { client } from "..";
 import { InfoMember } from "../models/info-member";
+import { getNickGuildMember } from "../utils/geral-utils";
 
 const appFirebase = initializeApp(firebaseConfig);
 const db = getFirestore(appFirebase);
@@ -86,24 +86,24 @@ const consultarHorarioBoss = async (): Promise<Boss[]> => {
     });
 }
 
-const adicionarAnotacaoHorario = async (user: User, timestampAcao: number): Promise<void> => {
-    if (!user || !timestampAcao) return;
+const adicionarAnotacaoHorario = async (member: GuildMember, timestampAcao: number): Promise<void> => {
+    if (!member || !timestampAcao) return;
 
-    const userRef = doc(db, config().collections.usuarios, user.id);
+    const userRef = doc(db, config().collections.usuarios, member.id);
     
     await setDoc(userRef, {
-        id: user.id,
-        name: user.tag,
+        id: member.id,
+        name: getNickGuildMember(member),
         timestampsAnotacoes: arrayUnion(timestampAcao)
     }, { merge: true }).then(() => {
 
         if (usuariosSingleton.usuarios.length > 0) {
-            const indexUsuario: number = usuariosSingleton.usuarios.findIndex(u => u.id === user.id);
+            const indexUsuario: number = usuariosSingleton.usuarios.findIndex(u => u.id === member.id);
     
             if (indexUsuario === -1) {
                 usuariosSingleton.usuarios.push({
-                    id: user.id,
-                    name: user.tag,
+                    id: member.id,
+                    name: getNickGuildMember(member),
                     timestampsAnotacoes: [timestampAcao],
                     totalTimeOnline: 0
                 });
@@ -118,12 +118,11 @@ const adicionarAnotacaoHorario = async (user: User, timestampAcao: number): Prom
 const adicionarTempoUsuario = async (infoMember: InfoMember): Promise<void> => {
     if (!infoMember.id || !infoMember.timeOnline) return;
 
-    const user: User = await client.users.fetch(infoMember.id);
-    const userRef: DocumentReference<DocumentData> = doc(db, config().collections.usuarios, user.id);
+    const userRef: DocumentReference<DocumentData> = doc(db, config().collections.usuarios, infoMember.id);
     
     await setDoc(userRef, {
-        id: user.id,
-        name: user.tag,
+        id: infoMember.id,
+        name: infoMember.nick,
         totalTimeOnline: increment(infoMember.timeOnline)
     }, { merge: true }).then(() => {
 
@@ -131,12 +130,12 @@ const adicionarTempoUsuario = async (infoMember: InfoMember): Promise<void> => {
             return;
         }
 
-        const indexUsuario: number = usuariosSingleton.usuarios.findIndex(u => u.id === user.id);
+        const indexUsuario: number = usuariosSingleton.usuarios.findIndex(u => u.id === infoMember.id);
 
         if (indexUsuario === -1) {
             usuariosSingleton.usuarios.push({
-                id: user.id,
-                name: user.tag,
+                id: infoMember.id,
+                name: infoMember.nick,
                 timestampsAnotacoes: [],
                 totalTimeOnline: infoMember.timeOnline
             });

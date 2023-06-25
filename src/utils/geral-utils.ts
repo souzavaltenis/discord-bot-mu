@@ -269,6 +269,13 @@ const getTextPositionRank = (index: number): string => {
     }
 }
 
+const getNickGuildMember = (member: GuildMember | null): string => {
+    const nickMember: string = member?.nickname || '';
+    const nickUser: string = member?.user.username || '';
+
+    return nickMember || nickUser;
+}
+
 export { 
     tracos, 
     numberToEmoji, 
@@ -290,5 +297,6 @@ export {
     getNameCommandsByCategory,
     limparIntervalUpdate,
     chunkArray,
-    getTextPositionRank
+    getTextPositionRank,
+    getNickGuildMember
 }

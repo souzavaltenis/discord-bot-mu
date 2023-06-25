@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { EmbedBuilder, userMention } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import { Usuario } from "../../models/usuario";
 import { bold } from "@discordjs/builders";
 import { formatTimestamp } from "../../utils/data-utils";
@@ -30,7 +30,7 @@ const getEmbedTabelaRankOnline = (): EmbedBuilder => {
         const isTop3: boolean = positionRank < 3;
         const textTotalTimeOnline: string = formatTimestamp(usuario.totalTimeOnline);
         
-        textRankOnline += `${getTextPositionRank(positionRank)} ${userMention(usuario.id)}` +
+        textRankOnline += `${getTextPositionRank(positionRank)} ${usuario.name}` +
             `  ${bold('→')}  ` +
             `( ${isTop3 ? bold(textTotalTimeOnline + '') : textTotalTimeOnline} )\n`;
 

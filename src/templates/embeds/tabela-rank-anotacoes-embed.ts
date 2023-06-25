@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { EmbedBuilder, userMention } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import { Usuario } from "../../models/usuario";
 import { bold } from "@discordjs/builders";
 import { dataNowMoment, isSameMoment } from "../../utils/data-utils";
@@ -49,7 +49,7 @@ const addFieldsRank = (type: string, usuarios: Usuario[], embed: EmbedBuilder, l
         const quantidadeAnotacoes: number = type ? calcularHorariosPorTempo(usuario.timestampsAnotacoes, type) : usuario.timestampsAnotacoes.length;
         if (quantidadeAnotacoes === 0) return;
         const isTop3: boolean = positionRank < 3;
-        msgUsuario += `${getTextPositionRank(positionRank)} ${userMention(usuario.id)}` +
+        msgUsuario += `${getTextPositionRank(positionRank)} ${usuario.name}` +
             `  ${bold('→')}  ` +
             `( ${isTop3 ? bold(quantidadeAnotacoes + '') : quantidadeAnotacoes} ${quantidadeAnotacoes > 1 ? 'anotações' : 'anotação'} )\n`;
 
