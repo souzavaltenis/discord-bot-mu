@@ -27,21 +27,24 @@ export = {
         let infoMember: InfoMember | undefined = geralSingleton.infoMember.get(idUser);
 
         if (infoMember === undefined) {
-            infoMember = new InfoMember(idUser, nickUser, 0, 0);
+            infoMember = new InfoMember(idUser, nickUser, 0, 0, 0);
         }
 
         if (isExit) {
+            const totalTimeConnection: number = infoMember.connectSince > 0 ? timestampNow - infoMember.connectSince : 0;
+
             if (infoMember.lastConnect !== 0) {
                 infoMember.timeOnline = timestampNow - infoMember.lastConnect;
                 infoMember.lastConnect = 0;
+                infoMember.connectSince = 0;
     
                 await adicionarTempoUsuario(infoMember);
             }
 
             let messageExit: string = `[${timestampNowStr}]: ${nickUser} saiu de ${oldState.channel?.name} <${oldState.guild.name}>`;
             
-            if (infoMember.timeOnline > 1000) {
-                messageExit += ` (Ficou ${formatTimestamp(infoMember.timeOnline)})`;
+            if (totalTimeConnection > 1000) {
+                messageExit += ` (Ficou ${formatTimestamp(totalTimeConnection)})`;
             }
 
             await logInOutTextChannel()?.send({
@@ -53,6 +56,7 @@ export = {
             if (newState.channelId !== config().channels.voiceAfk) {
                 infoMember.timeOnline = 0;
                 infoMember.lastConnect = timestampNow;
+                infoMember.connectSince = timestampNow;
             }
             
             const messageEnter: string = `[${timestampNowStr}]: ${nickUser} entrou em ${newState.channel?.name} <${oldState.guild.name}>`;

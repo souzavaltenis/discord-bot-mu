@@ -240,7 +240,7 @@ const salvarTempoOnlineMembros = async (): Promise<void> => {
 
     await Promise.all(listaRequisicoes).then(() => {
         logInOutTextChannel()?.send({
-            content: codeBlock(`[${dataNowString()}]: O tempo online de ${listaRequisicoes.length} membros foram atualizados`)
+            content: '\u200B\n\u200B\n' + codeBlock(`[${dataNowString()}]: O tempo online de ${listaRequisicoes.length} membros foram atualizados`) + '\u200B\n\u200B\n'
         });
     });
 }
