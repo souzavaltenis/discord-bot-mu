@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { GuildMember } from "discord.js";
+import { GuildMember, codeBlock } from "discord.js";
 import { initializeApp } from "firebase/app";
 import { doc, getFirestore, DocumentData, updateDoc, getDocs, collection, arrayUnion, orderBy, query, setDoc, QuerySnapshot, getDoc, deleteField, limit, increment, DocumentReference } from "firebase/firestore";
 import { Moment } from "moment";
@@ -18,6 +18,8 @@ import { Sorteio } from "../models/sorteio";
 import { TypeTimestamp } from "../models/enum/type-timestamp";
 import { InfoMember } from "../models/info-member";
 import { getNickGuildMember } from "../utils/geral-utils";
+import { geralSingleton } from "../models/singleton/geral-singleton";
+import { logInOutTextChannel } from "../utils/channels-utils";
 
 const appFirebase = initializeApp(firebaseConfig);
 const db = getFirestore(appFirebase);
@@ -222,6 +224,27 @@ const salvarSorteio = async (sorteio: Sorteio): Promise<void> => {
     await setDoc(refDocSorteio, Object.assign(sorteio));
 }
 
+const salvarTempoOnlineMembros = async (): Promise<void> => {
+    const listaRequisicoes: Promise<void>[] = [];
+
+    geralSingleton.infoMember.forEach((infoMember: InfoMember) => {
+        if (infoMember.lastConnect !== 0) {
+            const timestampNow: number = new Date().valueOf();
+
+            infoMember.timeOnline = timestampNow - infoMember.lastConnect;
+            infoMember.lastConnect = timestampNow;
+
+            listaRequisicoes.push(adicionarTempoUsuario(infoMember));
+        }
+    });
+
+    await Promise.all(listaRequisicoes).then(() => {
+        logInOutTextChannel()?.send({
+            content: codeBlock(`[${dataNowString()}]: O tempo online de ${listaRequisicoes.length} membros foram atualizados`)
+        });
+    });
+}
+
 export {
     carregarConfiguracoes,
     carregarDadosBot,
@@ -236,5 +259,6 @@ export {
     adicionarBackupListaBoss,
     consultarBackupsListaBoss,
     salvarSorteio,
-    adicionarTempoUsuario
+    adicionarTempoUsuario,
+    salvarTempoOnlineMembros
 };

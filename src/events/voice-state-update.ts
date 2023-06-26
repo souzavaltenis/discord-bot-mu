@@ -1,4 +1,4 @@
-import { VoiceState, channelMention } from "discord.js";
+import { VoiceState, codeBlock } from "discord.js";
 import { config } from "../config/get-configs";
 import { dataNowString, formatTimestamp } from "../utils/data-utils";
 import { geralSingleton } from "../models/singleton/geral-singleton";
@@ -38,13 +38,15 @@ export = {
                 await adicionarTempoUsuario(infoMember);
             }
 
-            let messageExit: string = `[${timestampNowStr}]: ${nickUser} saiu de ${channelMention(oldState.channelId || '')}`;
+            let messageExit: string = `[${timestampNowStr}]: ${nickUser} saiu de ${oldState.channel?.name} <${oldState.guild.name}>`;
             
-            if (infoMember.timeOnline) {
+            if (infoMember.timeOnline > 1000) {
                 messageExit += ` (Ficou ${formatTimestamp(infoMember.timeOnline)})`;
             }
 
-            await logInOutTextChannel()?.send({ content: messageExit });
+            await logInOutTextChannel()?.send({
+                content: codeBlock(messageExit)
+            });
         }
 
         if (isEnter) {
@@ -52,8 +54,12 @@ export = {
                 infoMember.timeOnline = 0;
                 infoMember.lastConnect = timestampNow;
             }
+            
+            const messageEnter: string = `[${timestampNowStr}]: ${nickUser} entrou em ${newState.channel?.name} <${oldState.guild.name}>`;
 
-            await logInOutTextChannel()?.send({ content: `[${timestampNowStr}]: ${nickUser} entrou em ${channelMention(newState.channelId || '')}` });
+            await logInOutTextChannel()?.send({
+                content: codeBlock(messageEnter)
+            });
         }
 
         geralSingleton.infoMember.set(idUser, infoMember);

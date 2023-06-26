@@ -4,7 +4,7 @@ import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
 import { mainTextChannel } from "../utils/channels-utils";
 import { dataNowMoment } from "../utils/data-utils";
 import { getLogsGeralString } from "../utils/geral-utils";
-import { initBackupListaBoss } from "../utils/backup-utils";
+import { initAllRoutinesBackups } from "../utils/backup-utils";
 import { Client } from "discord.js";
 import { geralSingleton } from "../models/singleton/geral-singleton";
 
@@ -18,6 +18,6 @@ export = {
         await sendMessageKafka(config().kafka.topicLogsGeralBot, getLogsGeralString({ client: client }));
         await mostrarHorarios(mainTextChannel());
 
-        initBackupListaBoss();
+        initAllRoutinesBackups();
     }
 }

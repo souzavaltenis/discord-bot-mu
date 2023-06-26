@@ -1,6 +1,6 @@
 import moment, { Moment } from "moment";
 
-const dataNowString = (pattern: string): string => {
+const dataNowString = (pattern: string = 'HH:mm:ss'): string => {
     return moment().utcOffset('GMT-03:00').format(pattern);
 }
 

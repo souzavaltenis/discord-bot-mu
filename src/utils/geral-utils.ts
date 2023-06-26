@@ -280,6 +280,15 @@ const escapeDiscordText = (nick: string): string => {
     return nick.replace(/([\_\~\*\>\|])/g, '\\$1');
 }
 
+const agendarExecucoes = (msTriggerInit: number, msRepeat: number, callback: () => void) => {
+    setTimeout(() => {
+        (function run() {
+            callback();
+            setTimeout(run, msRepeat);
+        })();
+    }, msTriggerInit);
+}
+
 export { 
     tracos, 
     numberToEmoji, 
@@ -303,5 +312,6 @@ export {
     chunkArray,
     getTextPositionRank,
     getNickGuildMember,
-    escapeDiscordText
+    escapeDiscordText,
+    agendarExecucoes
 }
