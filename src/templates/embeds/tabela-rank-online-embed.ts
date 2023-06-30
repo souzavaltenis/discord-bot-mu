@@ -12,8 +12,8 @@ const getEmbedTabelaRankOnline = (): EmbedBuilder => {
 
     const embedTabelaRankOnline = new EmbedBuilder()
         .setColor("DarkBlue")
-        .setTitle(`Rank de Tempo Online 🏆`)
-        .setFooter({ text: config().mu.avisoFooter || 'Rank iniciado em 24/06/23' })
+        .setTitle(`Rank Tempo Online 🏆`)
+        .setFooter({ text: config().mu.avisoFooter || 'Rank iniciado em 30/06/23' })
         .setTimestamp();
 
     const limitUsers: number = 30;
