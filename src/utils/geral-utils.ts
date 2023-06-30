@@ -271,7 +271,7 @@ const getTextPositionRank = (index: number): string => {
 
 const getNickGuildMember = (member: GuildMember | null): string => {
     const nickMember: string = member?.nickname || '';
-    const nickUser: string = member?.user.username || '';
+    const nickUser: string = member?.user?.username || '';
 
     return nickMember || nickUser;
 }
