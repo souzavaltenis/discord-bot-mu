@@ -3,35 +3,32 @@ import { config } from "../config/get-configs";
 import { adicionarTempoUsuario } from "../db/db";
 import { InfoMember } from "../models/info-member";
 import { geralSingleton } from "../models/singleton/geral-singleton";
-import { mainTextChannel, logInOutTextChannel } from "./channels-utils";
+import { logInOutTextChannel } from "./channels-utils";
 import { dataNowString, formatTimestamp } from "./data-utils";
 import { getNickGuildMember } from "./geral-utils";
 
 async function checkUserMute(oldState: VoiceState, newState: VoiceState): Promise<void> {
-    // No action if member has headset role
-    if (newState.member?.roles.cache.has(config().cargos.headset)) {
+    // No action if member has headset role or not exists member/channel on newState
+    if (newState.member?.roles.cache.has(config().cargos.headset) || !newState.member || !newState.channelId) {
         return;
     }
 
-    // If mute audio on main channel, move to afk channel
-    if (newState.selfDeaf && newState.channelId === config().channels.voiceHorarios) {
+    const isMuted: boolean = newState.selfDeaf || newState.selfDeaf || false;
+    const isNewChannelAfk: boolean = newState.channelId === config().channels.voiceAfk;
+    const isOldChannelAfk: boolean = oldState.channelId === config().channels.voiceAfk;
+
+    // Move member to afk voice channel if mute audio
+    if (isMuted && !isNewChannelAfk) {
         await newState.member?.voice.setChannel(config().channels.voiceAfk);
     }
-    
-    // If unmute audio on afk channel, move to main channel
-    if (oldState.channelId === config().channels.voiceAfk && !newState.selfDeaf && newState.channelId === config().channels.voiceAfk) {
+
+    // Move member to horarios voice channel if unmute audio
+    if (!isMuted && isOldChannelAfk) {
         await newState.member?.voice.setChannel(config().channels.voiceHorarios);
     }
 }
 
 async function checkUserTimeConnection(oldState: VoiceState, newState: VoiceState): Promise<void> {
-    const isMainGuild: boolean = [oldState.guild.id, newState.guild.id].includes(mainTextChannel()?.guildId || '');
-    const isBot: boolean = oldState.member?.user.bot ?? newState.member?.user.bot ?? false;
-
-    if (!isMainGuild || isBot) {
-        return;
-    }
-
     const idUser: string = oldState.member?.id || newState.member?.id || '';
     const nickUser: string = getNickGuildMember(oldState.member) || getNickGuildMember(newState.member);
     const isExit: boolean = oldState.channelId !== null && (newState.channelId === null || (newState.channelId !== null && newState.channelId !== oldState.channelId));
