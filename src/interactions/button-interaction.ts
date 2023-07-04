@@ -26,10 +26,6 @@ export = {
     action: async (interaction: ButtonInteraction): Promise<void> => {
         const listaBoss: Boss[] = ListBossSingleton.getInstance().boss;
         const buttons: ButtonBuilder[] = getButtonsTabela();
-
-        if (interaction.customId !== Ids.BUTTON_TABLE_ADD_HORARIO) {
-            await interaction.deferUpdate();
-        }
         
         sendMessageKafka(config().kafka.topicLogsGeralBot, getLogsGeralString({ msgInteraction: interaction }));
 
@@ -44,13 +40,15 @@ export = {
 
         switch(interaction.customId) {
             // Button Todos
-            case Ids.BUTTON_TABLE_BOSS: 
+            case Ids.BUTTON_TABLE_BOSS:
                 embedSelecionada = getEmbedTabelaBoss(listaBoss);
+                await interaction.deferUpdate();
                 break;
 
             // Button Vencidos
-            case Ids.BUTTON_TABLE_VENCIDOS: 
-                embedSelecionada = getEmbedTabelaVencidos(listaBoss); 
+            case Ids.BUTTON_TABLE_VENCIDOS:
+                embedSelecionada = getEmbedTabelaVencidos(listaBoss);
+                await interaction.deferUpdate();
                 break;
 
             // Button Proximos
@@ -64,6 +62,7 @@ export = {
 
                 embedSelecionada = getEmbedTabelaProximos(isAbrir, listaBoss);
                 rowButtons.push(disableSubButton(getButtonsProximos(), idButtonProximos));
+                await interaction.deferUpdate();
                 break;
             
             // Button Rank
@@ -75,6 +74,7 @@ export = {
                 const isRankAnotacoes: boolean = [Ids.BUTTON_TABLE_RANK, Ids.BUTTON_TABLE_RANK_ANOTACOES].includes(idButtonRank);
                 embedSelecionada = isRankAnotacoes ? getEmbedTabelaRankAnotacoes() : getEmbedTabelaRankOnline();
                 rowButtons.push(disableSubButton(getButtonsRank(), idButtonRank));
+                await interaction.deferUpdate();
                 break;
 
             // Button Histórico
@@ -82,12 +82,13 @@ export = {
                 embedSelecionada = getEmbedAvisoHistorico();
                 backupsBossSingleton.backups = await consultarBackupsListaBoss();
                 rowSelects.push(getSelectMenuBackup(backupsBossSingleton.backups));
+                await interaction.deferUpdate();
                 break;
             
             // Button Adicionar
             case Ids.BUTTON_TABLE_ADD_HORARIO:
                 embedSelecionada = getEmbedTabelaBoss(listaBoss);
-                interaction.showModal(new AdicionarHorarioModal().getModal());
+                await interaction.showModal(new AdicionarHorarioModal().getModal());
                 break;
         }
 
