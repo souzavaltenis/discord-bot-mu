@@ -2,18 +2,20 @@
 import { EmbedBuilder } from "discord.js";
 import { Usuario } from "../../models/usuario";
 import { bold } from "@discordjs/builders";
-import { formatTimestamp } from "../../utils/data-utils";
+import { formatTimestamp, stringToMoment } from "../../utils/data-utils";
 import { config } from "../../config/get-configs";
 import { usuariosSingleton } from '../../models/singleton/usuarios-singleton';
 import { escapeDiscordText, getTextPositionRank } from "../../utils/geral-utils";
+import { Moment } from "moment";
 
 const getEmbedTabelaRankOnline = (): EmbedBuilder => {
     const usuariosGeral: Usuario[] = usuariosSingleton.usuarios.map((usuario: Usuario) => ({...usuario}));
+    const dataNewRank: Moment = stringToMoment(config().geral.dateNewRank);
 
     const embedTabelaRankOnline = new EmbedBuilder()
         .setColor("DarkBlue")
         .setTitle(`Rank Tempo Online 🏆`)
-        .setFooter({ text: config().mu.avisoFooter || 'Rank iniciado em 30/06/23' })
+        .setFooter({ text: config().mu.avisoFooter || `Rank iniciado em ${dataNewRank.format('DD/MM/YYYY')}` })
         .setTimestamp();
 
     const limitUsers: number = 30;

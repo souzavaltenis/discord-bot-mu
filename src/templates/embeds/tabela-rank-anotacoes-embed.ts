@@ -2,7 +2,7 @@
 import { EmbedBuilder } from "discord.js";
 import { Usuario } from "../../models/usuario";
 import { bold } from "@discordjs/builders";
-import { dataNowMoment, isSameMoment } from "../../utils/data-utils";
+import { dataNowMoment, isSameMoment, stringToMoment } from "../../utils/data-utils";
 import { config } from "../../config/get-configs";
 import { usuariosSingleton } from '../../models/singleton/usuarios-singleton';
 import { Moment } from "moment";
@@ -13,11 +13,12 @@ let dataNow: Moment;
 const getEmbedTabelaRankAnotacoes = (): EmbedBuilder => {
     dataNow = dataNowMoment();
     const usuariosGeral: Usuario[] = usuariosSingleton.usuarios.map((usuario: Usuario) => ({...usuario}));
-
+    const dataNewRank: Moment = stringToMoment(config().geral.dateNewRank);
+    
     const embedTabelaRank = new EmbedBuilder()
         .setColor("DarkBlue")
         .setTitle(`Rank Anotações 🏆`)
-        .setFooter({ text: config().mu.avisoFooter || 'Rank iniciado em 30/06/23' })
+        .setFooter({ text: config().mu.avisoFooter || `Rank iniciado em ${dataNewRank.format('DD/MM/YYYY')}` })
         .setTimestamp();
 
     const limitUsers: number = 10;
