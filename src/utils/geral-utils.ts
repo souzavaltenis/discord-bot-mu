@@ -16,6 +16,7 @@ import { intervalUpdate } from "../models/singleton/interval-singleton";
 import { sendMessageKafka } from "../services/kafka/kafka-producer";
 import { vaiAbrirBoss } from "./boss-utils";
 import { dataNowMoment } from "./data-utils";
+import { TimeoutSingleton } from "../models/singleton/timeout-singleton";
 
 const tracos = (quantidade: number): string => {
     let str: string = '';
@@ -290,6 +291,16 @@ const agendarExecucoes = (msTriggerInit: number, msRepeat: number, callback: () 
     }, msTriggerInit);
 }
 
+const sinalizarAlteracaoPeloBot = (): void => {
+    clearTimeout(TimeoutSingleton.getInstance().timeoutAlteracaoBdBot);
+
+    geralSingleton.updateBotInProgress = true;
+    
+    TimeoutSingleton.getInstance().timeoutAlteracaoBdBot = setTimeout(() => {
+        geralSingleton.updateBotInProgress = false;
+    }, 10000);
+};
+
 export { 
     tracos, 
     numberToEmoji, 
@@ -314,5 +325,6 @@ export {
     getTextPositionRank,
     getNickGuildMember,
     escapeDiscordText,
-    agendarExecucoes
+    agendarExecucoes,
+    sinalizarAlteracaoPeloBot
 }

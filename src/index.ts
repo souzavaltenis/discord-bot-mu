@@ -5,6 +5,7 @@ import { listenerErrors } from './utils/aviso-erro';
 import { loadCommands } from './handlers/commands-handler';
 import { deployCommands } from './utils/deploy-commands';
 import { loadInteractions } from './handlers/interactions-handler';
+import { listenersFirestore } from './db/listeners';
 
 const client = new Client({
     intents: [
@@ -20,6 +21,7 @@ loadData().then(async () => {
     await client.login(config().bot.token);
     await deployCommands();
 
+    listenersFirestore();
     listenerErrors();
 });
 

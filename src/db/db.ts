@@ -2,7 +2,25 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { GuildMember, codeBlock } from "discord.js";
 import { initializeApp } from "firebase/app";
-import { doc, getFirestore, DocumentData, updateDoc, getDocs, collection, arrayUnion, orderBy, query, setDoc, QuerySnapshot, getDoc, deleteField, limit, increment, DocumentReference, DocumentSnapshot } from "firebase/firestore";
+import {
+    doc,
+    getFirestore,
+    DocumentData,
+    updateDoc,
+    setDoc,
+    getDocs,
+    collection,
+    arrayUnion,
+    orderBy,
+    query,
+    QuerySnapshot,
+    getDoc,
+    deleteField,
+    limit,
+    increment,
+    DocumentReference,
+    DocumentSnapshot
+} from "firebase/firestore";
 import { Moment } from "moment";
 import { firebaseConfig, collectionConfig, documentConfigProd, documentConfigTest } from '../config/config.json';
 import { Boss } from "../models/boss";
@@ -17,7 +35,7 @@ import { bossConverter, backupListaBossConverter, configConverter, sorteioConver
 import { Sorteio } from "../models/sorteio";
 import { TypeTimestamp } from "../models/enum/type-timestamp";
 import { InfoMember } from "../models/info-member";
-import { getNickGuildMember } from "../utils/geral-utils";
+import { getNickGuildMember, sinalizarAlteracaoPeloBot } from "../utils/geral-utils";
 import { geralSingleton } from "../models/singleton/geral-singleton";
 import { logInOutTextChannel } from "../utils/channels-utils";
 
@@ -44,6 +62,8 @@ const carregarDadosBot = async (): Promise<void> => {
 }
 
 const sincronizarConfigsBot = async (): Promise<void> => {
+    sinalizarAlteracaoPeloBot();
+    
     const docConfigRef = doc(db, collectionConfig, botIsProd ? documentConfigProd : documentConfigTest).withConverter(configConverter);
     await setDoc(docConfigRef, config(), { merge: true });
 }
@@ -65,6 +85,7 @@ const removerSala = async (sala: number): Promise<void> => {
     const documentsBoss: string[] = Object.values(config().documents);
 
     for (const docBoss of documentsBoss) {
+        sinalizarAlteracaoPeloBot();
         const bossRef = doc(db, config().collections.boss, docBoss);
         await updateDoc(bossRef, {
             [`salas.${sala}`]: deleteField()
@@ -73,6 +94,8 @@ const removerSala = async (sala: number): Promise<void> => {
 }
 
 const adicionarHorarioBoss = async (bossInfo: IBossInfoAdd): Promise<void> => {
+    sinalizarAlteracaoPeloBot();
+
     const bossRef = doc(db, config().collections.boss, bossInfo.nomeDocBoss);
     return updateDoc(bossRef, {
         [`salas.${bossInfo.salaBoss}`]: bossInfo.horarioInformado
@@ -262,6 +285,7 @@ const isBossAtivo = async (nomeDocBoss: string): Promise<boolean> => {
 }
 
 export {
+    db,
     carregarConfiguracoes,
     carregarDadosBot,
     sincronizarConfigsBot,
