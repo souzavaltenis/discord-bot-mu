@@ -15,7 +15,7 @@ const bossConverter = {
         salasMoment.forEach((value, key) => {
             salasString.set(key, momentToString(value));
         });
-        return { id: boss.id, nome: boss.nome, salas: Object.fromEntries(salasString) };
+        return { id: boss.id, nome: boss.nome, salas: Object.fromEntries(salasString), ativo: boss.ativo };
     },
     fromFirestore(snapshot: QueryDocumentSnapshot, options: SnapshotOptions): Boss {
         const data = snapshot.data(options);
@@ -23,7 +23,7 @@ const bossConverter = {
         Object.keys(data.salas).forEach(key => {
             salas.set(parseInt(key), stringToMoment(data.salas[key]))
         });
-        return new Boss(data.id, data.nome, salas);
+        return new Boss(data.id, data.nome, salas, data.ativo);
     }
 };
 
@@ -40,7 +40,7 @@ const backupListaBossConverter = {
                 salas.set(parseInt(key), stringToMoment(element.salas[key]))
             });
 
-            return new Boss(element.id, element.nome, salas);
+            return new Boss(element.id, element.nome, salas, element.ativo);
         });
 
         return new BackupListaBoss(data.timestamp, listaBoss);

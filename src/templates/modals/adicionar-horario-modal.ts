@@ -1,6 +1,6 @@
 import { ActionRowBuilder, ModalBuilder, TextInputBuilder, ModalSubmitInteraction, EmbedBuilder, TextInputStyle, ModalActionRowComponentBuilder, GuildMember } from 'discord.js';
 import { Ids } from '../../models/ids';
-import { adicionarAnotacaoHorario, adicionarHorarioBoss } from '../../db/db';
+import { adicionarAnotacaoHorario, adicionarHorarioBoss, isBossAtivo } from '../../db/db';
 import { mostrarHorarios } from '../messages/tabela-horario-boss';
 import { config } from '../../config/get-configs';
 import { dataNowMoment, dataNowString, distanceDatasInMinutes, momentToString, stringToMoment } from '../../utils/data-utils';
@@ -89,6 +89,18 @@ export class AdicionarHorarioModal {
 
         if (!nomeDocBoss) {
             const msgErroBoss: string = `${interaction.user} Boss (${bold(textInputNomeBoss)}) não é reconhecido!`;
+            await sendLogErroInput(interaction, msgErroBoss);
+            await interaction.reply({
+                content: msgErroBoss,
+                ephemeral: true
+            });
+            return;
+        }
+
+        const bossAtivo: boolean = await isBossAtivo(nomeDocBoss);
+
+        if (!bossAtivo) {
+            const msgErroBoss: string = `${interaction.user} Boss (${bold(textInputNomeBoss)}) está desativado!`;
             await sendLogErroInput(interaction, msgErroBoss);
             await interaction.reply({
                 content: msgErroBoss,

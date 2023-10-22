@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { GuildMember, codeBlock } from "discord.js";
 import { initializeApp } from "firebase/app";
-import { doc, getFirestore, DocumentData, updateDoc, getDocs, collection, arrayUnion, orderBy, query, setDoc, QuerySnapshot, getDoc, deleteField, limit, increment, DocumentReference } from "firebase/firestore";
+import { doc, getFirestore, DocumentData, updateDoc, getDocs, collection, arrayUnion, orderBy, query, setDoc, QuerySnapshot, getDoc, deleteField, limit, increment, DocumentReference, DocumentSnapshot } from "firebase/firestore";
 import { Moment } from "moment";
 import { firebaseConfig, collectionConfig, documentConfigProd, documentConfigTest } from '../config/config.json';
 import { Boss } from "../models/boss";
@@ -80,12 +80,19 @@ const adicionarHorarioBoss = async (bossInfo: IBossInfoAdd): Promise<void> => {
 }
 
 const consultarHorarioBoss = async (): Promise<Boss[]> => {
-    return new Promise<Boss[]>(async (resolve) => {
-        const querySnapshot = await getDocs(query(collection(db, config().collections.boss), orderBy("id")).withConverter(bossConverter));
-        const listaBoss = [] as Boss[];
-        querySnapshot.forEach(boss => listaBoss.push(boss.data()));
-        resolve(listaBoss);
+    const querySnapshot = await getDocs(query(collection(db, config().collections.boss), orderBy("id")).withConverter(bossConverter));
+    
+    const listaBoss = [] as Boss[];
+
+    querySnapshot.forEach(snapshot => {
+        const boss: Boss = snapshot.data();
+
+        if (boss.ativo) {
+            listaBoss.push(boss);
+        }
     });
+
+    return listaBoss;
 }
 
 const adicionarAnotacaoHorario = async (member: GuildMember, timestampAcao: number): Promise<void> => {
@@ -245,6 +252,15 @@ const salvarTempoOnlineMembros = async (): Promise<void> => {
     });
 }
 
+const isBossAtivo = async (nomeDocBoss: string): Promise<boolean> => {
+    const documentReference: DocumentReference = doc(db, config().collections.boss, nomeDocBoss);
+    const documentSnapshot: DocumentSnapshot = await getDoc(documentReference);
+
+    const boss: Boss = documentSnapshot.data() as Boss;
+
+    return boss.ativo;
+}
+
 export {
     carregarConfiguracoes,
     carregarDadosBot,
@@ -260,5 +276,6 @@ export {
     consultarBackupsListaBoss,
     salvarSorteio,
     adicionarTempoUsuario,
-    salvarTempoOnlineMembros
+    salvarTempoOnlineMembros,
+    isBossAtivo
 };
