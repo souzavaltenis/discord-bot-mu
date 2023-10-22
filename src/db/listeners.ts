@@ -1,22 +1,33 @@
-import { CollectionReference, collection, onSnapshot } from "@firebase/firestore";
-import { db } from "./db";
+import { CollectionReference, DocumentData, QuerySnapshot, collection, onSnapshot } from "@firebase/firestore";
+import { carregarConfiguracoes, db } from "./db";
 import { config } from "../config/get-configs";
 import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
 import { mainTextChannel } from "../utils/channels-utils";
-import { geralSingleton } from "../models/singleton/geral-singleton";
+import { existeAtualizacaoExterna } from "../utils/geral-utils";
+import { collectionConfig } from '../config/config.json';
 
 function listenersFirestore() {
     listenerUpdatesBoss();
+    listenerUpdatesConfig();
 }
 
 function listenerUpdatesBoss(): void {
-    const collectionRef: CollectionReference = collection(db, config().collections.boss);
+    const bossCollectionRef: CollectionReference = collection(db, config().collections.boss);
 
-    onSnapshot(collectionRef, (snapshot) => {
-        const hasBossUpdates: boolean = snapshot.docChanges().some(change => change.type === "modified");
+    onSnapshot(bossCollectionRef, async (snapshot: QuerySnapshot<DocumentData>): Promise<void> => {
+        if (existeAtualizacaoExterna(snapshot.docChanges())) {
+            await mostrarHorarios(mainTextChannel());
+        }
+    });
+}
 
-        if (hasBossUpdates && !geralSingleton.updateBotInProgress) {
-            mostrarHorarios(mainTextChannel());
+function listenerUpdatesConfig(): void {
+    const configCollectionRef: CollectionReference = collection(db, collectionConfig);
+
+    onSnapshot(configCollectionRef, async (snapshot: QuerySnapshot<DocumentData>): Promise<void> => {
+        if (existeAtualizacaoExterna(snapshot.docChanges())) {
+            await carregarConfiguracoes();
+            await mostrarHorarios(mainTextChannel());
         }
     });
 }

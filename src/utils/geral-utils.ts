@@ -17,6 +17,7 @@ import { sendMessageKafka } from "../services/kafka/kafka-producer";
 import { vaiAbrirBoss } from "./boss-utils";
 import { dataNowMoment } from "./data-utils";
 import { TimeoutSingleton } from "../models/singleton/timeout-singleton";
+import { DocumentChange } from "@firebase/firestore";
 
 const tracos = (quantidade: number): string => {
     let str: string = '';
@@ -301,6 +302,12 @@ const sinalizarAlteracaoPeloBot = (): void => {
     }, 10000);
 };
 
+const existeAtualizacaoExterna = (documentsChange: DocumentChange[]): boolean => {
+    const hasUpdate: boolean = documentsChange.some(change => change.type === "modified");
+    const hasInternalUpdate = geralSingleton.updateBotInProgress;
+    return hasUpdate && !hasInternalUpdate;
+};
+
 export { 
     tracos, 
     numberToEmoji, 
@@ -326,5 +333,6 @@ export {
     getNickGuildMember,
     escapeDiscordText,
     agendarExecucoes,
-    sinalizarAlteracaoPeloBot
+    sinalizarAlteracaoPeloBot,
+    existeAtualizacaoExterna
 }
