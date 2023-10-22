@@ -70,7 +70,8 @@ export = {
                         { name: 'Relics',     value: config().documents.relics },
                         { name: 'Fenix',      value: config().documents.fenix },
                         { name: 'Death Beam', value: config().documents.deathBeam },
-                        { name: 'Genocider',  value: config().documents.geno }
+                        { name: 'Genocider',  value: config().documents.geno },
+                        { name: 'Hell Maine',  value: config().documents.hell }
                     );
         
                     return option;

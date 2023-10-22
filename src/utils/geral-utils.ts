@@ -70,6 +70,7 @@ const getIdBossByDoc = (nomeDocBoss: string): number => {
         case config().documents.fenix:     return 3;
         case config().documents.deathBeam: return 4;
         case config().documents.geno:      return 5;
+        case config().documents.hell:      return 6;
         default: return 0;
     }
 }

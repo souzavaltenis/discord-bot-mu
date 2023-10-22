@@ -4,4 +4,5 @@ export interface IValoresNomeBoss {
     geno: string[];
     rei: string[];
     relics: string[];
+    hell: string[];
 }

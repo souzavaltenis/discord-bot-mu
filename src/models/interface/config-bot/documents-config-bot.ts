@@ -4,4 +4,5 @@ export interface IDocumentsConfigBot {
     geno: string;
     rei: string;
     relics: string;
+    hell: string;
 }

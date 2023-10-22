@@ -21,7 +21,7 @@ export class AdicionarHorarioModal {
         const inputNomeBoss = new TextInputBuilder()
             .setCustomId(Ids.INPUT_NOME_BOSS)
             .setLabel("Qual boss?")
-            .setPlaceholder("Ex: rei, fenix, relics, dbk, geno")
+            .setPlaceholder("Ex: rei, fenix, relics, dbk, geno, hell")
             .setMinLength(1)
             .setMaxLength(20)
             .setRequired(true)
@@ -76,6 +76,7 @@ export class AdicionarHorarioModal {
         const valoresFenix: string[] = config().geral.valoresNomeBoss.fenix;
         const valoresDbk: string[] = config().geral.valoresNomeBoss.dbk;
         const valoresGeno: string[] = config().geral.valoresNomeBoss.geno;
+        const valoresHell: string[] = config().geral.valoresNomeBoss.hell;
         
         switch (true) {
             case valoresRei.includes(textInputNomeBoss):    nomeDocBoss = config().documents.rei;       break;
@@ -83,6 +84,7 @@ export class AdicionarHorarioModal {
             case valoresFenix.includes(textInputNomeBoss):  nomeDocBoss = config().documents.fenix;     break;
             case valoresDbk.includes(textInputNomeBoss):    nomeDocBoss = config().documents.deathBeam; break;
             case valoresGeno.includes(textInputNomeBoss):   nomeDocBoss = config().documents.geno;      break;
+            case valoresHell.includes(textInputNomeBoss):   nomeDocBoss = config().documents.hell;      break;
         }
 
         if (!nomeDocBoss) {
