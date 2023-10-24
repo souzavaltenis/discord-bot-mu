@@ -35,7 +35,8 @@ const formatTimestamp = (timestamp: number): string => {
     let textTimestamp: string = '';
     
     const duration = moment.duration(timestamp);
-    const days = duration.days();
+    
+    const days = ~~duration.asDays();
     const hours = duration.hours();
     const minutes = duration.minutes();
     const seconds = duration.seconds();
