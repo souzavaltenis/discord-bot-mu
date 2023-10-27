@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { GuildMember, codeBlock } from "discord.js";
+import { GuildMember, User, codeBlock } from "discord.js";
 import { initializeApp } from "firebase/app";
 import {
     doc,
@@ -19,7 +19,8 @@ import {
     limit,
     increment,
     DocumentReference,
-    DocumentSnapshot
+    DocumentSnapshot,
+    arrayRemove
 } from "firebase/firestore";
 import { Moment } from "moment";
 import { firebaseConfig, collectionConfig, documentConfigProd, documentConfigTest } from '../config/config.json';
@@ -38,6 +39,7 @@ import { InfoMember } from "../models/info-member";
 import { getNickGuildMember, sinalizarAlteracaoPeloBot } from "../utils/geral-utils";
 import { geralSingleton } from "../models/singleton/geral-singleton";
 import { logInOutTextChannel } from "../utils/channels-utils";
+import { INickInfo } from "../models/interface/nick-info";
 
 const appFirebase = initializeApp(firebaseConfig);
 const db = getFirestore(appFirebase);
@@ -137,7 +139,8 @@ const adicionarAnotacaoHorario = async (member: GuildMember, timestampAcao: numb
                     id: member.id,
                     name: getNickGuildMember(member),
                     timestampsAnotacoes: [timestampAcao],
-                    totalTimeOnline: 0
+                    totalTimeOnline: 0,
+                    nicks: []
                 });
             } else if (indexUsuario > -1) {
                 usuariosSingleton.usuarios[indexUsuario].timestampsAnotacoes.push(timestampAcao);
@@ -169,13 +172,80 @@ const adicionarTempoUsuario = async (infoMember: InfoMember): Promise<void> => {
                 id: infoMember.id,
                 name: infoMember.nick,
                 timestampsAnotacoes: [],
-                totalTimeOnline: infoMember.timeOnline
+                totalTimeOnline: infoMember.timeOnline,
+                nicks: []
             });
         } else if (indexUsuario > -1) {
             usuariosSingleton.usuarios[indexUsuario].totalTimeOnline += infoMember.timeOnline;
         }
 
     });
+}
+
+const ativarMembroPT = async (nick: string, userDiscord: User, idUserAtivacao: string): Promise<void> => {
+    const userRef: DocumentReference<DocumentData> = doc(db, config().collections.usuarios, userDiscord.id);
+
+    const nickInfoNovo: INickInfo = {
+        nick: nick,
+        ativo: true,
+        timestampAtivacao: new Date().valueOf(),
+        idUserAtivacao: idUserAtivacao,
+        timestampRemocao: 0,
+        idUserRemocao: ''
+    } as INickInfo;
+    
+    await setDoc(userRef, {
+        id: userDiscord.id,
+        name: userDiscord.username,
+        nicks: arrayUnion(nickInfoNovo)
+    }, { merge: true });
+    
+    const indexUsuario: number = usuariosSingleton.usuarios.findIndex(u => u.id === userDiscord.id);
+    const indexNick: number = usuariosSingleton.usuarios[indexUsuario]?.nicks?.findIndex(n => n.nick === nick) || -1;
+
+    // Remove no DB o nick antigo
+    if (indexNick > -1) {
+        const nickInfoAntigo: INickInfo = usuariosSingleton.usuarios[indexUsuario].nicks[indexNick];
+
+        await setDoc(userRef, { nicks: arrayRemove(nickInfoAntigo) }, { merge: true });
+    }
+
+    // Mantendo a lista usuário local atualizada
+    if (indexUsuario === -1) { // Usuário novo sem nick (Adicionar usuário e nick)
+        usuariosSingleton.usuarios.push({
+            id: userDiscord.id,
+            name: userDiscord.username,
+            timestampsAnotacoes: [],
+            totalTimeOnline: 0,
+            nicks: [nickInfoNovo]
+        });
+    } else if (indexNick > -1) { // Usuário velho com nick (Atualizar nick)
+        usuariosSingleton.usuarios[indexUsuario].nicks[indexNick] = nickInfoNovo;
+    } else { // Usuário velho sem nick (Adicionar nick)
+        usuariosSingleton.usuarios[indexUsuario].nicks.push(nickInfoNovo);
+    }
+}
+
+const desativarMembroPT = async (nick: string, userDiscord: User, idUserRemocao: string): Promise<void> => {
+    const userRef: DocumentReference<DocumentData> = doc(db, config().collections.usuarios, userDiscord.id);
+
+    const indexUsuario: number = usuariosSingleton.usuarios.findIndex(u => u.id === userDiscord.id);
+    const indexNickUsuario: number = usuariosSingleton.usuarios[indexUsuario].nicks.findIndex(n => n.nick === nick);
+    const nickInfoAntigo: INickInfo = usuariosSingleton.usuarios[indexUsuario].nicks[indexNickUsuario];
+    
+    const nickInfoNovo: INickInfo = {
+        nick: nick,
+        ativo: false,
+        timestampAtivacao: 0,
+        idUserAtivacao: '',
+        timestampRemocao: new Date().valueOf(),
+        idUserRemocao: idUserRemocao
+    } as INickInfo;
+
+    await setDoc(userRef, { nicks: arrayRemove(nickInfoAntigo) }, { merge: true });
+    await setDoc(userRef, { nicks: arrayUnion(nickInfoNovo) }, { merge: true });
+    
+    usuariosSingleton.usuarios[indexUsuario].nicks.splice(indexNickUsuario, 1);
 }
 
 const consultarUsuarios = async(): Promise<void> => {
@@ -200,8 +270,8 @@ const consultarUsuarios = async(): Promise<void> => {
                             return timestamp;
                     }
                 });
-
-            return new Usuario(user.id || 0, user.name || '', timestamps, user.totalTimeOnline || 0);
+            
+            return new Usuario(user.id || 0, user.name || '', timestamps, user.totalTimeOnline || 0, user.nicks || []);
         });
 }
 
@@ -301,5 +371,7 @@ export {
     salvarSorteio,
     adicionarTempoUsuario,
     salvarTempoOnlineMembros,
-    isBossAtivo
+    isBossAtivo,
+    ativarMembroPT,
+    desativarMembroPT
 };
