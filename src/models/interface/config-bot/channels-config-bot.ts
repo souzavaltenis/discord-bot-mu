@@ -5,4 +5,6 @@ export interface IChannelsConfigBot {
     voiceHorarios: string;
     voiceBC: string;
     textLogInOut: string;
+    textInfoNickPT: string;
+    textGerenciarNickPT: string;
 }

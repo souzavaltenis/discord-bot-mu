@@ -5,6 +5,7 @@ import { usuariosSingleton } from "../models/singleton/usuarios-singleton";
 import { Usuario } from "../models/usuario";
 import { client } from "..";
 import { INickInfo } from "../models/interface/nick-info";
+import { config } from "../config/get-configs";
 
 export = {
     category: CategoryCommand.GERAL,
@@ -26,8 +27,15 @@ export = {
             return subcommand;
         }),
         
-    execute: async (interaction: ChatInputCommandInteraction): Promise<void> => {
+    execute: async (interaction: ChatInputCommandInteraction): Promise<void | InteractionResponse<boolean>> => {
         const opcaoSubCommand: string = interaction.options.getSubcommand();
+
+        if (interaction.channelId !== config().channels.textGerenciarNickPT) {
+            return await interaction.reply({
+                content: `Esse comando só pode ser usado no canal <#${config().channels.textGerenciarNickPT}>`,
+                ephemeral: true
+            });
+        }
 
         switch (opcaoSubCommand) {
             case "add": await subCommandAdd(interaction); break;
@@ -44,14 +52,14 @@ export = {
 
             if (usuarioPT) {
                 return await interaction.reply({
-                    content: `Nick \`${nick}\` já está setado para o usuário <@${usuarioPT.id}>`
+                    content: `[ℹ️] \`${nick}\` já está setado para o usuário <@${usuarioPT.id}>`
                 });
             }
 
             await ativarMembroPT(nick, userDiscord, interaction.user.id);
 
             return await interaction.reply({
-                content: `[✅] Nick \`${nick}\` foi **adicionado** a PT`
+                content: `[✅] \`${nick}\` foi **adicionado** a PT`
             });
         }
 
@@ -73,7 +81,7 @@ export = {
             await desativarMembroPT(nick, userDiscord, interaction.user.id);
 
             return await interaction.reply({
-                content: `[🗑️] Nick \`${nick}\` foi **removido** da PT`
+                content: `[🗑️] \`${nick}\` foi **removido** da PT`
             });
         }
     }
