@@ -12,20 +12,35 @@ export = {
     data: new SlashCommandBuilder()
         .setName('pt')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
-        .setDescription('Gerenciar membros da PT de Boss')
-        .addSubcommand(subcommand => {
+        .setDescription('Gerenciar nicks de membros da PT de Boss')
+        .addSubcommand(subcommand =>
             subcommand.setName('add')
                 .setDescription('Adicionar nick da PT')
-                .addStringOption(option => option.setName('nick').setDescription('Qual nick deseja adicionar a PT?').setRequired(true))
-                .addUserOption(option => option.setName('user_discord').setDescription('Qual usuário do discord vinculado a esse nick?').setRequired(true));
-            return subcommand;
-        })
-        .addSubcommand(subcommand => {
+                .addStringOption(option =>
+                    option.setName('nick')
+                    .setDescription('Qual nick deseja adicionar a PT?')
+                    .setRequired(true)
+                    .setMinLength(4)
+                    .setMaxLength(10)
+                )
+                .addUserOption(option =>
+                    option.setName('user_discord')
+                    .setDescription('Qual usuário do discord esta vinculado com esse nick?')
+                    .setRequired(true)
+                )
+        )
+        .addSubcommand(subcommand =>
             subcommand.setName('remove')
                 .setDescription('Remover nick da PT')
-                .addStringOption(option => option.setName('nick').setDescription('Qual nick deseja remover da PT?').setRequired(true));
-            return subcommand;
-        }),
+                .addStringOption(option =>
+                    option.setName('nick')
+                        .setDescription('Qual nick deseja remover da PT?')
+                        .setAutocomplete(true)
+                        .setRequired(true)
+                        .setMinLength(4)
+                        .setMaxLength(10)
+                )
+        ),
         
     execute: async (interaction: ChatInputCommandInteraction): Promise<void | InteractionResponse<boolean>> => {
         const opcaoSubCommand: string = interaction.options.getSubcommand();
@@ -46,20 +61,28 @@ export = {
             const nick: string = interaction.options.getString('nick', true);
             const userDiscord: User = interaction.options.getUser('user_discord', true);
 
+            if (!/^[a-zA-Z_0-9]{4,10}$/.test(nick)) {
+                return await interaction.reply({
+                    content: `[ℹ️] O nick \`${nick}\` é inválido`,
+                    ephemeral: true
+                });
+            }
+
             const usuarioPT: Usuario | undefined = usuariosSingleton.usuarios.find((u: Usuario) => {
                 return u.nicks.some((n: INickInfo) => n.nick.toLowerCase() === nick.toLowerCase() && n.ativo);
             });
 
             if (usuarioPT) {
                 return await interaction.reply({
-                    content: `[ℹ️] \`${nick}\` já está setado para o usuário <@${usuarioPT.id}>`
+                    content: `[ℹ️] O nick \`${nick}\` já está em uso pelo membro <@${usuarioPT.id}> da PT`,
+                    ephemeral: true
                 });
             }
 
             await ativarMembroPT(nick, userDiscord, interaction.user.id);
 
             return await interaction.reply({
-                content: `[✅] \`${nick}\` foi **adicionado** como membro da PT`
+                content: `[✅] O nick \`${nick}\` foi **adicionado** ao membro <@${userDiscord.id}> da PT`
             });
         }
 
