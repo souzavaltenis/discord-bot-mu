@@ -9,16 +9,16 @@ async function verificarMensagemNick(message: Message): Promise<Message<boolean>
     let nickInfo: INickInfo | undefined;
     
     const usuarioPT: Usuario | undefined = usuariosSingleton.usuarios.find((u: Usuario) => {
-        nickInfo = u.nicks.find((n: INickInfo) => n.nick === nick);
+        nickInfo = u.nicks.find((n: INickInfo) => n.nick.toLowerCase() === nick.toLowerCase());
         return nickInfo;
     });
 
     if (!nickInfo || !usuarioPT) {
         return await message.reply({ content: `[❌] \`${nick}\` não foi localizado na PT` });
     } else if (nickInfo.ativo) {
-        return await message.reply({ content: `[✅] \`${nick}\` é membro <@${usuarioPT.id}> da PT` });
+        return await message.reply({ content: `[✅] \`${nickInfo.nick}\` é o membro <@${usuarioPT.id}> da PT` });
     } else {
-        return await message.reply({ content: `[❌] \`${nick}\` não é mais membro PT` });
+        return await message.reply({ content: `[❌] \`${nickInfo.nick}\` não é mais um membro da PT` });
     }
 }
 
@@ -26,7 +26,7 @@ async function verificarMensagemUsuario(message: Message): Promise<Message<boole
     const idUsuario: string = message.content.match(/\<@(\d+)\>/)?.[1] || "";
     const usuarioPT: Usuario | undefined = usuariosSingleton.usuarios.find((u: Usuario) => u.id === idUsuario);
 
-    if (!usuarioPT || (usuarioPT && !usuarioPT.nicks.length)) {
+    if (!usuarioPT || (usuarioPT && !usuarioPT.nicks.filter(n => n.ativo).length)) {
         return await message.reply({ content: `[❌] <@${idUsuario}> não possui nicks cadastrados na PT` });
     }
 

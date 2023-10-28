@@ -47,7 +47,7 @@ export = {
             const userDiscord: User = interaction.options.getUser('user_discord', true);
 
             const usuarioPT: Usuario | undefined = usuariosSingleton.usuarios.find((u: Usuario) => {
-                return u.nicks.some((n: INickInfo) => n.nick === nick && n.ativo);
+                return u.nicks.some((n: INickInfo) => n.nick.toLowerCase() === nick.toLowerCase() && n.ativo);
             });
 
             if (usuarioPT) {
@@ -59,7 +59,7 @@ export = {
             await ativarMembroPT(nick, userDiscord, interaction.user.id);
 
             return await interaction.reply({
-                content: `[✅] \`${nick}\` foi **adicionado** a PT`
+                content: `[✅] \`${nick}\` foi **adicionado** como membro da PT`
             });
         }
 
@@ -67,12 +67,12 @@ export = {
             const nick: string = interaction.options.getString('nick', true);
 
             const usuario: Usuario | undefined = usuariosSingleton.usuarios.find((u: Usuario) => {
-                return u.nicks.some(n => n.nick === nick);
+                return u.nicks.some(n => n.nick.toLowerCase() === nick.toLowerCase());
             });
 
             if (!usuario) {
                 return await interaction.reply({
-                    content: `Não foi possível localizar o usuário responsável pelo nick \`${nick}\``
+                    content: `Não foi possível localizar o membro responsável pelo nick \`${nick}\``
                 });
             }
 
@@ -81,7 +81,7 @@ export = {
             await desativarMembroPT(nick, userDiscord, interaction.user.id);
 
             return await interaction.reply({
-                content: `[🗑️] \`${nick}\` foi **removido** da PT`
+                content: `[🗑️] \`${nick}\` foi **removido** como membro da PT`
             });
         }
     }
