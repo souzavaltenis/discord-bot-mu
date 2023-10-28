@@ -14,11 +14,11 @@ async function verificarMensagemNick(message: Message): Promise<Message<boolean>
     });
 
     if (!nickInfo || !usuarioPT) {
-        return await message.reply({ content: `[❌] \`${nick}\` não foi localizado na PT` });
+        return await message.reply({ content: `[❌] O nick \`${nick}\` não foi localizado na PT. \`Estou errado? Use o comando /pt add\`` });
     } else if (nickInfo.ativo) {
-        return await message.reply({ content: `[✅] \`${nickInfo.nick}\` é o membro <@${usuarioPT.id}> da PT` });
+        return await message.reply({ content: `[✅] O nick \`${nickInfo.nick}\` é o membro <@${usuarioPT.id}> da PT` });
     } else {
-        return await message.reply({ content: `[❌] \`${nickInfo.nick}\` não é mais um membro da PT` });
+        return await message.reply({ content: `[❌] O nick \`${nickInfo.nick}\` não pertence mais a PT` });
     }
 }
 

@@ -11,7 +11,6 @@ export = {
     category: CategoryCommand.GERAL,
     data: new SlashCommandBuilder()
         .setName('pt')
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .setDescription('Gerenciar nicks de membros da PT de Boss')
         .addSubcommand(subcommand =>
             subcommand.setName('add')
