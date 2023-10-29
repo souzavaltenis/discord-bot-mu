@@ -50,7 +50,7 @@ const formatTimestamp = (timestamp: number): string => {
     if (minutes > 0 || hours > 0 || days > 0)
         textTimestamp += minutes + 'm ';
 
-    if (seconds > 0 || minutes > 0 || hours > 0 || days > 0)
+    if (seconds > 0)
         textTimestamp += seconds + 's';
 
     return textTimestamp;
