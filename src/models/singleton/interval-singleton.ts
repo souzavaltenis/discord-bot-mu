@@ -1,5 +1,5 @@
 class IntervalSingleton {
-    intervalId: NodeJS.Timer | undefined;
+    intervalId: NodeJS.Timeout | undefined;
 }
 
 export const intervalUpdate: IntervalSingleton = new IntervalSingleton();
