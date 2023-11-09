@@ -111,8 +111,8 @@ export class AdicionarHorarioModal {
 
         const textInputSalaBoss: string = interaction.fields.getTextInputValue(Ids.INPUT_SALA_BOSS).replace(/\D/g, '');
         
-        const salaBoss = parseInt(textInputSalaBoss);
-        const salasConhecidas = config().mu.salasPermitidas;
+        const salaBoss: number = parseInt(textInputSalaBoss);
+        const salasConhecidas: number[] = config().mu.salasPermitidas.sort((a: number, b: number) => a - b);
 
         if (Number.isNaN(salaBoss) || !salasConhecidas.includes(salaBoss)) {
             const msgErroSala: string = `${interaction.user} Sala (${bold(textInputSalaBoss)}) não é reconhecida! Use as salas ${salasConhecidas}.`;
