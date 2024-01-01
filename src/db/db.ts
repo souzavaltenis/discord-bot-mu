@@ -174,13 +174,15 @@ const adicionarTempoUsuario = async (infoMember: InfoMember): Promise<void> => {
 
         const indexUsuario: number = usuariosSingleton.usuarios.findIndex(u => u.id === infoMember.id);
 
+        const infoTimeOnlineInicial: ITimeOnlineInfo = {
+            timestampDay: dataNowMoment(true).valueOf(),
+            timestampOnline: infoMember.timeOnline,
+            isOld: false
+        };
+
         if (indexUsuario === -1) {
             const timeOnline: Map<string, ITimeOnlineInfo> = new Map<string, ITimeOnlineInfo>();
-            timeOnline.set(keyDataAtual, {
-                timestampDay: dataNowMoment(true).valueOf(),
-                timestampOnline: infoMember.timeOnline,
-                isOld: false
-            });
+            timeOnline.set(keyDataAtual, infoTimeOnlineInicial);
 
             usuariosSingleton.usuarios.push({
                 id: infoMember.id,
@@ -193,7 +195,7 @@ const adicionarTempoUsuario = async (infoMember: InfoMember): Promise<void> => {
         } else if (indexUsuario > -1) {
             usuariosSingleton.usuarios[indexUsuario].totalTimeOnline += infoMember.timeOnline;
 
-            const timeOnlineAtual: ITimeOnlineInfo = usuariosSingleton.usuarios[indexUsuario].timeOnline.get(keyDataAtual)!;
+            const timeOnlineAtual: ITimeOnlineInfo = usuariosSingleton.usuarios[indexUsuario].timeOnline.get(keyDataAtual) ?? infoTimeOnlineInicial;
             timeOnlineAtual.timestampOnline = timeOnlineAtual.timestampOnline += infoMember.timeOnline;
             usuariosSingleton.usuarios[indexUsuario].timeOnline.set(keyDataAtual, timeOnlineAtual);
         }
