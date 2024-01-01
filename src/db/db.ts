@@ -42,6 +42,7 @@ import { logInOutTextChannel } from "../utils/channels-utils";
 import { INickInfo } from "../models/interface/nick-info";
 import { ITimeOnlineInfo } from "../models/interface/time-online-info";
 import { prepararListaTimestampAnotacoes, prepararMapTimeOnline } from "../utils/usuario-utils";
+import { atualizarCacheNicksUsuario, atualizarCacheTempoOnlineUsuario } from "../utils/cache-utils";
 
 const appFirebase = initializeApp(firebaseConfig);
 const db = getFirestore(appFirebase);
@@ -166,41 +167,7 @@ const adicionarTempoUsuario = async (infoMember: InfoMember): Promise<void> => {
         timeOnline: {
             [keyDataAtual]: increment(infoMember.timeOnline)
         }
-    }, { merge: true }).then(() => {
-
-        if (usuariosSingleton.usuarios.length === 0) {
-            return;
-        }
-
-        const indexUsuario: number = usuariosSingleton.usuarios.findIndex(u => u.id === infoMember.id);
-
-        const infoTimeOnlineInicial: ITimeOnlineInfo = {
-            timestampDay: dataNowMoment(true).valueOf(),
-            timestampOnline: infoMember.timeOnline,
-            isOld: false
-        };
-
-        if (indexUsuario === -1) {
-            const timeOnline: Map<string, ITimeOnlineInfo> = new Map<string, ITimeOnlineInfo>();
-            timeOnline.set(keyDataAtual, infoTimeOnlineInicial);
-
-            usuariosSingleton.usuarios.push({
-                id: infoMember.id,
-                name: infoMember.nick,
-                timestampsAnotacoes: [],
-                totalTimeOnline: infoMember.timeOnline,
-                nicks: [],
-                timeOnline: timeOnline
-            });
-        } else if (indexUsuario > -1) {
-            usuariosSingleton.usuarios[indexUsuario].totalTimeOnline += infoMember.timeOnline;
-
-            const timeOnlineAtual: ITimeOnlineInfo = usuariosSingleton.usuarios[indexUsuario].timeOnline.get(keyDataAtual) ?? infoTimeOnlineInicial;
-            timeOnlineAtual.timestampOnline = timeOnlineAtual.timestampOnline += infoMember.timeOnline;
-            usuariosSingleton.usuarios[indexUsuario].timeOnline.set(keyDataAtual, timeOnlineAtual);
-        }
-
-    });
+    }, { merge: true }).then(() => atualizarCacheTempoOnlineUsuario(keyDataAtual, infoMember));
 }
 
 const ativarMembroPT = async (nick: string, userDiscord: User, idUserAtivacao: string): Promise<void> => {
@@ -231,21 +198,7 @@ const ativarMembroPT = async (nick: string, userDiscord: User, idUserAtivacao: s
         await setDoc(userRef, { nicks: arrayRemove(nickInfoAntigo) }, { merge: true });
     }
 
-    // Mantendo a lista usuário local atualizada
-    if (indexUsuario === -1) { // Usuário novo sem nick (Adicionar usuário e nick)
-        usuariosSingleton.usuarios.push({
-            id: userDiscord.id,
-            name: userDiscord.username,
-            timestampsAnotacoes: [],
-            totalTimeOnline: 0,
-            nicks: [nickInfoNovo],
-            timeOnline: new Map<string, ITimeOnlineInfo>()
-        });
-    } else if (indexNick > -1) { // Usuário velho com nick (Atualizar nick)
-        usuariosSingleton.usuarios[indexUsuario].nicks[indexNick] = nickInfoNovo;
-    } else { // Usuário velho sem nick (Adicionar nick)
-        usuariosSingleton.usuarios[indexUsuario].nicks.push(nickInfoNovo);
-    }
+    atualizarCacheNicksUsuario(indexUsuario, userDiscord, indexNick, nickInfoNovo);
 }
 
 const desativarMembroPT = async (nick: string, userDiscord: User, idUserRemocao: string): Promise<void> => {
