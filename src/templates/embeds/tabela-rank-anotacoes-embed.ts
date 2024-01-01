@@ -18,8 +18,7 @@ const getEmbedTabelaRankAnotacoes = (): EmbedBuilder => {
     const embedTabelaRank = new EmbedBuilder()
         .setColor("DarkBlue")
         .setTitle(`Rank Anotações 🏆`)
-        .setFooter({ text: config().mu.avisoFooter || `Rank iniciado em ${dataNewRank.format('DD/MM/YYYY')}` })
-        .setTimestamp();
+        .setFooter({ text: config().mu.avisoFooter || `Rank iniciado em ${dataNewRank.format('DD/MM/YYYY')}` });
 
     const limitUsers: number = 10;
 

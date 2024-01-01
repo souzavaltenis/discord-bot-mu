@@ -1,4 +1,5 @@
 import { INickInfo } from "./interface/nick-info";
+import { ITimeOnlineInfo } from "./interface/time-online-info";
 
 export class Usuario {
     id: string;
@@ -9,9 +10,9 @@ export class Usuario {
      */
     totalTimeOnline: number;
     nicks: INickInfo[];
-    timeOnline: Map<string, number>;
+    timeOnline: Map<string, ITimeOnlineInfo>;
 
-    constructor(id: string, name: string, timestampsAnotacoes: number[], totalTimeOnline: number, nicks: INickInfo[], timeOnline: Map<string, number>) {
+    constructor(id: string, name: string, timestampsAnotacoes: number[], totalTimeOnline: number, nicks: INickInfo[], timeOnline: Map<string, ITimeOnlineInfo>) {
         this.id = id;
         this.name = name;
         this.timestampsAnotacoes = timestampsAnotacoes;

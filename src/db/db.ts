@@ -29,18 +29,19 @@ import { Boss } from "../models/boss";
 import { IBossInfoAdd } from "../models/interface/boss-info-add";
 import { ConfigBotSingleton } from "../models/singleton/config-bot-singleton";
 import { Usuario } from "../models/usuario";
-import { dataNowMoment, dataNowString, isSameMoment, stringToMoment, timestampToMoment } from "../utils/data-utils";
+import { dataNowMoment, dataNowString, stringToMoment, timestampToMoment } from "../utils/data-utils";
 import { botIsProd, bdIsProd, config } from "../config/get-configs";
 import { usuariosSingleton } from "../models/singleton/usuarios-singleton";
 import { BackupListaBoss } from "../models/backup-lista-boss";
 import { bossConverter, backupListaBossConverter, configConverter, sorteioConverter } from "./converters";
 import { Sorteio } from "../models/sorteio";
-import { TypeTimestamp } from "../models/enum/type-timestamp";
 import { InfoMember } from "../models/info-member";
 import { getNickGuildMember, sinalizarAlteracaoPeloBot } from "../utils/geral-utils";
 import { geralSingleton } from "../models/singleton/geral-singleton";
 import { logInOutTextChannel } from "../utils/channels-utils";
 import { INickInfo } from "../models/interface/nick-info";
+import { ITimeOnlineInfo } from "../models/interface/time-online-info";
+import { prepararListaTimestampAnotacoes, prepararMapTimeOnline } from "../utils/usuario-utils";
 
 const appFirebase = initializeApp(firebaseConfig);
 const db = getFirestore(appFirebase);
@@ -142,7 +143,7 @@ const adicionarAnotacaoHorario = async (member: GuildMember, timestampAcao: numb
                     timestampsAnotacoes: [timestampAcao],
                     totalTimeOnline: 0,
                     nicks: [],
-                    timeOnline: new Map<string, number>()
+                    timeOnline: new Map<string, ITimeOnlineInfo>()
                 });
             } else if (indexUsuario > -1) {
                 usuariosSingleton.usuarios[indexUsuario].timestampsAnotacoes.push(timestampAcao);
@@ -174,8 +175,12 @@ const adicionarTempoUsuario = async (infoMember: InfoMember): Promise<void> => {
         const indexUsuario: number = usuariosSingleton.usuarios.findIndex(u => u.id === infoMember.id);
 
         if (indexUsuario === -1) {
-            const timeOnline: Map<string, number> = new Map<string, number>();
-            timeOnline.set(keyDataAtual, infoMember.timeOnline);
+            const timeOnline: Map<string, ITimeOnlineInfo> = new Map<string, ITimeOnlineInfo>();
+            timeOnline.set(keyDataAtual, {
+                timestampDay: dataNowMoment(true).valueOf(),
+                timestampOnline: infoMember.timeOnline,
+                isOld: false
+            });
 
             usuariosSingleton.usuarios.push({
                 id: infoMember.id,
@@ -188,8 +193,9 @@ const adicionarTempoUsuario = async (infoMember: InfoMember): Promise<void> => {
         } else if (indexUsuario > -1) {
             usuariosSingleton.usuarios[indexUsuario].totalTimeOnline += infoMember.timeOnline;
 
-            const timeOnlineAtual: number = usuariosSingleton.usuarios[indexUsuario].timeOnline.get(keyDataAtual) || 0;
-            usuariosSingleton.usuarios[indexUsuario].timeOnline.set(keyDataAtual, timeOnlineAtual + infoMember.timeOnline);
+            const timeOnlineAtual: ITimeOnlineInfo = usuariosSingleton.usuarios[indexUsuario].timeOnline.get(keyDataAtual)!;
+            timeOnlineAtual.timestampOnline = timeOnlineAtual.timestampOnline += infoMember.timeOnline;
+            usuariosSingleton.usuarios[indexUsuario].timeOnline.set(keyDataAtual, timeOnlineAtual);
         }
 
     });
@@ -231,7 +237,7 @@ const ativarMembroPT = async (nick: string, userDiscord: User, idUserAtivacao: s
             timestampsAnotacoes: [],
             totalTimeOnline: 0,
             nicks: [nickInfoNovo],
-            timeOnline: new Map<string, number>()
+            timeOnline: new Map<string, ITimeOnlineInfo>()
         });
     } else if (indexNick > -1) { // Usuário velho com nick (Atualizar nick)
         usuariosSingleton.usuarios[indexUsuario].nicks[indexNick] = nickInfoNovo;
@@ -273,31 +279,16 @@ const consultarUsuarios = async(): Promise<void> => {
     usuariosSingleton.usuarios = listaUsuariosSnap.docs
         .map(docUser => docUser.data())
         .map(user => {
-            const timestampsAnotacoes: number[] = (user.timestampsAnotacoes as number[] || [] as number[])
-                .filter((timestamp: number) => timestamp >= timestampNewRankMoment)
-                .map((timestamp: number) => {
-                    switch (true) {
-                        // case timestamp <= timestampNewRankMoment:
-                        //     return TypeTimestamp.OLD_TIMESTAMP_RANK;
-                        case !isSameMoment(dataNow, timestamp, 'week') && !isSameMoment(dataNow, timestamp, 'day'):
-                            return TypeTimestamp.NEW_TIMESTAMP_DATED;
-                        default:
-                            return timestamp;
-                    }
-                });
-
-            const mapTimeOnline: Map<string, number> = new Map<string, number>(Object.entries(user.timeOnline ?? {}));
-            const listTimeOnlineFiltered: [string, number][] = [...mapTimeOnline].filter(([key]) => {
-                return stringToMoment(key, 'DD/MM/YYYY').valueOf() >= timestampNewRankMoment;
-            });
+            const listaTimestampAnotacoes: number[] = prepararListaTimestampAnotacoes(user.timestampsAnotacoes, timestampNewRankMoment, dataNow);
+            const mapTimeOnline: Map<string, ITimeOnlineInfo> = prepararMapTimeOnline(user.timeOnline, timestampNewRankMoment, dataNow);
 
             return new Usuario(
                 user.id || 0,
                 user.name || '',
-                timestampsAnotacoes,
+                listaTimestampAnotacoes,
                 user.totalTimeOnline || 0,
                 user.nicks || [],
-                new Map<string, number>(listTimeOnlineFiltered)
+                mapTimeOnline
             );
         });
 }

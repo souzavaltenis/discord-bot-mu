@@ -206,7 +206,7 @@ async function resetarRankAnotacoes(interaction: ChatInputCommandInteraction): P
 
     const textoNovaDataCompleto: string = textoNovaData + ' 00:00 -03:00'; 
 
-    if (stringToMoment(textoNovaDataCompleto).valueOf() < dataNowMoment('day').valueOf()) {
+    if (stringToMoment(textoNovaDataCompleto).valueOf() < dataNowMoment(true).valueOf()) {
         const msgErroData: string = `${interaction.user} A data informada precisa ser igual ou maior que a data de hoje (${dataNowMoment().format('DD/MM/YYYY')})`;
         await sendLogErroInput(interaction, msgErroData);
         return await interaction.reply(msgErroData);
