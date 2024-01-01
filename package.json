@@ -9,8 +9,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rimraf dist/",
     "zip": "node ./dist/src/utils/zip-utils.js",
-    "docker": "npm run clean && npx tsc && node ./dist/src/utils/docker-utils.js",
-    "build": "npm run clean && npx tsc && npm run zip",
+    "docker": "node ./dist/src/utils/docker-utils.js",
+    "build": "npm run clean && npx tsc && npm run zip && npm run docker",
     "update": "npx npm-check-updates -u && npm install"
   },
   "keywords": [],
