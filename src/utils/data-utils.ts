@@ -4,8 +4,8 @@ const dataNowString = (pattern: string = 'HH:mm:ss'): string => {
     return moment().utcOffset('GMT-03:00').format(pattern);
 }
 
-const dataNowMoment = (): Moment => {
-    return moment().utcOffset('GMT-03:00');
+const dataNowMoment = (startOf?: string): Moment => {
+    return startOf ? moment().startOf('day').utcOffset('GMT-03:00') : moment().utcOffset('GMT-03:00');
 }
 
 const momentToString = (m: Moment): string => {

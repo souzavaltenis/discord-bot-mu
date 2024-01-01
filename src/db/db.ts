@@ -20,7 +20,8 @@ import {
     increment,
     DocumentReference,
     DocumentSnapshot,
-    arrayRemove
+    arrayRemove,
+    QueryDocumentSnapshot
 } from "firebase/firestore";
 import { Moment } from "moment";
 import { firebaseConfig, collectionConfig, documentConfigProd, documentConfigTest } from '../config/config.json';
@@ -260,10 +261,11 @@ const consultarUsuarios = async(): Promise<void> => {
         .map(docUser => docUser.data())
         .map(user => {
             const timestamps: number[] = (user.timestampsAnotacoes as number[] || [] as number[])
+                .filter((timestamp: number) => timestamp >= timestampNewRankMoment)
                 .map((timestamp: number) => {
                     switch (true) {
-                        case timestamp <= timestampNewRankMoment:
-                            return TypeTimestamp.OLD_TIMESTAMP_RANK;
+                        // case timestamp <= timestampNewRankMoment:
+                        //     return TypeTimestamp.OLD_TIMESTAMP_RANK;
                         case !isSameMoment(dataNow, timestamp, 'week') && !isSameMoment(dataNow, timestamp, 'day'):
                             return TypeTimestamp.NEW_TIMESTAMP_DATED;
                         default:
@@ -273,6 +275,23 @@ const consultarUsuarios = async(): Promise<void> => {
             
             return new Usuario(user.id || 0, user.name || '', timestamps, user.totalTimeOnline || 0, user.nicks || []);
         });
+}
+
+const resetarTempoOnlineUsuarios = async(): Promise<void> => {
+    const collectionUsuariosRef = collection(db, config().collections.usuarios);
+    const listaUsuariosSnap: QuerySnapshot<DocumentData> = await getDocs(collectionUsuariosRef);
+
+    const listaRequisicoes: Promise<void>[] = [];
+    
+    listaUsuariosSnap.docs.forEach((docUser: QueryDocumentSnapshot<DocumentData, DocumentData>) => {
+        const requisicao: Promise<void> = updateDoc(docUser.ref, {
+            totalTimeOnline: 0
+        });
+
+        listaRequisicoes.push(requisicao);
+    });
+
+    await Promise.all(listaRequisicoes);
 }
 
 const realizarBackupHorarios = async(momento: Moment, autor: string, tipoReset: string): Promise<void> => {
@@ -373,5 +392,6 @@ export {
     salvarTempoOnlineMembros,
     isBossAtivo,
     ativarMembroPT,
-    desativarMembroPT
+    desativarMembroPT,
+    resetarTempoOnlineUsuarios
 };

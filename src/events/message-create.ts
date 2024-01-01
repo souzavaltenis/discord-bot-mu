@@ -26,15 +26,5 @@ export = {
 
         }
 
-        if (message.channelId === config().channels.textInfoNickPT) {
-
-            switch (true) {
-                case /^[a-zA-Z_0-9]{4,10}$/.test(message.content):
-                    return await verificarMensagemNick(message);
-                
-                case /^\<@\d+\>$/.test(message.content):
-                    return await verificarMensagemUsuario(message);
-            }
-        }
     }
 }
