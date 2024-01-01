@@ -141,7 +141,8 @@ const adicionarAnotacaoHorario = async (member: GuildMember, timestampAcao: numb
                     name: getNickGuildMember(member),
                     timestampsAnotacoes: [timestampAcao],
                     totalTimeOnline: 0,
-                    nicks: []
+                    nicks: [],
+                    timeOnline: new Map<string, number>()
                 });
             } else if (indexUsuario > -1) {
                 usuariosSingleton.usuarios[indexUsuario].timestampsAnotacoes.push(timestampAcao);
@@ -155,11 +156,15 @@ const adicionarTempoUsuario = async (infoMember: InfoMember): Promise<void> => {
     if (!infoMember.id || !infoMember.timeOnline) return;
 
     const userRef: DocumentReference<DocumentData> = doc(db, config().collections.usuarios, infoMember.id);
-    
+    const keyDataAtual: string = dataNowString('DD/MM/YYYY');
+
     await setDoc(userRef, {
         id: infoMember.id,
         name: infoMember.nick,
-        totalTimeOnline: increment(infoMember.timeOnline)
+        totalTimeOnline: increment(infoMember.timeOnline),
+        timeOnline: {
+            [keyDataAtual]: increment(infoMember.timeOnline)
+        }
     }, { merge: true }).then(() => {
 
         if (usuariosSingleton.usuarios.length === 0) {
@@ -169,15 +174,22 @@ const adicionarTempoUsuario = async (infoMember: InfoMember): Promise<void> => {
         const indexUsuario: number = usuariosSingleton.usuarios.findIndex(u => u.id === infoMember.id);
 
         if (indexUsuario === -1) {
+            const timeOnline: Map<string, number> = new Map<string, number>();
+            timeOnline.set(keyDataAtual, infoMember.timeOnline);
+
             usuariosSingleton.usuarios.push({
                 id: infoMember.id,
                 name: infoMember.nick,
                 timestampsAnotacoes: [],
                 totalTimeOnline: infoMember.timeOnline,
-                nicks: []
+                nicks: [],
+                timeOnline: timeOnline
             });
         } else if (indexUsuario > -1) {
             usuariosSingleton.usuarios[indexUsuario].totalTimeOnline += infoMember.timeOnline;
+
+            const timeOnlineAtual: number = usuariosSingleton.usuarios[indexUsuario].timeOnline.get(keyDataAtual) || 0;
+            usuariosSingleton.usuarios[indexUsuario].timeOnline.set(keyDataAtual, timeOnlineAtual + infoMember.timeOnline);
         }
 
     });
@@ -218,7 +230,8 @@ const ativarMembroPT = async (nick: string, userDiscord: User, idUserAtivacao: s
             name: userDiscord.username,
             timestampsAnotacoes: [],
             totalTimeOnline: 0,
-            nicks: [nickInfoNovo]
+            nicks: [nickInfoNovo],
+            timeOnline: new Map<string, number>()
         });
     } else if (indexNick > -1) { // Usuário velho com nick (Atualizar nick)
         usuariosSingleton.usuarios[indexUsuario].nicks[indexNick] = nickInfoNovo;
@@ -260,7 +273,7 @@ const consultarUsuarios = async(): Promise<void> => {
     usuariosSingleton.usuarios = listaUsuariosSnap.docs
         .map(docUser => docUser.data())
         .map(user => {
-            const timestamps: number[] = (user.timestampsAnotacoes as number[] || [] as number[])
+            const timestampsAnotacoes: number[] = (user.timestampsAnotacoes as number[] || [] as number[])
                 .filter((timestamp: number) => timestamp >= timestampNewRankMoment)
                 .map((timestamp: number) => {
                     switch (true) {
@@ -272,8 +285,20 @@ const consultarUsuarios = async(): Promise<void> => {
                             return timestamp;
                     }
                 });
-            
-            return new Usuario(user.id || 0, user.name || '', timestamps, user.totalTimeOnline || 0, user.nicks || []);
+
+            const mapTimeOnline: Map<string, number> = new Map<string, number>(Object.entries(user.timeOnline ?? {}));
+            const listTimeOnlineFiltered: [string, number][] = [...mapTimeOnline].filter(([key]) => {
+                return stringToMoment(key, 'DD/MM/YYYY').valueOf() >= timestampNewRankMoment;
+            });
+
+            return new Usuario(
+                user.id || 0,
+                user.name || '',
+                timestampsAnotacoes,
+                user.totalTimeOnline || 0,
+                user.nicks || [],
+                new Map<string, number>(listTimeOnlineFiltered)
+            );
         });
 }
 

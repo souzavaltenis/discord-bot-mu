@@ -12,8 +12,8 @@ const momentToString = (m: Moment): string => {
     return m.isValid() ? m.format('DD/MM/YYYY HH:mm Z') : '';
 }
 
-const stringToMoment = (str: string): Moment => {
-    return str ? moment(str, 'DD/MM/YYYY HH:mm Z').utcOffset('GMT-03:00') : moment(null);
+const stringToMoment = (str: string, pattern: string = 'DD/MM/YYYY HH:mm Z'): Moment => {
+    return str ? moment(str, pattern).utcOffset('GMT-03:00') : moment(null);
 }
 
 const diffDatas = (x: Moment, y: Moment): Moment => {
