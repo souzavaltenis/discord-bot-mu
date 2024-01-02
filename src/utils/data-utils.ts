@@ -80,6 +80,10 @@ const millisecondsToNextHour = (): number => {
     return (60 - dataNowMoment().minutes()) * 60 * 1000;
 }
 
+const millisecondsToMidnight = (): number => {
+    return dataNowMoment().endOf('day').valueOf() - dataNowMoment().valueOf();
+}
+
 export { 
     dataNowString,
     dataNowMoment,
@@ -92,5 +96,6 @@ export {
     isSameMoment,
     millisecondsToNextHour,
     distanceDatasString,
-    formatTimestamp
+    formatTimestamp,
+    millisecondsToMidnight
 }
