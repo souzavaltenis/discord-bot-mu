@@ -26,7 +26,7 @@ const prepararMapTimeOnline = (timeOnline: any, timestampNewRankMoment: number, 
             
     let listTimeOnline: [string, ITimeOnlineInfo][] = [...mapTimeOnline].map(([k, v]) => {
         const timeOnlineInfo: ITimeOnlineInfo = {
-            timestampDay:  stringToMoment(k, 'DD/MM/YYYY').valueOf(),
+            timestampDay:  stringToMoment(k + '00:00 -03:00').valueOf(),
             timestampOnline: v,
             isOld: false
         };
