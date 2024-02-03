@@ -1,5 +1,5 @@
 import { VoiceState } from "discord.js";
-import { checkUserMute, checkUserTimeConnection } from "../utils/voice-utils";
+import { checkMoveMainVoiceChannel, checkUserMute, checkUserTimeConnection } from "../utils/voice-utils";
 import { mainTextChannel } from "../utils/channels-utils";
 
 export = {
@@ -11,7 +11,8 @@ export = {
         if (!isMainGuild || isBot) {
             return;
         }
-    
+        
+        await checkMoveMainVoiceChannel(newState);
         await checkUserMute(oldState, newState);
         await checkUserTimeConnection(oldState, newState);
     }

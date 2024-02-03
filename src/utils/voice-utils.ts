@@ -52,7 +52,7 @@ async function checkUserTimeConnection(oldState: VoiceState, newState: VoiceStat
             await adicionarTempoUsuario(infoMember);
         }
 
-        let messageExit: string = `[${timestampNowStr}]: ${nickUser} saiu de ${oldState.channel?.name} <${oldState.guild.name}>`;
+        let messageExit: string = `[${timestampNowStr}]: ${nickUser} saiu de ${oldState.channel?.name} (${oldState.channel?.id ?? ''}) <${oldState.guild.name}>`;
         
         if (totalTimeConnection > 1000) {
             messageExit += ` (Ficou ${formatTimestamp(totalTimeConnection)})`;
@@ -69,7 +69,7 @@ async function checkUserTimeConnection(oldState: VoiceState, newState: VoiceStat
             infoMember.lastConnect = timestampNow;
         }
         
-        const messageEnter: string = `[${timestampNowStr}]: ${nickUser} entrou em ${newState.channel?.name} <${newState.guild.name}>`;
+        const messageEnter: string = `[${timestampNowStr}]: ${nickUser} entrou em ${newState.channel?.name} (${newState.channel?.id ?? ''}) <${newState.guild.name}>`;
 
         await logInOutTextChannel()?.send({
             content: codeBlock(messageEnter)
@@ -79,7 +79,16 @@ async function checkUserTimeConnection(oldState: VoiceState, newState: VoiceStat
     geralSingleton.infoMember.set(idUser, infoMember);
 }
 
+async function checkMoveMainVoiceChannel(newState: VoiceState): Promise<void> {
+    const isEntryMainChannel: boolean = newState.channelId === config().channels.voiceEntryMain;
+
+    if (isEntryMainChannel) {
+        await newState.member?.voice.setChannel(config().channels.voiceHorarios);
+    }
+}
+
 export {
     checkUserMute,
-    checkUserTimeConnection
+    checkUserTimeConnection,
+    checkMoveMainVoiceChannel
 }

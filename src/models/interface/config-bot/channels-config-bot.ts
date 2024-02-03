@@ -7,4 +7,5 @@ export interface IChannelsConfigBot {
     textLogInOut: string;
     textInfoNickPT: string;
     textGerenciarNickPT: string;
+    voiceEntryMain: string;
 }
