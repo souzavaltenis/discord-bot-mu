@@ -1,5 +1,5 @@
 import { VoiceState } from "discord.js";
-import { checkMoveMainVoiceChannel, checkUserMute, checkUserTimeConnection } from "../utils/voice-utils";
+import { checkExitMainVoiceChannel, checkMoveMainVoiceChannel, checkUserMute, checkUserTimeConnection } from "../utils/voice-utils";
 import { mainTextChannel } from "../utils/channels-utils";
 
 export = {
@@ -15,5 +15,6 @@ export = {
         await checkMoveMainVoiceChannel(newState);
         await checkUserMute(oldState, newState);
         await checkUserTimeConnection(oldState, newState);
+        await checkExitMainVoiceChannel(oldState, newState);
     }
 }

@@ -1,4 +1,4 @@
-import { VoiceState, codeBlock } from "discord.js";
+import { GuildMember, VoiceState, codeBlock } from "discord.js";
 import { config } from "../config/get-configs";
 import { adicionarTempoUsuario } from "../db/db";
 import { InfoMember } from "../models/info-member";
@@ -81,14 +81,39 @@ async function checkUserTimeConnection(oldState: VoiceState, newState: VoiceStat
 
 async function checkMoveMainVoiceChannel(newState: VoiceState): Promise<void> {
     const isEntryMainChannel: boolean = newState.channelId === config().channels.voiceEntryMain;
+    const member: GuildMember | null = newState.member;
 
-    if (isEntryMainChannel) {
-        await newState.member?.voice.setChannel(config().channels.voiceHorarios);
+    if (!isEntryMainChannel || !member) {
+        return;
+    }
+
+    const hasMainChannelRole: boolean = member.roles.cache.has(config().cargos.mainChannel);
+
+    if (!hasMainChannelRole) {
+        await member.roles.add(config().cargos.mainChannel);
+    }
+
+    await member.voice.setChannel(config().channels.voiceHorarios);
+}
+
+async function checkExitMainVoiceChannel(oldState: VoiceState, newState: VoiceState): Promise<void> {
+    const isExitMainVoiceChannel = oldState.channelId === config().channels.voiceHorarios && newState.channelId !== config().channels.voiceHorarios;
+    const member: GuildMember | null = oldState.member;
+
+    if (!isExitMainVoiceChannel || !member) {
+        return;
+    }
+
+    const hasMainChannelRole: boolean = member.roles.cache.has(config().cargos.mainChannel);
+
+    if (hasMainChannelRole) {
+        await member.roles.remove(config().cargos.mainChannel);
     }
 }
 
 export {
     checkUserMute,
     checkUserTimeConnection,
-    checkMoveMainVoiceChannel
+    checkMoveMainVoiceChannel,
+    checkExitMainVoiceChannel
 }
