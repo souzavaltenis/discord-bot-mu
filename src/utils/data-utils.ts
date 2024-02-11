@@ -31,6 +31,11 @@ const distanceDatasInHours = (x: Moment, y: Moment): number => {
     return moment.duration(diff).asHours();
 }
 
+const distanceDatasInDays = (x: Moment, y: Moment): number => {
+    const diff = x.diff(y);
+    return ~~moment.duration(diff).asDays();
+}
+
 const formatTimestamp = (timestamp: number): string => {
     let textTimestamp: string = '';
     
@@ -92,6 +97,7 @@ export {
     diffDatas,
     distanceDatasInMinutes,
     distanceDatasInHours,
+    distanceDatasInDays,
     timestampToMoment,
     isSameMoment,
     millisecondsToNextHour,

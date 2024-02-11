@@ -2,7 +2,7 @@
 import { EmbedBuilder } from "discord.js";
 import { Usuario } from "../../models/usuario";
 import { bold } from "@discordjs/builders";
-import { dataNowMoment, formatTimestamp, isSameMoment, stringToMoment } from "../../utils/data-utils";
+import { dataNowMoment, distanceDatasInDays, formatTimestamp, isSameMoment, stringToMoment } from "../../utils/data-utils";
 import { config } from "../../config/get-configs";
 import { usuariosSingleton } from '../../models/singleton/usuarios-singleton';
 import { escapeDiscordText, getTextPositionRank } from "../../utils/geral-utils";
@@ -10,36 +10,39 @@ import { Moment } from "moment";
 import { ITimeOnlineInfo } from "../../models/interface/time-online-info";
 
 let dataNow: Moment;
+let dataNewRank: Moment;
 
 const getEmbedTabelaRankOnline = (): EmbedBuilder => {
     dataNow = dataNowMoment();
+    dataNewRank = stringToMoment(config().geral.dateNewRank);
+
     const usuariosGeral: Usuario[] = usuariosSingleton.usuarios.map((usuario: Usuario) => ({...usuario}));
-    const dataNewRank: Moment = stringToMoment(config().geral.dateNewRank);
 
     const embedTabelaRankOnline = new EmbedBuilder()
         .setColor("DarkBlue")
         .setTitle(`Rank Tempo Online 🏆`)
         .setFooter({ text: config().mu.avisoFooter || `Rank iniciado em ${dataNewRank.format('DD/MM/YYYY')}` });
 
-    const limitUsers: number = 10;
-
     // Geral
-    const usuariosRankGeral: Usuario[] = sortUsuariosPorTempo(usuariosGeral, 'geral').slice(0, limitUsers);
-    addFieldsRank('geral', usuariosRankGeral, embedTabelaRankOnline, limitUsers);
+    const limitUsersGeral: number = 10;
+    const usuariosRankGeral: Usuario[] = sortUsuariosPorTempo(usuariosGeral, 'geral').slice(0, limitUsersGeral);
+    addFieldsRank('geral', usuariosRankGeral, embedTabelaRankOnline, limitUsersGeral);
 
     // Semana
-    const usuariosRankSemanal: Usuario[] = sortUsuariosPorTempo(usuariosGeral, 'week').slice(0, limitUsers);
-    addFieldsRank('week', usuariosRankSemanal, embedTabelaRankOnline, limitUsers);
+    const limitUsersSemana: number = 10;
+    const usuariosRankSemanal: Usuario[] = sortUsuariosPorTempo(usuariosGeral, 'week').slice(0, limitUsersSemana);
+    addFieldsRank('week', usuariosRankSemanal, embedTabelaRankOnline, limitUsersSemana);
 
     // Dia
-    const usuariosRankDia: Usuario[] = sortUsuariosPorTempo(usuariosGeral, 'day').slice(0, limitUsers);
-    addFieldsRank('day', usuariosRankDia, embedTabelaRankOnline, limitUsers);
+    const limitUsersDia: number = 20;
+    const usuariosRankDia: Usuario[] = sortUsuariosPorTempo(usuariosGeral, 'day').slice(0, limitUsersDia);
+    addFieldsRank('day', usuariosRankDia, embedTabelaRankOnline, limitUsersDia);
 
     return embedTabelaRankOnline;
 }
 
 const addFieldsRank = (type: string, usuarios: Usuario[], embed: EmbedBuilder, limitUsers: number): void => {
-    let msgUsuario: string = '\u200B\n';
+    let msgUsuario: string = getTextDataByType(type) + '\n\u200B\n';
     let positionRank: number = 0;
 
     usuarios.slice(0, limitUsers).forEach((usuario: Usuario) => {
@@ -57,7 +60,11 @@ const addFieldsRank = (type: string, usuarios: Usuario[], embed: EmbedBuilder, l
         positionRank++;
     });
 
-    embed.addFields([{ name: getTitleFieldByType(type), value: msgUsuario + '\u200B' || '\u200B' }]);
+    if (msgUsuario.length > 1023) {
+        msgUsuario = msgUsuario.slice(0, 1023);
+    }
+
+    embed.addFields([{ name: getTitleFieldByType(type), value: msgUsuario + '\u200B' }]);
 }
 
 const getTitleFieldByType = (type: string): string => {
@@ -65,7 +72,20 @@ const getTitleFieldByType = (type: string): string => {
         'geral': '👑 Geral',
         'week': '🔰 Semana',
         'day': '📅 Hoje'
-    }[type] || '';
+    }[type] ?? '';
+}
+
+const getTextDataByType = (type: string): string => {
+    switch (type) {
+        case "geral":
+            return `(${dataNewRank.format('DD/MM/YY')} até ${dataNow.format('DD/MM/YY')} → ${distanceDatasInDays(dataNow, dataNewRank)} dias)`;
+        case "week":
+            return `(${dataNow.clone().startOf('isoWeek').format('DD/MM/YY')} até ${dataNow.clone().endOf('isoWeek').format('DD/MM/YY')})`;
+        case "day":
+            return `(${dataNow.format('DD/MM/YY')})`
+        default:
+            return "";
+    }
 }
 
 const sortUsuariosPorTempo = (usuarios: Usuario[], type: string): Usuario[] => {

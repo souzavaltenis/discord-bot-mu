@@ -2,18 +2,19 @@
 import { EmbedBuilder } from "discord.js";
 import { Usuario } from "../../models/usuario";
 import { bold } from "@discordjs/builders";
-import { dataNowMoment, isSameMoment, stringToMoment } from "../../utils/data-utils";
+import { dataNowMoment, distanceDatasInDays, isSameMoment, stringToMoment } from "../../utils/data-utils";
 import { config } from "../../config/get-configs";
 import { usuariosSingleton } from '../../models/singleton/usuarios-singleton';
 import { Moment } from "moment";
 import { escapeDiscordText, getTextPositionRank } from "../../utils/geral-utils";
 
 let dataNow: Moment;
+let dataNewRank: Moment;
 
 const getEmbedTabelaRankAnotacoes = (): EmbedBuilder => {
     dataNow = dataNowMoment();
     const usuariosGeral: Usuario[] = usuariosSingleton.usuarios.map((usuario: Usuario) => ({...usuario}));
-    const dataNewRank: Moment = stringToMoment(config().geral.dateNewRank);
+    dataNewRank = stringToMoment(config().geral.dateNewRank);
     
     const embedTabelaRank = new EmbedBuilder()
         .setColor("DarkBlue")
@@ -42,7 +43,7 @@ const getEmbedTabelaRankAnotacoes = (): EmbedBuilder => {
 }
 
 const addFieldsRank = (type: string, usuarios: Usuario[], embed: EmbedBuilder, limitUsers: number): void => {
-    let msgUsuario: string = '\u200B\n';
+    let msgUsuario: string = getTextDataByType(type) + '\n\u200B\n';
     let positionRank: number = 0;
 
     usuarios.slice(0, limitUsers).forEach((usuario) => {
@@ -56,7 +57,11 @@ const addFieldsRank = (type: string, usuarios: Usuario[], embed: EmbedBuilder, l
         positionRank++;
     });
 
-    embed.addFields([{ name: getTitleFieldByType(type), value: msgUsuario + '\u200B' || '\u200B' }]);
+    if (msgUsuario.length > 1023) {
+        msgUsuario = msgUsuario.slice(0, 1023);
+    }
+
+    embed.addFields([{ name: getTitleFieldByType(type), value: msgUsuario + '\u200B' }]);
 }
 
 const getTitleFieldByType = (type: string): string => {
@@ -65,6 +70,19 @@ const getTitleFieldByType = (type: string): string => {
         case 'week': return '🔰 Semana';
         case 'day': return '📅 Hoje';
         default: return '';
+    }
+}
+
+const getTextDataByType = (type: string): string => {
+    switch (type) {
+        case "":
+            return `(${dataNewRank.format('DD/MM/YY')} até ${dataNow.format('DD/MM/YY')} → ${distanceDatasInDays(dataNow, dataNewRank)} dias)`;
+        case "week":
+            return `(${dataNow.clone().startOf('isoWeek').format('DD/MM/YY')} até ${dataNow.clone().endOf('isoWeek').format('DD/MM/YY')})`;
+        case "day":
+            return `(${dataNow.format('DD/MM/YY')})`
+        default:
+            return "";
     }
 }
 

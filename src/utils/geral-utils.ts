@@ -18,6 +18,7 @@ import { vaiAbrirBoss } from "./boss-utils";
 import { dataNowMoment } from "./data-utils";
 import { TimeoutSingleton } from "../models/singleton/timeout-singleton";
 import { DocumentChange } from "@firebase/firestore";
+import { documentConfigTest } from "../config/config.json";
 
 const tracos = (quantidade: number): string => {
     let str: string = '';
@@ -303,6 +304,12 @@ const sinalizarAlteracaoPeloBot = (): void => {
 };
 
 const existeAtualizacaoExterna = (documentsChange: DocumentChange[]): boolean => {
+    const isBotTest: boolean = documentsChange.some(change => change.doc.ref.id === documentConfigTest);
+
+    if (isBotTest) {
+        return false;
+    }
+    
     const hasUpdate: boolean = documentsChange.some(change => change.type === "modified");
     const hasInternalUpdate = geralSingleton.updateBotInProgress;
     return hasUpdate && !hasInternalUpdate;
