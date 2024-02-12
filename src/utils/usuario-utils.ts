@@ -2,7 +2,9 @@
 import { Moment } from "moment";
 import { TypeTimestamp } from "../models/enum/type-timestamp";
 import { ITimeOnlineInfo } from "../models/interface/time-online-info";
-import { isSameMoment, stringToMoment } from "./data-utils";
+import { dataNowMoment, isSameMoment, stringToMoment } from "./data-utils";
+import { geralSingleton } from "../models/singleton/geral-singleton";
+import { consultarUsuarios } from "../db/db";
 
 const prepararListaTimestampAnotacoes = (timestampsAnotacoes: any, timestampNewRankMoment: number, dataNow: Moment): number[] => {
     const listaTimestampsAnotacoes: number[] = (timestampsAnotacoes as number[] || [] as number[])
@@ -43,7 +45,18 @@ const prepararMapTimeOnline = (timeOnline: any, timestampNewRankMoment: number, 
     return new Map<string, ITimeOnlineInfo>(listTimeOnline);
 }
 
+async function verificarAtualizacaoDiariaUsuarios(): Promise<void> {
+    const dataNow: Moment = dataNowMoment();
+
+    if (geralSingleton.lastViewRank.date() !== dataNow.date()) {
+        await consultarUsuarios();
+    }
+
+    geralSingleton.lastViewRank = dataNow;
+}
+
 export {
     prepararListaTimestampAnotacoes,
-    prepararMapTimeOnline
+    prepararMapTimeOnline,
+    verificarAtualizacaoDiariaUsuarios
 }

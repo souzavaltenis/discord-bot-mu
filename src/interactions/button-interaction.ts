@@ -20,6 +20,7 @@ import { getLogsGeralString, limparIntervalUpdate } from "../utils/geral-utils";
 import { getEmbedTabelaRankAnotacoes } from "../templates/embeds/tabela-rank-anotacoes-embed";
 import { getEmbedTabelaRankOnline } from "../templates/embeds/tabela-rank-online-embed";
 import { getButtonsRank } from "../templates/buttons/rank-buttons";
+import { verificarAtualizacaoDiariaUsuarios } from "../utils/usuario-utils";
 
 export = {
     name: 'ButtonInteraction',
@@ -69,6 +70,7 @@ export = {
             case Ids.BUTTON_TABLE_RANK:
             case Ids.BUTTON_TABLE_RANK_ANOTACOES:
             case Ids.BUTTON_TABLE_RANK_ONLINE:
+                await verificarAtualizacaoDiariaUsuarios();
                 const initButtonRank: string = Ids.BUTTON_TABLE_RANK_ANOTACOES;
                 const idButtonRank: string = interaction.customId === Ids.BUTTON_TABLE_RANK ? initButtonRank : interaction.customId;
                 const isRankAnotacoes: boolean = [Ids.BUTTON_TABLE_RANK, Ids.BUTTON_TABLE_RANK_ANOTACOES].includes(idButtonRank);

@@ -48,7 +48,7 @@ const formatLinhaInfo = (horario: Moment): string => {
 const isBossAberto = (horario: Moment): boolean => {
     if (!horario || !horario.isValid()) return false;
     
-    const dataAtual = moment().utcOffset('GMT-03:00');
+    const dataAtual = dataNowMoment();
     const dataNascimentoBossInicio = moment(horario).add(config().mu.horaBossInicial, 'hours');
 
     return dataAtual.isAfter(dataNascimentoBossInicio);
@@ -57,7 +57,7 @@ const isBossAberto = (horario: Moment): boolean => {
 const isBossVencido = (horario: Moment): boolean => {
     if (!horario || !horario.isValid()) return false;
 
-    const dataAtual = moment().utcOffset('GMT-03:00');
+    const dataAtual = dataNowMoment();
     const dataNascimentoBossFim = moment(horario).add(config().mu.horaBossFinal, 'hours');
 
     return dataAtual.isAfter(dataNascimentoBossFim);
