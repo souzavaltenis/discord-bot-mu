@@ -10,5 +10,6 @@
         "messagingSenderId": "",
         "appId": "",
         "measurementId": ""
-    }
+    },
+    "bucketUrl": ""
 }

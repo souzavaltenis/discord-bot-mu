@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { PermissionFlagsBits } from "discord-api-types/v9";
 import { ActionRowBuilder, bold, ButtonBuilder, ChatInputCommandInteraction, codeBlock, Collection, EmbedBuilder, Guild, InteractionResponse, Message, OAuth2Guild, TextChannel, User } from "discord.js";
 import { client } from "../index";
-import { config } from "../config/get-configs";
+import { botIsProd, config } from "../config/get-configs";
 import { adicionarHorarioBoss, carregarConfiguracoes, sincronizarConfigsBot } from "../db/db";
 import { Boss } from "../models/boss";
 import { Ids } from "../models/ids";
@@ -21,6 +22,10 @@ import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
 import { mainTextChannel } from "../utils/channels-utils";
 import { IGuildInfos } from "../models/interface/guild-infos";
 import { getEmbedServidoresBot } from "../templates/embeds/servidores-bot-embed";
+import { usuariosSingleton } from "../models/singleton/usuarios-singleton";
+import { geralSingleton } from "../models/singleton/geral-singleton";
+import { Usuario } from "../models/usuario";
+import { getLinkDownloadFile, uploadFileString } from "../db/storage";
 
 export = {
     category: CategoryCommand.ADM,
@@ -125,6 +130,36 @@ export = {
                 });
             
             return subcommand;
+        })
+        .addSubcommand(subcommand => {
+            subcommand.setName('get-log')
+                .setDescription('Gerar log dos dados atuais em memória')
+                .addStringOption(option => {
+                    option
+                        .setName('tipo_log')
+                        .setDescription('Qual tipo log?')
+                        .setRequired(true)
+                        .addChoices(
+                            { name: 'usuarios-singleton', value: 'usuarios-singleton' },
+                            { name: 'geral-singleton', value: 'geral-singleton' }
+                        );
+
+                    return option;
+                })
+                .addStringOption(option => {
+                    option
+                        .setName('extensao_arquivo')
+                        .setDescription('Qual extensão do arquivo de log?')
+                        .setRequired(true)
+                        .addChoices(
+                            { name: 'json', value: 'json' },
+                            { name: 'txt', value: 'txt' }
+                        );
+
+                    return option;
+                });
+            
+            return subcommand;
         }),
         
     execute: async (interaction: ChatInputCommandInteraction): Promise<InteractionResponse<boolean> | undefined> => {
@@ -148,6 +183,7 @@ export = {
             case "anotar": await subCommandAnotar(interaction); break;
             case "servidores": await subCommandServidores(interaction); break;
             case "botoes": await subCommandBotoes(interaction); break;
+            case "get-log": await subCommandGetLog(interaction); break;
         }
 
         async function subCommandSay(interaction: ChatInputCommandInteraction): Promise<void> {
@@ -313,6 +349,40 @@ export = {
             await interaction.reply({
                 content: 'Botão atualizado com sucesso!',
                 ephemeral: true 
+            });
+        }
+
+        async function subCommandGetLog(interaction: ChatInputCommandInteraction): Promise<void> {
+            const tipoLog: string = interaction.options.getString('tipo_log', true);
+            const extensaoArquivo: string = interaction.options.getString('extensao_arquivo', true);
+
+            let objetoLog = {};
+
+            switch (tipoLog) {
+                case "usuarios-singleton":
+                    objetoLog = usuariosSingleton.usuarios.map((usuario: Usuario) => {
+                        const copiaUsuario: any = Object.assign({}, usuario);
+                        copiaUsuario.timeOnline = [...copiaUsuario.timeOnline];
+                        return copiaUsuario;
+                    });
+                    break;
+                case "geral-singleton":
+                    const copiaGeralSingleton: any = Object.assign({}, geralSingleton);
+                    copiaGeralSingleton.infoMember = [...copiaGeralSingleton.infoMember];
+                    objetoLog = copiaGeralSingleton;
+                    break;
+            }
+
+            const conteudoArquivo: string = JSON.stringify(objetoLog, null, 4);
+            const nomeArquivo: string = `${tipoLog}-${dataNowMoment().toISOString()}.${extensaoArquivo}`;
+            const caminhoArquivo: string = `${botIsProd ? 'prod': 'test'}/logs/${tipoLog}/${nomeArquivo}`;
+
+            await uploadFileString(caminhoArquivo, conteudoArquivo);
+            const linkDownload: string = await getLinkDownloadFile(caminhoArquivo);
+
+            interaction.reply({
+                ephemeral: true,
+                content: `[${nomeArquivo}](${linkDownload})`
             });
         }
     }
