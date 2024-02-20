@@ -2,7 +2,7 @@ import { User } from "discord.js";
 import { InfoMember } from "../models/info-member";
 import { ITimeOnlineInfo } from "../models/interface/time-online-info";
 import { usuariosSingleton } from "../models/singleton/usuarios-singleton";
-import { dataNowMoment } from "./data-utils";
+import { stringToMoment } from "./data-utils";
 import { INickInfo } from "../models/interface/nick-info";
 
 function atualizarCacheTempoOnlineUsuario(keyDataAtual: string, infoMember: InfoMember): void {
@@ -13,7 +13,7 @@ function atualizarCacheTempoOnlineUsuario(keyDataAtual: string, infoMember: Info
     const indexUsuario: number = usuariosSingleton.usuarios.findIndex(u => u.id === infoMember.id);
 
     const infoTimeOnlineInicial: ITimeOnlineInfo = {
-        timestampDay: dataNowMoment(true).valueOf(),
+        timestampDay: stringToMoment(keyDataAtual + '00:00 -03:00').valueOf(),
         timestampOnline: infoMember.timeOnline,
         isOld: false
     };
