@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { PermissionFlagsBits } from "discord-api-types/v9";
-import { ActionRowBuilder, bold, ButtonBuilder, ChatInputCommandInteraction, codeBlock, Collection, EmbedBuilder, Guild, InteractionResponse, Message, OAuth2Guild, TextChannel, User } from "discord.js";
+import { ActionRowBuilder, bold, ButtonBuilder, ChatInputCommandInteraction, codeBlock, Collection, EmbedBuilder, Guild, GuildMember, InteractionResponse, Message, OAuth2Guild, TextChannel, User, VoiceChannel } from "discord.js";
 import { client } from "../index";
 import { botIsProd, config } from "../config/get-configs";
 import { adicionarHorarioBoss, carregarConfiguracoes, sincronizarConfigsBot } from "../db/db";
@@ -160,6 +160,50 @@ export = {
                 });
             
             return subcommand;
+        })
+        .addSubcommand(subcommand => {
+            subcommand.setName('move_sala')
+                .setDescription('Mover usuários entre salas')
+                .addChannelOption(option => {
+                    option
+                        .setName('canal_atual')
+                        .setDescription('Qual canal os usuários estão?')
+                        .setRequired(true);
+
+                    return option;
+                })
+                .addChannelOption(option => {
+                    option
+                        .setName('canal_destino')
+                        .setDescription('Qual canal os usuários deverão ir?')
+                        .setRequired(true);
+
+                    return option;
+                });
+            
+            return subcommand;
+        })
+        .addSubcommand(subcommand => {
+            subcommand.setName('move_usuario')
+                .setDescription('Mover usuário')
+                .addUserOption(option => {
+                    option
+                        .setName('usuario')
+                        .setDescription('Quem deseja mover?')
+                        .setRequired(true);
+
+                    return option;
+                })
+                .addChannelOption(option => {
+                    option
+                        .setName('canal_destino')
+                        .setDescription('Qual canal o usuário irá?')
+                        .setRequired(true);
+
+                    return option;
+                });
+            
+            return subcommand;
         }),
         
     execute: async (interaction: ChatInputCommandInteraction): Promise<InteractionResponse<boolean> | undefined> => {
@@ -184,6 +228,8 @@ export = {
             case "servidores": await subCommandServidores(interaction); break;
             case "botoes": await subCommandBotoes(interaction); break;
             case "get-log": await subCommandGetLog(interaction); break;
+            case "move_sala": await subCommandMoveSala(interaction); break;
+            case "move_usuario": await subCommandMoveUsuario(interaction); break;
         }
 
         async function subCommandSay(interaction: ChatInputCommandInteraction): Promise<void> {
@@ -383,6 +429,42 @@ export = {
             interaction.reply({
                 ephemeral: true,
                 content: `[${nomeArquivo}](${linkDownload})`
+            });
+        }
+
+        async function subCommandMoveSala(interaction: ChatInputCommandInteraction): Promise<void> {
+            const canalAtual: VoiceChannel = interaction.options.getChannel('canal_atual', true);
+            const canalDestino: VoiceChannel = interaction.options.getChannel('canal_destino', true);
+
+            const membros: GuildMember[] = [...canalAtual.members].map(m => m[1]);
+
+            for (const membro of membros) {
+                await membro.voice.setChannel(canalDestino);
+            }
+
+            await interaction.reply({
+                ephemeral: true,
+                content: `${membros.length} membros da sala ${canalAtual} foram movidos para sala ${canalDestino}`
+            });
+        }
+
+        async function subCommandMoveUsuario(interaction: ChatInputCommandInteraction): Promise<void | InteractionResponse<boolean>> {
+            const usuario: User = interaction.options.getUser('usuario', true);
+            const canalDestino: VoiceChannel = interaction.options.getChannel('canal_destino', true);
+            const membro: GuildMember | undefined = await canalDestino.guild?.members.fetch(usuario);
+
+            if (!membro) {
+                return await interaction.reply({
+                    ephemeral: true,
+                    content: `Não foi possível encontrar o membro ${usuario}`
+                });
+            }
+
+            await membro.voice.setChannel(canalDestino);
+
+            await interaction.reply({
+                ephemeral: true,
+                content: `O membro ${usuario} foi movido para sala ${canalDestino}`
             });
         }
     }
