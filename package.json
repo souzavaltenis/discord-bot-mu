@@ -18,21 +18,21 @@
   "license": "ISC",
   "dependencies": {
     "@discordjs/rest": "^2.2.0",
-    "discord-api-types": "^0.37.69",
+    "discord-api-types": "^0.37.74",
     "discord.js": "^14.14.1",
-    "firebase": "^10.8.0",
+    "firebase": "^10.9.0",
     "kafkajs": "^2.2.4",
     "moment": "^2.30.1"
   },
   "devDependencies": {
     "@tsconfig/node16": "^16.1.1",
-    "@types/node": "^20.11.17",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "@typescript-eslint/parser": "^6.21.0",
+    "@types/node": "^20.11.28",
+    "@typescript-eslint/eslint-plugin": "^7.2.0",
+    "@typescript-eslint/parser": "^7.2.0",
     "bestzip": "^2.2.1",
-    "eslint": "^8.56.0",
+    "eslint": "^8.57.0",
     "rimraf": "^5.0.5",
     "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.4.2"
   }
 }
