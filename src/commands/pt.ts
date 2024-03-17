@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, InteractionResponse, PermissionFlagsBits, SlashCommandBuilder, User } from "discord.js";
+import { ChatInputCommandInteraction, InteractionResponse, SlashCommandBuilder, User } from "discord.js";
 import { CategoryCommand } from "../models/enum/category-command";
 import { ativarMembroPT, desativarMembroPT } from "../db/db";
 import { usuariosSingleton } from "../models/singleton/usuarios-singleton";

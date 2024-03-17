@@ -68,7 +68,10 @@ async function resetarHorarios(interaction: ChatInputCommandInteraction, opcaoSu
     if (!(/^(?:[01][0-9]|2[0-3]):[0-5][0-9](?::[0-5][0-9])?$/).test(horario)) {
         const msgErroHorario: string = `${interaction.user} Horário (${bold(horario)}) não é reconhecido! Use como exemplo: 15:46`;
         await sendLogErroInput(interaction, msgErroHorario);
-        return await interaction.reply(msgErroHorario);
+        return await interaction.reply({
+            content: msgErroHorario,
+            ephemeral: true
+        });
     }
 
     const foiontem: string = interaction.options.getString('foi_ontem') || '';
@@ -77,7 +80,10 @@ async function resetarHorarios(interaction: ChatInputCommandInteraction, opcaoSu
     if (foiontem === 'N' && distanceDatasInMinutes(horarioReset, dataNowMoment()) >= 40) {
         const msgErroHorarioData: string = `${interaction.user} Horário (${bold(horario)}) é muito distante! Se foi de ontem, preencha o último campo com ${bold('Sim')}`;
         await sendLogErroInput(interaction, msgErroHorarioData);
-        return await interaction.reply(msgErroHorarioData);
+        return await interaction.reply({
+            content: msgErroHorarioData,
+            ephemeral: true
+        });
     }
 
     if (foiontem === 'S') {
@@ -87,8 +93,11 @@ async function resetarHorarios(interaction: ChatInputCommandInteraction, opcaoSu
     const sala: number = interaction.options.getNumber('sala') || 0;
 
     if (!config().mu.salasPermitidas.includes(sala) && opcaoSubCommand === "sala") {
+        const msgErroSala: string = `${interaction.user} sala ${sala} não foi encontrada`;
+        await sendLogErroInput(interaction, msgErroSala);
+
         return await interaction.reply({
-            content: `${interaction.user} sala ${sala} não foi encontrada`,
+            content: msgErroSala,
             ephemeral: true
         });
     }
@@ -193,7 +202,10 @@ async function resetarRankAnotacoes(interaction: ChatInputCommandInteraction): P
     if (idGuildInteraction !== idGuildMain || idUserInteraction !== idUserOwnerGuild) {
         const msgErroPermissao: string = `${interaction.user} somente o dono do servidor (<@${idUserOwnerGuild}>) pode usar esse comando!`;
         await sendLogErroInput(interaction, msgErroPermissao);
-        return await interaction.reply(msgErroPermissao);
+        return await interaction.reply({
+            content: msgErroPermissao,
+            ephemeral: true
+        });
     }
 
     const textoNovaData: string = interaction.options.getString('nova_data') || '';
@@ -201,7 +213,10 @@ async function resetarRankAnotacoes(interaction: ChatInputCommandInteraction): P
     if (!(/^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/).test(textoNovaData)) {
         const msgErroData: string = `${interaction.user} A data (${bold(textoNovaData)}) não é válida! Use como exemplo: 31/12/2023, padrão [DD/MM/YYYY]`;
         await sendLogErroInput(interaction, msgErroData);
-        return await interaction.reply(msgErroData);
+        return await interaction.reply({
+            content: msgErroData,
+            ephemeral: true
+        });
     }
 
     const textoNovaDataCompleto: string = textoNovaData + ' 00:00 -03:00'; 
@@ -209,7 +224,10 @@ async function resetarRankAnotacoes(interaction: ChatInputCommandInteraction): P
     if (stringToMoment(textoNovaDataCompleto).valueOf() < dataNowMoment(true).valueOf()) {
         const msgErroData: string = `${interaction.user} A data informada precisa ser igual ou maior que a data de hoje (${dataNowMoment().format('DD/MM/YYYY')})`;
         await sendLogErroInput(interaction, msgErroData);
-        return await interaction.reply(msgErroData);
+        return await interaction.reply({
+            content: msgErroData,
+            ephemeral: true
+        });
     }
 
     config().geral.dateNewRank = textoNovaDataCompleto;

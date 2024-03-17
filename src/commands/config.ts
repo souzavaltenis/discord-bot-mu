@@ -4,7 +4,7 @@ import { config } from "../config/get-configs";
 import { sincronizarConfigsBot } from "../db/db";
 import { CategoryCommand } from "../models/enum/category-command";
 import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
-import { underbold } from "../utils/geral-utils";
+import { sendLogErroInput, underbold } from "../utils/geral-utils";
 
 export = {
     category: CategoryCommand.BOSS,
@@ -31,8 +31,10 @@ export = {
             const intervaloFinal: number = interaction.options.getNumber('intervalo_final', true);
     
             if (intervaloFinal < intervaloInicial) {
+                const msgErroIntervalo: string = 'O intervalo final deve ser maior que o inicial';
+                await sendLogErroInput(interaction, msgErroIntervalo);
                 return await interaction.reply({
-                    content: 'O intervalo final deve ser maior que o inicial',
+                    content: msgErroIntervalo,
                     ephemeral: true
                 });
             }
