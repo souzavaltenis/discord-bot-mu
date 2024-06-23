@@ -2,8 +2,8 @@ import { ChatInputCommandInteraction, channelMention, ApplicationCommandType } f
 import { config } from "../config/get-configs";
 import { CategoryCommand } from "../models/enum/category-command";
 import { commands } from "../models/singleton/commands-singleton";
-import { getNameCommandsByCategory, sendLogErroInput, getLogsGeralString } from "../utils/geral-utils";
-import { clientRabbitMQ } from "../services/rabbitmq/client-rabbitmq";
+import { getNameCommandsByCategory } from "../utils/geral-utils";
+import { sendLogErroInput, sendLogGeral } from "../utils/logs-utils";
 
 export = {
     name: 'ChatInputCommandInteraction',
@@ -20,7 +20,7 @@ export = {
             return;
         }
 
-        await clientRabbitMQ.produceMessage(config().rabbitmq.routingKeys.logsGeral, getLogsGeralString({ cmdInteraction: interaction }));
+        sendLogGeral({ cmdInteraction: interaction });
 
         if ([ApplicationCommandType.ChatInput, ApplicationCommandType.Message].includes(interaction.commandType)) {
             const command = commands.get(interaction.commandName);

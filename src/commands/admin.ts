@@ -12,7 +12,7 @@ import { TimeoutSingleton } from "../models/singleton/timeout-singleton";
 import { getButtonsTabela } from "../templates/buttons/style-tabela-buttons";
 import { getEmbedTabelaBoss } from "../templates/embeds/tabela-boss-embed";
 import { disableButton } from "../utils/buttons-utils";
-import { getIdButton, getNickMember, limparIntervalUpdate, sendLogErroInput } from "../utils/geral-utils";
+import { getIdButton, getNickMember, limparIntervalUpdate } from "../utils/geral-utils";
 import { CategoryCommand } from "../models/enum/category-command";
 import { Moment } from "moment";
 import { dataNowMoment, dataNowString, momentToString, stringToMoment, timestampToMoment } from "../utils/data-utils";
@@ -26,6 +26,7 @@ import { usuariosSingleton } from "../models/singleton/usuarios-singleton";
 import { geralSingleton } from "../models/singleton/geral-singleton";
 import { Usuario } from "../models/usuario";
 import { getLinkDownloadFile, uploadFileString } from "../db/storage";
+import { sendLogErroInput } from "../utils/logs-utils";
 
 export = {
     category: CategoryCommand.ADM,

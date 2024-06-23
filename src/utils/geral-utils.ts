@@ -1,23 +1,16 @@
-import { bold, underscore } from "@discordjs/builders";
-import { APIButtonComponentWithCustomId, ButtonBuilder, ButtonStyle, GuildMember, Interaction } from "discord.js";
+import { APIButtonComponentWithCustomId, ButtonBuilder, ButtonStyle, GuildMember, Interaction, underline, bold } from "discord.js";
 import { Moment } from "moment";
 import { config } from '../config/get-configs';
 import { Boss } from "../models/boss";
 import { CategoryCommand } from "../models/enum/category-command";
-import { TypeLog } from "../models/enum/type-log";
-import { ILogsErrosInput } from "../models/interface/logs-erros-input";
-import { ILogsGeral } from "../models/interface/logs-geral";
-import { IParamsLogsGeral } from "../models/interface/params-logs-geral";
 import { SalaBoss } from "../models/sala-boss";
 import { commands } from "../models/singleton/commands-singleton";
 import { geralSingleton } from "../models/singleton/geral-singleton";
 import { intervalUpdate } from "../models/singleton/interval-singleton";
 import { vaiAbrirBoss } from "./boss-utils";
-import { dataNowMoment } from "./data-utils";
 import { TimeoutSingleton } from "../models/singleton/timeout-singleton";
 import { DocumentChange } from "@firebase/firestore";
 import { documentConfigTest } from "../config/config.json";
-import { clientRabbitMQ } from "../services/rabbitmq/client-rabbitmq";
 
 const tracos = (quantidade: number): string => {
     let str: string = '';
@@ -51,7 +44,7 @@ const numbersToEmoji = (n: number): string => {
 }
 
 const underbold = (str: string): string => {
-    return underscore(bold(str));
+    return underline(bold(str));
 }
 
 const getNomeBossByDoc = (nomeDocBoss: string): string => {
@@ -132,82 +125,6 @@ const gerarListaSalaBoss = (listaBoss: Boss[]): SalaBoss[] => {
     });
 
     return listaSalaBoss;
-}
-
-const getLogsGeralString = (params?: IParamsLogsGeral): string => {
-
-    if (!params) return '';
-
-    const { cmdInteraction, client, msgInteraction, guild } = params;
-    let log = {} as ILogsGeral;
-
-    // On Command
-    if (cmdInteraction) {
-        log = {
-            type: TypeLog.ON_COMMAND,
-            userId: cmdInteraction.user?.id,
-            userName: cmdInteraction.user?.tag,
-            command: `/${cmdInteraction.commandName}`,
-            guildId: cmdInteraction.guild?.id,
-            guildName: cmdInteraction.guild?.name,
-            timestamp: cmdInteraction.createdTimestamp
-        } as ILogsGeral;
-
-    // On Ready
-    } else if (client) {
-        log = {
-            type: TypeLog.ON_READY,
-            userId: client.user?.id,
-            userName: client.user?.tag,
-            command: '',
-            guildId: '',
-            guildName: '',
-            timestamp: dataNowMoment().valueOf()
-        } as ILogsGeral;
-
-    // On Button Click
-    } else if (msgInteraction) {
-        log = {
-            type: TypeLog.ON_BUTTON_CLICK,
-            userId: msgInteraction.member?.user.id,
-            userName: msgInteraction.member?.user.username,
-            command: msgInteraction.customId,
-            guildId: msgInteraction.guild?.id,
-            guildName: msgInteraction.guild?.name,
-            timestamp: msgInteraction.createdTimestamp
-        } as ILogsGeral;
-
-    // On Guild Create
-    } else if (guild) {
-        log = {
-            type: TypeLog.ON_GUILD_CREATE,
-            userId: '',
-            userName: '',
-            command: '',
-            guildId: guild.id,
-            guildName: guild.name,
-            timestamp: dataNowMoment().valueOf()
-        } as ILogsGeral;
-    }
-
-    return JSON.stringify(log);
-}
-
-const getLogsErrosInputString = (interaction: Interaction, msgErroBoss: string): string => {
-    const logInputErro = {
-        userId: interaction.user.id,
-        userName: interaction.user.tag,
-        message: msgErroBoss,
-        guildId: interaction.guild?.id,
-        guildName: interaction.guild?.name,
-        timestamp: interaction.createdTimestamp,
-    } as ILogsErrosInput;
-    
-    return JSON.stringify(logInputErro);
-}
-
-const sendLogErroInput = async(interaction: Interaction, msgErroBoss: string): Promise<void> => {
-    await clientRabbitMQ.produceMessage(config().rabbitmq.routingKeys.logsErrosInput, getLogsErrosInputString(interaction, msgErroBoss));
 }
 
 const sleep = async (ms: number): Promise<void> => {
@@ -323,9 +240,6 @@ export {
     formatInfosInputs, 
     gerarTabelaSalas, 
     gerarListaSalaBoss,
-    getLogsGeralString,
-    getLogsErrosInputString,
-    sendLogErroInput,
     sleep,
     textoFooter,
     getIdBossByDoc,

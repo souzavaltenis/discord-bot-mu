@@ -4,10 +4,10 @@ import { adicionarSala, removerSala, sincronizarConfigsBot } from "../db/db";
 import { Ids } from "../models/ids";
 import { getButtonsSimNaoSala } from "../templates/buttons/sim-nao-buttons-sala";
 import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
-import { sendLogErroInput, getLogsGeralString, limparIntervalUpdate } from "../utils/geral-utils";
+import { limparIntervalUpdate } from "../utils/geral-utils";
 import { config } from "../config/get-configs";
 import { CategoryCommand } from "../models/enum/category-command";
-import { clientRabbitMQ } from "../services/rabbitmq/client-rabbitmq";
+import { sendLogErroInput, sendLogGeral } from "../utils/logs-utils";
 
 export = {
     category: CategoryCommand.BOSS,
@@ -82,7 +82,7 @@ export = {
             const collector = message?.createMessageComponentCollector({ filter: (i: Interaction) => i.isButton(), time: 1000 * 60 });
             collector?.on("collect", async (interactionMessage: MessageComponentInteraction) => {
 
-                await clientRabbitMQ.produceMessage(config().rabbitmq.routingKeys.logsGeral, getLogsGeralString({ msgInteraction: interactionMessage }));
+                sendLogGeral({ msgInteraction: interactionMessage });
 
                 let msgBotoes: string = '';
 

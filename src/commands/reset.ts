@@ -7,11 +7,11 @@ import { IBossInfoAdd } from "../models/interface/boss-info-add";
 import { getButtonsSimNao } from "../templates/buttons/sim-nao-buttons";
 import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
 import { dataNowMoment, dataNowString, distanceDatasInMinutes, momentToString, stringToMoment } from "../utils/data-utils";
-import { getLogsGeralString, limparIntervalUpdate, sendLogErroInput, sleep } from "../utils/geral-utils";
+import { limparIntervalUpdate, sleep } from "../utils/geral-utils";
 import { config } from "../config/get-configs";
 import { CategoryCommand } from "../models/enum/category-command";
 import { mainTextChannel } from "../utils/channels-utils";
-import { clientRabbitMQ } from "../services/rabbitmq/client-rabbitmq";
+import { sendLogErroInput, sendLogGeral } from "../utils/logs-utils";
 
 export = {
     category: CategoryCommand.BOSS,
@@ -132,7 +132,7 @@ async function resetarHorarios(interaction: ChatInputCommandInteraction, opcaoSu
 
     collector?.on("collect", async (interactionMessage: MessageComponentInteraction) => {
 
-        await clientRabbitMQ.produceMessage(config().rabbitmq.routingKeys.logsGeral, getLogsGeralString({ msgInteraction: interactionMessage }));
+        sendLogGeral({ msgInteraction: interactionMessage });
 
         let msgBotoes: string = '';
 

@@ -6,10 +6,11 @@ import { config } from '../../config/get-configs';
 import { dataNowMoment, dataNowString, distanceDatasInMinutes, momentToString, stringToMoment } from '../../utils/data-utils';
 import { bold } from '@discordjs/builders';
 import { Moment } from 'moment';
-import { getNickMember, sendLogErroInput } from '../../utils/geral-utils';
+import { getNickMember } from '../../utils/geral-utils';
 import { IBossInfoAdd } from '../../models/interface/boss-info-add';
 import { getEmbedAddBoss } from '../embeds/adicionar-boss-embed';
 import { usuariosSingleton } from '../../models/singleton/usuarios-singleton';
+import { sendLogErroInput } from '../../utils/logs-utils';
 
 export class AdicionarHorarioModal {
 

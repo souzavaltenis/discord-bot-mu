@@ -1,6 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, EmbedBuilder, Message, StringSelectMenuBuilder } from "discord.js";
 import { Boss } from "../models/boss";
-import { config } from "../config/get-configs";
 import { consultarBackupsListaBoss } from "../db/db";
 import { Ids } from "../models/ids";
 import { intervalUpdate } from "../models/singleton/interval-singleton";
@@ -15,12 +14,12 @@ import { getEmbedTabelaVencidos } from "../templates/embeds/tabela-vencidos-embe
 import { AdicionarHorarioModal } from "../templates/modals/adicionar-horario-modal";
 import { getSelectMenuBackup } from "../templates/selects/backups-selects";
 import { disableSubButton, disableButton } from "../utils/buttons-utils";
-import { getLogsGeralString, limparIntervalUpdate } from "../utils/geral-utils";
+import { limparIntervalUpdate } from "../utils/geral-utils";
 import { getEmbedTabelaRankAnotacoes } from "../templates/embeds/tabela-rank-anotacoes-embed";
 import { getEmbedTabelaRankOnline } from "../templates/embeds/tabela-rank-online-embed";
 import { getButtonsRank } from "../templates/buttons/rank-buttons";
 import { verificarAtualizacaoDiariaUsuarios } from "../utils/usuario-utils";
-import { clientRabbitMQ } from "../services/rabbitmq/client-rabbitmq";
+import { sendLogGeral } from "../utils/logs-utils";
 
 export = {
     name: 'ButtonInteraction',
@@ -28,7 +27,7 @@ export = {
         const listaBoss: Boss[] = ListBossSingleton.getInstance().boss;
         const buttons: ButtonBuilder[] = getButtonsTabela();
         
-        clientRabbitMQ.produceMessage(config().rabbitmq.routingKeys.logsGeral, getLogsGeralString({ msgInteraction: interaction }));
+        sendLogGeral({ msgInteraction: interaction });
 
         let embedSelecionada: EmbedBuilder | undefined;
         const rowButtons: ActionRowBuilder<ButtonBuilder>[] = [];
