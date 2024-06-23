@@ -32,7 +32,7 @@ export = {
     
             if (intervaloFinal < intervaloInicial) {
                 const msgErroIntervalo: string = 'O intervalo final deve ser maior que o inicial';
-                await sendLogErroInput(interaction, msgErroIntervalo);
+                sendLogErroInput(interaction, msgErroIntervalo);
                 return await interaction.reply({
                     content: msgErroIntervalo,
                     ephemeral: true

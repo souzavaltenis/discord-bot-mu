@@ -1,4 +1,4 @@
-export interface ILogsErrosInputKafka {
+export interface ILogsErrosInput {
     userId: string;
     userName: string;
     message: string;

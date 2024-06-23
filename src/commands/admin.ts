@@ -209,7 +209,7 @@ export = {
     execute: async (interaction: ChatInputCommandInteraction): Promise<InteractionResponse<boolean> | undefined> => {
         if (!config().adminsIds.includes(interaction.user.id)) {
             const msgErroPermissao: string = `${interaction.user} Você não pode utilizar esse comando`;
-            await sendLogErroInput(interaction, msgErroPermissao);
+            sendLogErroInput(interaction, msgErroPermissao);
             return await interaction.reply({ 
                 content: msgErroPermissao,
                 ephemeral: true
@@ -326,7 +326,7 @@ export = {
 
             if (!(/^(?:[01][0-9]|2[0-3]):[0-5][0-9](?::[0-5][0-9])?$/).test(horario)) {
                 const msgErroHorario: string = `${interaction.user} Horário (${bold(horario)}) não é reconhecido! Use como exemplo: 15:46`;
-                await sendLogErroInput(interaction, msgErroHorario);
+                sendLogErroInput(interaction, msgErroHorario);
                 await interaction.reply({
                     content: msgErroHorario,
                     ephemeral: true

@@ -89,24 +89,22 @@ export class AdicionarHorarioModal {
 
         if (!nomeDocBoss) {
             const msgErroBoss: string = `${interaction.user} Boss (${bold(textInputNomeBoss)}) não é reconhecido!`;
-            await sendLogErroInput(interaction, msgErroBoss);
-            await interaction.reply({
+            sendLogErroInput(interaction, msgErroBoss);
+            return await interaction.reply({
                 content: msgErroBoss,
                 ephemeral: true
             });
-            return;
         }
 
         const bossAtivo: boolean = await isBossAtivo(nomeDocBoss);
 
         if (!bossAtivo) {
             const msgErroBoss: string = `${interaction.user} Boss (${bold(textInputNomeBoss)}) está desativado!`;
-            await sendLogErroInput(interaction, msgErroBoss);
-            await interaction.reply({
+            sendLogErroInput(interaction, msgErroBoss);
+            return await interaction.reply({
                 content: msgErroBoss,
                 ephemeral: true
             });
-            return;
         }
 
         const textInputSalaBoss: string = interaction.fields.getTextInputValue(Ids.INPUT_SALA_BOSS).replace(/\D/g, '');
@@ -116,24 +114,22 @@ export class AdicionarHorarioModal {
 
         if (Number.isNaN(salaBoss) || !salasConhecidas.includes(salaBoss)) {
             const msgErroSala: string = `${interaction.user} Sala (${bold(textInputSalaBoss)}) não é reconhecida! Use as salas ${salasConhecidas}.`;
-            await sendLogErroInput(interaction, msgErroSala);
-            await interaction.reply({
+            sendLogErroInput(interaction, msgErroSala);
+            return await interaction.reply({
                 content: msgErroSala,
                 ephemeral: true
             });
-            return;
         }
 
         const textInputHorarioBoss: string = interaction.fields.getTextInputValue(Ids.INPUT_HORARIO_BOSS).replace(';', ':');
 
         if (!(/^(?:[01][0-9]|2[0-3]):[0-5][0-9](?::[0-5][0-9])?$/).test(textInputHorarioBoss)) {
             const msgErroHorario: string = `${interaction.user} Horário (${bold(textInputHorarioBoss)}) não é reconhecido! Use como exemplo: 15:46`;
-            await sendLogErroInput(interaction, msgErroHorario);
-            await interaction.reply({
+            sendLogErroInput(interaction, msgErroHorario);
+            return await interaction.reply({
                 content: msgErroHorario,
                 ephemeral: true
             });
-            return;
         }
 
         const horarioInformado: Moment = stringToMoment(`${dataNowString('DD/MM/YYYY')} ${textInputHorarioBoss} -0300`)
@@ -143,12 +139,11 @@ export class AdicionarHorarioModal {
 
         if (!foiOntem && distanceDatasInMinutes(horarioInformado, dataNowMoment()) >= 40) {
             const msgErroHorarioData: string = `${interaction.user} Horário (${bold(textInputHorarioBoss)}) é muito distante! Se foi de ontem, preencha o campo (foi ontem?) com ${bold('sim')}.`;
-            await sendLogErroInput(interaction, msgErroHorarioData);
-            await interaction.reply({
+            sendLogErroInput(interaction, msgErroHorarioData);
+            return await interaction.reply({
                 content: msgErroHorarioData,
                 ephemeral: true
             });
-            return;
         }
 
         if (foiOntem) {

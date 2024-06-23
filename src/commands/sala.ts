@@ -2,12 +2,12 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import { bold, ChatInputCommandInteraction, Interaction, InteractionResponse, MessageComponentInteraction } from "discord.js";
 import { adicionarSala, removerSala, sincronizarConfigsBot } from "../db/db";
 import { Ids } from "../models/ids";
-import { sendMessageKafka } from "../services/kafka/kafka-producer";
 import { getButtonsSimNaoSala } from "../templates/buttons/sim-nao-buttons-sala";
 import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
 import { sendLogErroInput, getLogsGeralString, limparIntervalUpdate } from "../utils/geral-utils";
 import { config } from "../config/get-configs";
 import { CategoryCommand } from "../models/enum/category-command";
+import { clientRabbitMQ } from "../services/rabbitmq/client-rabbitmq";
 
 export = {
     category: CategoryCommand.BOSS,
@@ -36,7 +36,7 @@ export = {
         if (opcaoSubCommand === "adicionar") {
             if (config().mu.salasPermitidas.includes(sala)) {
                 const msgErroSalaExiste: string = `Sala ${sala} já existe!`;
-                await sendLogErroInput(interaction, msgErroSalaExiste);
+                sendLogErroInput(interaction, msgErroSalaExiste);
                 return await interaction.reply({
                     content: msgErroSalaExiste,
                     ephemeral: true
@@ -45,7 +45,7 @@ export = {
 
             if (config().mu.salasPermitidas.length >= config().mu.limitSalas) {
                 const msgErroLimiteSala: string = `Falha! O limite de ${config().mu.limitSalas} salas foi atingido.`;
-                await sendLogErroInput(interaction, msgErroLimiteSala);
+                sendLogErroInput(interaction, msgErroLimiteSala);
                 return await interaction.reply({
                     content: msgErroLimiteSala,
                     ephemeral: true
@@ -68,7 +68,7 @@ export = {
         if (opcaoSubCommand === "remover") {
             if (!config().mu.salasPermitidas.includes(sala)) {
                 const msgErroSalaInvalida: string = `Sala ${sala} não existe.`;
-                await sendLogErroInput(interaction, msgErroSalaInvalida);
+                sendLogErroInput(interaction, msgErroSalaInvalida);
                 return await interaction.reply({
                     content: msgErroSalaInvalida,
                     ephemeral: true
@@ -82,7 +82,7 @@ export = {
             const collector = message?.createMessageComponentCollector({ filter: (i: Interaction) => i.isButton(), time: 1000 * 60 });
             collector?.on("collect", async (interactionMessage: MessageComponentInteraction) => {
 
-                await sendMessageKafka(config().kafka.topicLogsGeralBot, getLogsGeralString({ msgInteraction: interactionMessage }));
+                await clientRabbitMQ.produceMessage(config().rabbitmq.routingKeys.logsGeral, getLogsGeralString({ msgInteraction: interactionMessage }));
 
                 let msgBotoes: string = '';
 

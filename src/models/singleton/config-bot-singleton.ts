@@ -5,8 +5,8 @@ import { IChannelsConfigBot } from "../interface/config-bot/channels-config-bot"
 import { ICollectionsConfigBot } from "../interface/config-bot/collections-config-bot";
 import { IDocumentsConfigBot } from "../interface/config-bot/documents-config-bot";
 import { IGeralConfigBot } from "../interface/config-bot/geral-config-bot";
-import { IKafkaConfigBot } from "../interface/config-bot/kafka-config-bot";
 import { IMuConfigBot } from "../interface/config-bot/mu-config-bot";
+import { IRabbitMQConfigBot } from "../interface/config-bot/rabbitmq-config-bot";
 
 export class ConfigBotSingleton {
     private static instance: ConfigBotSingleton;
@@ -28,7 +28,7 @@ export class ConfigBotSingleton {
                 {} as IDocumentsConfigBot,
                 {} as IGeralConfigBot,
                 {} as IMuConfigBot,
-                {} as IKafkaConfigBot,
+                {} as IRabbitMQConfigBot,
                 '',
                 [],
                 new Map<string, boolean>()

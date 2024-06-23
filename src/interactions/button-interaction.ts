@@ -6,7 +6,6 @@ import { Ids } from "../models/ids";
 import { intervalUpdate } from "../models/singleton/interval-singleton";
 import { ListBossSingleton } from "../models/singleton/list-boss-singleton";
 import { backupsBossSingleton } from "../models/singleton/lista-backup-singleton";
-import { sendMessageKafka } from "../services/kafka/kafka-producer";
 import { getButtonsProximos } from "../templates/buttons/proximos-buttons";
 import { getButtonsTabela } from "../templates/buttons/style-tabela-buttons";
 import { getEmbedAvisoHistorico } from "../templates/embeds/aviso-historico-embed";
@@ -21,6 +20,7 @@ import { getEmbedTabelaRankAnotacoes } from "../templates/embeds/tabela-rank-ano
 import { getEmbedTabelaRankOnline } from "../templates/embeds/tabela-rank-online-embed";
 import { getButtonsRank } from "../templates/buttons/rank-buttons";
 import { verificarAtualizacaoDiariaUsuarios } from "../utils/usuario-utils";
+import { clientRabbitMQ } from "../services/rabbitmq/client-rabbitmq";
 
 export = {
     name: 'ButtonInteraction',
@@ -28,7 +28,7 @@ export = {
         const listaBoss: Boss[] = ListBossSingleton.getInstance().boss;
         const buttons: ButtonBuilder[] = getButtonsTabela();
         
-        sendMessageKafka(config().kafka.topicLogsGeralBot, getLogsGeralString({ msgInteraction: interaction }));
+        clientRabbitMQ.produceMessage(config().rabbitmq.routingKeys.logsGeral, getLogsGeralString({ msgInteraction: interaction }));
 
         let embedSelecionada: EmbedBuilder | undefined;
         const rowButtons: ActionRowBuilder<ButtonBuilder>[] = [];

@@ -1,24 +1,23 @@
 import { bold, underscore } from "@discordjs/builders";
 import { APIButtonComponentWithCustomId, ButtonBuilder, ButtonStyle, GuildMember, Interaction } from "discord.js";
-import { RecordMetadata } from "kafkajs";
 import { Moment } from "moment";
 import { config } from '../config/get-configs';
 import { Boss } from "../models/boss";
 import { CategoryCommand } from "../models/enum/category-command";
 import { TypeLog } from "../models/enum/type-log";
-import { ILogsErrosInputKafka } from "../models/interface/kafka/logs-erros-input-kafka";
-import { ILogsGeralKafka } from "../models/interface/kafka/logs-geral-kafka";
+import { ILogsErrosInput } from "../models/interface/logs-erros-input";
+import { ILogsGeral } from "../models/interface/logs-geral";
 import { IParamsLogsGeral } from "../models/interface/params-logs-geral";
 import { SalaBoss } from "../models/sala-boss";
 import { commands } from "../models/singleton/commands-singleton";
 import { geralSingleton } from "../models/singleton/geral-singleton";
 import { intervalUpdate } from "../models/singleton/interval-singleton";
-import { sendMessageKafka } from "../services/kafka/kafka-producer";
 import { vaiAbrirBoss } from "./boss-utils";
 import { dataNowMoment } from "./data-utils";
 import { TimeoutSingleton } from "../models/singleton/timeout-singleton";
 import { DocumentChange } from "@firebase/firestore";
 import { documentConfigTest } from "../config/config.json";
+import { clientRabbitMQ } from "../services/rabbitmq/client-rabbitmq";
 
 const tracos = (quantidade: number): string => {
     let str: string = '';
@@ -140,7 +139,7 @@ const getLogsGeralString = (params?: IParamsLogsGeral): string => {
     if (!params) return '';
 
     const { cmdInteraction, client, msgInteraction, guild } = params;
-    let log = {} as ILogsGeralKafka;
+    let log = {} as ILogsGeral;
 
     // On Command
     if (cmdInteraction) {
@@ -152,7 +151,7 @@ const getLogsGeralString = (params?: IParamsLogsGeral): string => {
             guildId: cmdInteraction.guild?.id,
             guildName: cmdInteraction.guild?.name,
             timestamp: cmdInteraction.createdTimestamp
-        } as ILogsGeralKafka;
+        } as ILogsGeral;
 
     // On Ready
     } else if (client) {
@@ -164,7 +163,7 @@ const getLogsGeralString = (params?: IParamsLogsGeral): string => {
             guildId: '',
             guildName: '',
             timestamp: dataNowMoment().valueOf()
-        } as ILogsGeralKafka;
+        } as ILogsGeral;
 
     // On Button Click
     } else if (msgInteraction) {
@@ -176,7 +175,7 @@ const getLogsGeralString = (params?: IParamsLogsGeral): string => {
             guildId: msgInteraction.guild?.id,
             guildName: msgInteraction.guild?.name,
             timestamp: msgInteraction.createdTimestamp
-        } as ILogsGeralKafka;
+        } as ILogsGeral;
 
     // On Guild Create
     } else if (guild) {
@@ -188,7 +187,7 @@ const getLogsGeralString = (params?: IParamsLogsGeral): string => {
             guildId: guild.id,
             guildName: guild.name,
             timestamp: dataNowMoment().valueOf()
-        } as ILogsGeralKafka;
+        } as ILogsGeral;
     }
 
     return JSON.stringify(log);
@@ -202,13 +201,13 @@ const getLogsErrosInputString = (interaction: Interaction, msgErroBoss: string):
         guildId: interaction.guild?.id,
         guildName: interaction.guild?.name,
         timestamp: interaction.createdTimestamp,
-    } as ILogsErrosInputKafka;
+    } as ILogsErrosInput;
     
     return JSON.stringify(logInputErro);
 }
 
-const sendLogErroInput = async(interaction: Interaction, msgErroBoss: string): Promise<RecordMetadata[]> => {
-    return await sendMessageKafka(config().kafka.topicLogsErrosInputBot, getLogsErrosInputString(interaction, msgErroBoss));
+const sendLogErroInput = async(interaction: Interaction, msgErroBoss: string): Promise<void> => {
+    await clientRabbitMQ.produceMessage(config().rabbitmq.routingKeys.logsErrosInput, getLogsErrosInputString(interaction, msgErroBoss));
 }
 
 const sleep = async (ms: number): Promise<void> => {

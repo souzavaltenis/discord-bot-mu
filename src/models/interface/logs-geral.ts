@@ -1,6 +1,6 @@
-import { TypeLog } from "../../enum/type-log";
+import { TypeLog } from "../enum/type-log";
 
-export interface ILogsGeralKafka {
+export interface ILogsGeral {
     type: TypeLog;
     userId: string;
     userName: string;

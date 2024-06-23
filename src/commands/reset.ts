@@ -4,7 +4,6 @@ import { Moment } from "moment";
 import { realizarBackupHorarios, adicionarHorarioBoss, sincronizarConfigsBot, consultarUsuarios, resetarTempoOnlineUsuarios } from "../db/db";
 import { Ids } from "../models/ids";
 import { IBossInfoAdd } from "../models/interface/boss-info-add";
-import { sendMessageKafka } from "../services/kafka/kafka-producer";
 import { getButtonsSimNao } from "../templates/buttons/sim-nao-buttons";
 import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
 import { dataNowMoment, dataNowString, distanceDatasInMinutes, momentToString, stringToMoment } from "../utils/data-utils";
@@ -12,6 +11,7 @@ import { getLogsGeralString, limparIntervalUpdate, sendLogErroInput, sleep } fro
 import { config } from "../config/get-configs";
 import { CategoryCommand } from "../models/enum/category-command";
 import { mainTextChannel } from "../utils/channels-utils";
+import { clientRabbitMQ } from "../services/rabbitmq/client-rabbitmq";
 
 export = {
     category: CategoryCommand.BOSS,
@@ -67,7 +67,7 @@ async function resetarHorarios(interaction: ChatInputCommandInteraction, opcaoSu
 
     if (!(/^(?:[01][0-9]|2[0-3]):[0-5][0-9](?::[0-5][0-9])?$/).test(horario)) {
         const msgErroHorario: string = `${interaction.user} Horário (${bold(horario)}) não é reconhecido! Use como exemplo: 15:46`;
-        await sendLogErroInput(interaction, msgErroHorario);
+        sendLogErroInput(interaction, msgErroHorario);
         return await interaction.reply({
             content: msgErroHorario,
             ephemeral: true
@@ -79,7 +79,7 @@ async function resetarHorarios(interaction: ChatInputCommandInteraction, opcaoSu
 
     if (foiontem === 'N' && distanceDatasInMinutes(horarioReset, dataNowMoment()) >= 40) {
         const msgErroHorarioData: string = `${interaction.user} Horário (${bold(horario)}) é muito distante! Se foi de ontem, preencha o último campo com ${bold('Sim')}`;
-        await sendLogErroInput(interaction, msgErroHorarioData);
+        sendLogErroInput(interaction, msgErroHorarioData);
         return await interaction.reply({
             content: msgErroHorarioData,
             ephemeral: true
@@ -94,7 +94,7 @@ async function resetarHorarios(interaction: ChatInputCommandInteraction, opcaoSu
 
     if (!config().mu.salasPermitidas.includes(sala) && opcaoSubCommand === "sala") {
         const msgErroSala: string = `${interaction.user} sala ${sala} não foi encontrada`;
-        await sendLogErroInput(interaction, msgErroSala);
+        sendLogErroInput(interaction, msgErroSala);
 
         return await interaction.reply({
             content: msgErroSala,
@@ -132,7 +132,7 @@ async function resetarHorarios(interaction: ChatInputCommandInteraction, opcaoSu
 
     collector?.on("collect", async (interactionMessage: MessageComponentInteraction) => {
 
-        await sendMessageKafka(config().kafka.topicLogsGeralBot, getLogsGeralString({ msgInteraction: interactionMessage }));
+        await clientRabbitMQ.produceMessage(config().rabbitmq.routingKeys.logsGeral, getLogsGeralString({ msgInteraction: interactionMessage }));
 
         let msgBotoes: string = '';
 
@@ -201,7 +201,7 @@ async function resetarRankAnotacoes(interaction: ChatInputCommandInteraction): P
 
     if (idGuildInteraction !== idGuildMain || idUserInteraction !== idUserOwnerGuild) {
         const msgErroPermissao: string = `${interaction.user} somente o dono do servidor (<@${idUserOwnerGuild}>) pode usar esse comando!`;
-        await sendLogErroInput(interaction, msgErroPermissao);
+        sendLogErroInput(interaction, msgErroPermissao);
         return await interaction.reply({
             content: msgErroPermissao,
             ephemeral: true
@@ -212,7 +212,7 @@ async function resetarRankAnotacoes(interaction: ChatInputCommandInteraction): P
 
     if (!(/^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/).test(textoNovaData)) {
         const msgErroData: string = `${interaction.user} A data (${bold(textoNovaData)}) não é válida! Use como exemplo: 31/12/2023, padrão [DD/MM/YYYY]`;
-        await sendLogErroInput(interaction, msgErroData);
+        sendLogErroInput(interaction, msgErroData);
         return await interaction.reply({
             content: msgErroData,
             ephemeral: true
@@ -223,7 +223,7 @@ async function resetarRankAnotacoes(interaction: ChatInputCommandInteraction): P
 
     if (stringToMoment(textoNovaDataCompleto).valueOf() < dataNowMoment(true).valueOf()) {
         const msgErroData: string = `${interaction.user} A data informada precisa ser igual ou maior que a data de hoje (${dataNowMoment().format('DD/MM/YYYY')})`;
-        await sendLogErroInput(interaction, msgErroData);
+        sendLogErroInput(interaction, msgErroData);
         return await interaction.reply({
             content: msgErroData,
             ephemeral: true

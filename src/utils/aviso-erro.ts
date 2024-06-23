@@ -1,7 +1,6 @@
-import { EmbedBuilder } from "discord.js";
 import { config } from "../config/get-configs";
-import { client } from "../index";
-import { getEmbedAlertaErro } from "../templates/embeds/alerta-erro-embed";
+import { ErrorGeral } from "../models/error-geral";
+import { clientRabbitMQ } from "../services/rabbitmq/client-rabbitmq";
 
 const listenerErrors = (): void => {
     process.on('unhandledRejection', async (err: Error) => await sendAlertError(err));
@@ -9,9 +8,13 @@ const listenerErrors = (): void => {
 }
 
 const sendAlertError = async (err: Error): Promise<void> => {
-    const user = await client.users.fetch(config().ownerId).catch((e) => {e});
-    const embedAlertaErro: EmbedBuilder = getEmbedAlertaErro(err);
-    await user?.send({ embeds: [embedAlertaErro] }).catch((e) => {e});
+    const errorGeral: ErrorGeral = new ErrorGeral(err.name, err.message, err.stack || '');
+
+    if (err.stack?.includes('amqplib')) {
+        return;
+    }
+
+    await clientRabbitMQ.produceMessage(config().rabbitmq.routingKeys.errosApp, JSON.stringify(errorGeral));
 }
 
 export { listenerErrors }

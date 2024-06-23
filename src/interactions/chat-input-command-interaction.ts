@@ -2,15 +2,15 @@ import { ChatInputCommandInteraction, channelMention, ApplicationCommandType } f
 import { config } from "../config/get-configs";
 import { CategoryCommand } from "../models/enum/category-command";
 import { commands } from "../models/singleton/commands-singleton";
-import { sendMessageKafka } from "../services/kafka/kafka-producer";
 import { getNameCommandsByCategory, sendLogErroInput, getLogsGeralString } from "../utils/geral-utils";
+import { clientRabbitMQ } from "../services/rabbitmq/client-rabbitmq";
 
 export = {
     name: 'ChatInputCommandInteraction',
     action: async (interaction: ChatInputCommandInteraction): Promise<void> => {
         if (getNameCommandsByCategory(CategoryCommand.BOSS).includes(interaction.commandName) && interaction.channelId !== config().channels.textHorarios && interaction.user.id !== config().ownerId) {
             const msgWrongChannel: string = `${interaction.user} esse comando só pode ser utilizado no canal ${channelMention(config().channels.textHorarios)}`;
-            await sendLogErroInput(interaction, msgWrongChannel);
+            sendLogErroInput(interaction, msgWrongChannel);
             
             await interaction.reply({
                 content: msgWrongChannel,
@@ -20,7 +20,7 @@ export = {
             return;
         }
 
-        await sendMessageKafka(config().kafka.topicLogsGeralBot, getLogsGeralString({ cmdInteraction: interaction }));
+        await clientRabbitMQ.produceMessage(config().rabbitmq.routingKeys.logsGeral, getLogsGeralString({ cmdInteraction: interaction }));
 
         if ([ApplicationCommandType.ChatInput, ApplicationCommandType.Message].includes(interaction.commandType)) {
             const command = commands.get(interaction.commandName);

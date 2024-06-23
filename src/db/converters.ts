@@ -59,16 +59,17 @@ const configConverter = {
     },
     fromFirestore(snapshot: QueryDocumentSnapshot, options: SnapshotOptions): ConfigBot {
         const data = snapshot.data(options);
+
         return new ConfigBot(
-            data.bot, 
-            data.cargos, 
-            data.channels, 
-            data.collections, 
-            data.dicasFooter, 
+            data.bot,
+            data.cargos,
+            data.channels,
+            data.collections,
+            data.dicasFooter,
             data.documents,
             data.geral,
-            data.mu, 
-            data.kafka, 
+            data.mu,
+            data.rabbitmq,
             data.ownerId,
             data.adminsIds,
             new Map<string, boolean>(Object.entries(data.configButtons))
