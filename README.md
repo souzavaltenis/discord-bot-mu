@@ -5,7 +5,7 @@ Bot discord criado com objetivo de adicionar/recuperar informações dos boss no
 - typescript
 - discordjs
 - firestore
-- kafkajs
+- rabbitmq
 
 ### Comandos disponíveis
 ![comandos](https://github.com/souzavaltenis/discord-bot-mu/assets/47244327/fd7a81a4-888e-467e-a23e-d3c3f6b0280e)
