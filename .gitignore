@@ -2,7 +2,4 @@ dist
 .vscode
 node_modules
 package-lock.json
-config.json
-config-prod.json
-config-teste.json
-config-old.json
+config*.json
