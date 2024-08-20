@@ -1,6 +1,6 @@
 {
   "name": "bot-horarios-mu",
-  "version": "4.1.0",
+  "version": "4.1.1",
   "description": "",
   "main": "src/index.ts",
   "scripts": {
@@ -21,7 +21,7 @@
     "amqplib": "^0.10.4",
     "discord-api-types": "^0.37.95",
     "discord.js": "^14.15.3",
-    "firebase": "^10.12.2",
+    "firebase": "~10.12.2",
     "moment": "^2.30.1"
   },
   "devDependencies": {

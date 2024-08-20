@@ -31,8 +31,13 @@ async function checkUserMute(oldState: VoiceState, newState: VoiceState): Promis
 async function checkUserTimeConnection(oldState: VoiceState, newState: VoiceState): Promise<void> {
     const idUser: string = oldState.member?.id || newState.member?.id || '';
     const nickUser: string = getNickGuildMember(oldState.member) || getNickGuildMember(newState.member);
-    const isExit: boolean = oldState.channelId !== null && (newState.channelId === null || (newState.channelId !== null && newState.channelId !== oldState.channelId));
-    const isEnter: boolean = newState.channelId !== null;
+    
+    const isExit: boolean = 
+        (Boolean(oldState.channel) && Boolean(oldState.channelId)) &&
+        (!newState.channelId || (Boolean(newState.channelId) && newState.channelId !== oldState.channelId));
+    
+    const isEnter: boolean = Boolean(newState.channel) && Boolean(newState.channelId);
+    
     const timestampNow: number = new Date().valueOf();
     const timestampNowStr: string = dataNowString('HH:mm:ss');
 
