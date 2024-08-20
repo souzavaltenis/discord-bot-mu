@@ -1,15 +1,17 @@
 {
-    "collectionConfig": "",
-    "documentConfigProd": "",
-    "documentConfigTest": "",
-    "firebaseConfig": {
-        "apiKey": "",
-        "authDomain": "",
-        "projectId": "",
-        "storageBucket": "",
-        "messagingSenderId": "",
-        "appId": "",
-        "measurementId": ""
-    },
-    "bucketUrl": ""
+    "bot-horarios-mu": {
+        "collectionConfig": "",
+        "documentConfigProd": "",
+        "documentConfigTest": "",
+        "firebaseConfig": {
+            "apiKey": "",
+            "authDomain": "",
+            "projectId": "",
+            "storageBucket": "",
+            "messagingSenderId": "",
+            "appId": "",
+            "measurementId": ""
+        },
+        "bucketUrl": ""
+    }
 }

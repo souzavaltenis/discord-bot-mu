@@ -4,7 +4,11 @@ import { config } from "../config/get-configs";
 import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
 import { mainTextChannel } from "../utils/channels-utils";
 import { existeAtualizacaoExterna } from "../utils/geral-utils";
-import { collectionConfig } from '../config/config.json';
+import dadosConfigJson from '../config/config.json';
+import { IDadosConfigsJson } from "../models/interface/config-bot/dados-config-json";
+import { name as nomeProjeto } from '../../package.json';
+
+const { collectionConfig } = (dadosConfigJson as IDadosConfigsJson)[nomeProjeto];
 
 function listenersFirestore() {
     listenerUpdatesBoss();

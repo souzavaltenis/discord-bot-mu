@@ -24,7 +24,7 @@ import {
     QueryDocumentSnapshot
 } from "firebase/firestore";
 import { Moment } from "moment";
-import { firebaseConfig, collectionConfig, documentConfigProd, documentConfigTest } from '../config/config.json';
+import dadosConfigJson from '../config/config.json';
 import { Boss } from "../models/boss";
 import { IBossInfoAdd } from "../models/interface/boss-info-add";
 import { ConfigBotSingleton } from "../models/singleton/config-bot-singleton";
@@ -43,6 +43,10 @@ import { INickInfo } from "../models/interface/nick-info";
 import { ITimeOnlineInfo } from "../models/interface/time-online-info";
 import { prepararListaTimestampAnotacoes, prepararMapTimeOnline } from "../utils/usuario-utils";
 import { atualizarCacheNicksUsuario, atualizarCacheTempoOnlineUsuario } from "../utils/cache-utils";
+import { IDadosConfigsJson } from "../models/interface/config-bot/dados-config-json";
+import { name as nomeProjeto } from '../../package.json';
+
+const { firebaseConfig, collectionConfig, documentConfigProd, documentConfigTest } = (dadosConfigJson as IDadosConfigsJson)[nomeProjeto];
 
 const appFirebase = initializeApp(firebaseConfig);
 const db = getFirestore(appFirebase);

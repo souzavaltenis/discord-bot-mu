@@ -1,6 +1,10 @@
 import { initializeApp } from "firebase/app";
-import { firebaseConfig, bucketUrl } from '../config/config.json';
+import dadosConfigJson from '../config/config.json';
 import { UploadResult, getStorage, ref, uploadString, getDownloadURL, StorageReference } from "firebase/storage";
+import { IDadosConfigsJson } from "../models/interface/config-bot/dados-config-json";
+import { name as nomeProjeto } from '../../package.json';
+
+const { firebaseConfig, bucketUrl } = (dadosConfigJson as IDadosConfigsJson)[nomeProjeto];
 
 const appFirebase = initializeApp(firebaseConfig);
 const storage = getStorage(appFirebase, bucketUrl);

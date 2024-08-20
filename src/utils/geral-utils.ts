@@ -10,7 +10,11 @@ import { intervalUpdate } from "../models/singleton/interval-singleton";
 import { vaiAbrirBoss } from "./boss-utils";
 import { TimeoutSingleton } from "../models/singleton/timeout-singleton";
 import { DocumentChange } from "@firebase/firestore";
-import { documentConfigTest } from "../config/config.json";
+import dadosConfigJson from "../config/config.json";
+import { IDadosConfigsJson } from "../models/interface/config-bot/dados-config-json";
+import { name as nomeProjeto } from '../../package.json';
+
+const { documentConfigTest } = (dadosConfigJson as IDadosConfigsJson)[nomeProjeto];
 
 const tracos = (quantidade: number): string => {
     let str: string = '';
