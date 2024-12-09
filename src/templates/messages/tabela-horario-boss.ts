@@ -11,7 +11,10 @@ import { limparIntervalUpdate } from "../../utils/geral-utils";
 import { ListBossSingleton } from "../../models/singleton/list-boss-singleton";
 
 const mostrarHorarios = async (textChannel: TextBasedChannel | undefined | null) => {
-    
+    if (!textChannel?.isSendable()) {
+        return;
+    }
+
     await consultarHorarioBoss().then(async (listaBoss: Boss[]) => {
 
         ListBossSingleton.getInstance().boss = listaBoss;

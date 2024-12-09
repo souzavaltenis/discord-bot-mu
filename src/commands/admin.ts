@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { PermissionFlagsBits } from "discord-api-types/v9";
-import { ActionRowBuilder, bold, ButtonBuilder, ChatInputCommandInteraction, codeBlock, Collection, EmbedBuilder, Guild, GuildMember, InteractionResponse, Message, OAuth2Guild, TextChannel, User, VoiceChannel } from "discord.js";
+import { ActionRowBuilder, APIButtonComponentWithCustomId, bold, ButtonBuilder, ChatInputCommandInteraction, codeBlock, Collection, EmbedBuilder, Guild, GuildMember, InteractionResponse, Message, OAuth2Guild, TextChannel, User, VoiceChannel } from "discord.js";
 import { client } from "../index";
 import { botIsProd, config } from "../config/get-configs";
 import { adicionarHorarioBoss, carregarConfiguracoes, sincronizarConfigsBot } from "../db/db";
@@ -112,7 +112,7 @@ export = {
                     const botoesTabelaHorarios: ButtonBuilder[] = getButtonsTabela(true);
 
                     botoesTabelaHorarios.forEach((botao: ButtonBuilder) => {
-                        option.addChoices({ name: botao.data.label || '', value: getIdButton(botao) });
+                        option.addChoices({ name: (botao.toJSON() as APIButtonComponentWithCustomId).label || '', value: getIdButton(botao) });
                     });
 
                     return option;

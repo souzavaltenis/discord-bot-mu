@@ -30,6 +30,10 @@ export = {
         }),
         
     execute: async (interaction: ChatInputCommandInteraction): Promise<InteractionResponse<boolean> | undefined> => {
+        if (!interaction.channel?.isSendable()) {
+            return;
+        }
+
         const opcaoSubCommand = interaction.options.getSubcommand();
         const sala: number = interaction.options.getNumber('sala', true);
 
@@ -103,7 +107,10 @@ export = {
                     config().mu.salasPermitidas = config().mu.salasPermitidas.filter(s => s !== sala);
                     await removerSala(sala);
                     await mostrarHorarios(interaction.channel);
-                    await interaction.channel?.send({ content: `✅ Sala ${sala} excluída com sucesso por ${interaction.user}` });
+                    
+                    if (interaction.channel?.isSendable()) {
+                        await interaction.channel.send({ content: `✅ Sala ${sala} excluída com sucesso por ${interaction.user}` });
+                    }
                 }
             });
         }

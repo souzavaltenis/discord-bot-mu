@@ -53,8 +53,11 @@ export = {
             
             await interaction.deferReply();
             await interaction.deleteReply();
-            await mostrarHorarios(interaction.channel);
-            await interaction.channel?.send(`✅ ${interaction.user} intervalo dos boss alterado de ${textoIntevaloAntigo} para ${textoIntevaloNovo} horas.`);
+
+            if (interaction.channel?.isSendable()) {
+                await mostrarHorarios(interaction.channel);
+                await interaction.channel.send(`✅ ${interaction.user} intervalo dos boss alterado de ${textoIntevaloAntigo} para ${textoIntevaloNovo} horas.`);
+            }
         }
     }
 }

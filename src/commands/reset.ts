@@ -126,7 +126,11 @@ async function resetarHorarios(interaction: ChatInputCommandInteraction, opcaoSu
     let msgComando: string = opcaoSubCommand === 'sala' ? `sala ${sala}` : opcaoSubCommand;
     msgComando = bold(msgComando);
 
-    const message = await interaction.channel?.send({ content: `${interaction.user} você confirma esse reset ${msgComando}?`, components: [rowButtons] });
+    if (!interaction.channel?.isSendable()) {
+        return;
+    }
+
+    const message = await interaction.channel.send({ content: `${interaction.user} você confirma esse reset ${msgComando}?`, components: [rowButtons] });
 
     const collector = message?.createMessageComponentCollector({ filter: (i: Interaction) => i.isButton(), time: 1000 * 60 });
 
@@ -188,7 +192,11 @@ async function resetarHorarios(interaction: ChatInputCommandInteraction, opcaoSu
         
         await sleep(3000);
         await mostrarHorarios(interaction.channel);
-        await interaction.channel?.send({ content: `✅ Reset ${msgComando} para ${bold(horarioReset.format('HH:mm (DD/MM)'))} confirmado por ${interaction.user} foi concluído com sucesso!` });
+        
+        if (interaction.channel?.isSendable()) {
+            await interaction.channel.send({ content: `✅ Reset ${msgComando} para ${bold(horarioReset.format('HH:mm (DD/MM)'))} confirmado por ${interaction.user} foi concluído com sucesso!` });
+        }
+
         await sincronizarConfigsBot();
     }
 }
@@ -236,7 +244,10 @@ async function resetarRankAnotacoes(interaction: ChatInputCommandInteraction): P
     await consultarUsuarios();
 
     await mostrarHorarios(interaction.channel);
-    await interaction.channel?.send({
-        content: `✅ Reset do Rank Anotações para ${textoNovaData} confirmado por ${interaction.user} foi concluído com sucesso!`
-    });
+
+    if (interaction.channel?.isSendable()) {
+        await interaction.channel.send({
+            content: `✅ Reset do Rank Anotações para ${textoNovaData} confirmado por ${interaction.user} foi concluído com sucesso!`
+        });
+    }
 }
