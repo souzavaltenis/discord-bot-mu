@@ -22,10 +22,6 @@ import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
 import { mainTextChannel } from "../utils/channels-utils";
 import { IGuildInfos } from "../models/interface/guild-infos";
 import { getEmbedServidoresBot } from "../templates/embeds/servidores-bot-embed";
-import { usuariosSingleton } from "../models/singleton/usuarios-singleton";
-import { geralSingleton } from "../models/singleton/geral-singleton";
-import { Usuario } from "../models/usuario";
-import { getLinkDownloadFile, uploadFileString } from "../db/storage";
 import { sendLogErroInput } from "../utils/logs-utils";
 
 export = {
@@ -400,36 +396,41 @@ export = {
         }
 
         async function subCommandGetLog(interaction: ChatInputCommandInteraction): Promise<void> {
-            const tipoLog: string = interaction.options.getString('tipo_log', true);
-            const extensaoArquivo: string = interaction.options.getString('extensao_arquivo', true);
+            // const tipoLog: string = interaction.options.getString('tipo_log', true);
+            // const extensaoArquivo: string = interaction.options.getString('extensao_arquivo', true);
 
-            let objetoLog = {};
+            // let objetoLog = {};
 
-            switch (tipoLog) {
-                case "usuarios-singleton":
-                    objetoLog = usuariosSingleton.usuarios.map((usuario: Usuario) => {
-                        const copiaUsuario: any = Object.assign({}, usuario);
-                        copiaUsuario.timeOnline = [...copiaUsuario.timeOnline];
-                        return copiaUsuario;
-                    });
-                    break;
-                case "geral-singleton":
-                    const copiaGeralSingleton: any = Object.assign({}, geralSingleton);
-                    copiaGeralSingleton.infoMember = [...copiaGeralSingleton.infoMember];
-                    objetoLog = copiaGeralSingleton;
-                    break;
-            }
+            // switch (tipoLog) {
+            //     case "usuarios-singleton":
+            //         objetoLog = usuariosSingleton.usuarios.map((usuario: Usuario) => {
+            //             const copiaUsuario: any = Object.assign({}, usuario);
+            //             copiaUsuario.timeOnline = [...copiaUsuario.timeOnline];
+            //             return copiaUsuario;
+            //         });
+            //         break;
+            //     case "geral-singleton":
+            //         const copiaGeralSingleton: any = Object.assign({}, geralSingleton);
+            //         copiaGeralSingleton.infoMember = [...copiaGeralSingleton.infoMember];
+            //         objetoLog = copiaGeralSingleton;
+            //         break;
+            // }
 
-            const conteudoArquivo: string = JSON.stringify(objetoLog, null, 4);
-            const nomeArquivo: string = `${tipoLog}-${dataNowMoment().toISOString()}.${extensaoArquivo}`;
-            const caminhoArquivo: string = `${botIsProd ? 'prod': 'test'}/logs/${tipoLog}/${nomeArquivo}`;
+            // const conteudoArquivo: string = JSON.stringify(objetoLog, null, 4);
+            // const nomeArquivo: string = `${tipoLog}-${dataNowMoment().toISOString()}.${extensaoArquivo}`;
+            // const caminhoArquivo: string = `${botIsProd ? 'prod': 'test'}/logs/${tipoLog}/${nomeArquivo}`;
 
-            await uploadFileString(caminhoArquivo, conteudoArquivo);
-            const linkDownload: string = await getLinkDownloadFile(caminhoArquivo);
+            // await uploadFileString(caminhoArquivo, conteudoArquivo);
+            // const linkDownload: string = await getLinkDownloadFile(caminhoArquivo);
+
+            // interaction.reply({
+            //     ephemeral: true,
+            //     content: `[${nomeArquivo}](${linkDownload})`
+            // });
 
             interaction.reply({
                 ephemeral: true,
-                content: `[${nomeArquivo}](${linkDownload})`
+                content: 'Comando desativado.'
             });
         }
 
