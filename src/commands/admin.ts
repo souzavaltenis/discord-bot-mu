@@ -73,7 +73,9 @@ export = {
                         { name: 'Fenix',      value: config().documents.fenix },
                         { name: 'Death Beam', value: config().documents.deathBeam },
                         { name: 'Genocider',  value: config().documents.geno },
-                        { name: 'Hell Maine',  value: config().documents.hell }
+                        { name: 'Hell Maine',  value: config().documents.hell },
+                        { name: 'Red Dragon',  value: config().documents.red },
+                        { name: 'Hydra',  value: config().documents.hydra }
                     );
         
                     return option;

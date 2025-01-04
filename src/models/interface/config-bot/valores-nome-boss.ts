@@ -5,4 +5,6 @@ export interface IValoresNomeBoss {
     rei: string[];
     relics: string[];
     hell: string[];
+    red: string[];
+    hydra: string[];
 }

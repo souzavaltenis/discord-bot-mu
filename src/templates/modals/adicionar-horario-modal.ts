@@ -22,7 +22,7 @@ export class AdicionarHorarioModal {
         const inputNomeBoss = new TextInputBuilder()
             .setCustomId(Ids.INPUT_NOME_BOSS)
             .setLabel("Qual boss?")
-            .setPlaceholder("Ex: rei, fenix, relics, dbk, geno, hell")
+            .setPlaceholder("Ex: rei, fenix, relics, dbk, geno, hell, red, hydra")
             .setMinLength(1)
             .setMaxLength(20)
             .setRequired(true)
@@ -78,6 +78,8 @@ export class AdicionarHorarioModal {
         const valoresDbk: string[] = config().geral.valoresNomeBoss.dbk;
         const valoresGeno: string[] = config().geral.valoresNomeBoss.geno;
         const valoresHell: string[] = config().geral.valoresNomeBoss.hell;
+        const valoresRed: string[] = config().geral.valoresNomeBoss.red;
+        const valoresHydra: string[] = config().geral.valoresNomeBoss.hydra;
         
         switch (true) {
             case valoresRei.includes(textInputNomeBoss):    nomeDocBoss = config().documents.rei;       break;
@@ -86,6 +88,8 @@ export class AdicionarHorarioModal {
             case valoresDbk.includes(textInputNomeBoss):    nomeDocBoss = config().documents.deathBeam; break;
             case valoresGeno.includes(textInputNomeBoss):   nomeDocBoss = config().documents.geno;      break;
             case valoresHell.includes(textInputNomeBoss):   nomeDocBoss = config().documents.hell;      break;
+            case valoresRed.includes(textInputNomeBoss):    nomeDocBoss = config().documents.red;       break;
+            case valoresHydra.includes(textInputNomeBoss):  nomeDocBoss = config().documents.hydra;     break;
         }
 
         if (!nomeDocBoss) {

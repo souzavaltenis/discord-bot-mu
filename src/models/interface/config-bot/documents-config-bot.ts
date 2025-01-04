@@ -5,4 +5,6 @@ export interface IDocumentsConfigBot {
     rei: string;
     relics: string;
     hell: string;
+    red: string;
+    hydra: string;
 }
