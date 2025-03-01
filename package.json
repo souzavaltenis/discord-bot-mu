@@ -10,6 +10,7 @@
     "clean": "rimraf dist/",
     "zip": "node ./dist/src/utils/zip-utils.js",
     "docker": "node ./dist/src/utils/docker-utils.js",
+    "tsc": "npx tsc",
     "build": "npm run clean && npx tsc && npm run zip && npm run docker",
     "update": "npx npm-check-updates -u && npm install"
   },
