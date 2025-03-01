@@ -1,6 +1,7 @@
 import { VoiceState } from "discord.js";
-import { checkExitMainVoiceChannel, checkMoveMainVoiceChannel, checkUserMute, checkUserTimeConnection } from "../utils/voice-utils";
+import { config } from "../config/get-configs";
 import { mainTextChannel } from "../utils/channels-utils";
+import { checkExitMainVoiceChannel, checkMoveMainVoiceChannel, checkUserMute, checkUserTimeConnection } from "../utils/voice-utils";
 
 export = {
     name: 'voiceStateUpdate',
@@ -11,10 +12,13 @@ export = {
         if (!isMainGuild || isBot) {
             return;
         }
-        
-        await checkMoveMainVoiceChannel(newState);
+
+        if (config().cargos.mainChannel) {
+            await checkMoveMainVoiceChannel(newState);
+            await checkExitMainVoiceChannel(oldState, newState);
+        }
+
         await checkUserMute(oldState, newState);
         await checkUserTimeConnection(oldState, newState);
-        await checkExitMainVoiceChannel(oldState, newState);
     }
 }
