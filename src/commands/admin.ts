@@ -2,26 +2,26 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { PermissionFlagsBits } from "discord-api-types/v9";
 import { ActionRowBuilder, APIButtonComponentWithCustomId, bold, ButtonBuilder, ChatInputCommandInteraction, codeBlock, Collection, EmbedBuilder, Guild, GuildMember, InteractionResponse, Message, OAuth2Guild, TextChannel, User, VoiceChannel } from "discord.js";
-import { client } from "../index";
-import { botIsProd, config } from "../config/get-configs";
+import { Moment } from "moment";
+import { config } from "../config/get-configs";
 import { adicionarHorarioBoss, carregarConfiguracoes, sincronizarConfigsBot } from "../db/db";
+import { client } from "../index";
 import { Boss } from "../models/boss";
+import { CategoryCommand } from "../models/enum/category-command";
 import { Ids } from "../models/ids";
+import { IBossInfoAdd } from "../models/interface/boss-info-add";
+import { IGuildInfos } from "../models/interface/guild-infos";
 import { ListBossSingleton } from "../models/singleton/list-boss-singleton";
 import { TimeoutSingleton } from "../models/singleton/timeout-singleton";
 import { getButtonsTabela } from "../templates/buttons/style-tabela-buttons";
-import { getEmbedTabelaBoss } from "../templates/embeds/tabela-boss-embed";
-import { disableButton } from "../utils/buttons-utils";
-import { getIdButton, getNickMember, limparIntervalUpdate } from "../utils/geral-utils";
-import { CategoryCommand } from "../models/enum/category-command";
-import { Moment } from "moment";
-import { dataNowMoment, dataNowString, momentToString, stringToMoment, timestampToMoment } from "../utils/data-utils";
-import { IBossInfoAdd } from "../models/interface/boss-info-add";
 import { getEmbedAddBoss } from "../templates/embeds/adicionar-boss-embed";
-import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
-import { mainTextChannel } from "../utils/channels-utils";
-import { IGuildInfos } from "../models/interface/guild-infos";
 import { getEmbedServidoresBot } from "../templates/embeds/servidores-bot-embed";
+import { getEmbedTabelaBoss } from "../templates/embeds/tabela-boss-embed";
+import { mostrarHorarios } from "../templates/messages/tabela-horario-boss";
+import { disableButton } from "../utils/buttons-utils";
+import { mainTextChannel } from "../utils/channels-utils";
+import { dataNowMoment, dataNowString, momentToString, stringToMoment, timestampToMoment } from "../utils/data-utils";
+import { getIdButton, getNickMember, limparIntervalUpdate } from "../utils/geral-utils";
 import { sendLogErroInput } from "../utils/logs-utils";
 
 export = {
@@ -64,33 +64,33 @@ export = {
                 .addStringOption(option => option.setName('horario').setDescription('Qual horário?').setRequired(true))
                 .addStringOption(option => {
                     option
-                    .setName('boss')
-                    .setDescription('Qual Boss?')
-                    .setRequired(true)
-                    .addChoices(
-                        { name: 'Rei Kundun', value: config().documents.rei },
-                        { name: 'Relics',     value: config().documents.relics },
-                        { name: 'Fenix',      value: config().documents.fenix },
-                        { name: 'Death Beam', value: config().documents.deathBeam },
-                        { name: 'Genocider',  value: config().documents.geno },
-                        { name: 'Hell Maine',  value: config().documents.hell },
-                        { name: 'Red Dragon',  value: config().documents.red },
-                        { name: 'Hydra',  value: config().documents.hydra }
-                    );
-        
+                        .setName('boss')
+                        .setDescription('Qual Boss?')
+                        .setRequired(true)
+                        .addChoices(
+                            { name: 'Rei Kundun', value: config().documents.rei },
+                            { name: 'Relics', value: config().documents.relics },
+                            { name: 'Fenix', value: config().documents.fenix },
+                            { name: 'Death Beam', value: config().documents.deathBeam },
+                            { name: 'Genocider', value: config().documents.geno },
+                            { name: 'Hell Maine', value: config().documents.hell },
+                            { name: 'Red Dragon', value: config().documents.red },
+                            { name: 'Hydra', value: config().documents.hydra }
+                        );
+
                     return option;
                 })
                 .addNumberOption(option => {
                     option.setName('sala').setDescription('Qual sala?').setRequired(true);
-        
+
                     config().mu.salasPermitidas.forEach((sala: number) => {
-                        option.addChoices({ name: `Sala ${sala}`, value: sala});
+                        option.addChoices({ name: `Sala ${sala}`, value: sala });
                     });
-        
+
                     return option;
                 })
                 .addStringOption(option => option.setName('foi_ontem').setDescription('Esse horário foi ontem?').addChoices({ name: 'Não', value: 'N' }, { name: 'Sim', value: 'S' }));
-            
+
             return subcommand;
         })
         .addSubcommand(subcommand => {
@@ -127,7 +127,7 @@ export = {
 
                     return option;
                 });
-            
+
             return subcommand;
         })
         .addSubcommand(subcommand => {
@@ -157,7 +157,7 @@ export = {
 
                     return option;
                 });
-            
+
             return subcommand;
         })
         .addSubcommand(subcommand => {
@@ -179,7 +179,7 @@ export = {
 
                     return option;
                 });
-            
+
             return subcommand;
         })
         .addSubcommand(subcommand => {
@@ -201,15 +201,15 @@ export = {
 
                     return option;
                 });
-            
+
             return subcommand;
         }),
-        
+
     execute: async (interaction: ChatInputCommandInteraction): Promise<InteractionResponse<boolean> | undefined> => {
         if (!config().adminsIds.includes(interaction.user.id)) {
             const msgErroPermissao: string = `${interaction.user} Você não pode utilizar esse comando`;
             sendLogErroInput(interaction, msgErroPermissao);
-            return await interaction.reply({ 
+            return await interaction.reply({
                 content: msgErroPermissao,
                 ephemeral: true
             });
@@ -217,7 +217,7 @@ export = {
 
         const opcaoSubCommand: string = interaction.options.getSubcommand();
 
-        switch(opcaoSubCommand) {
+        switch (opcaoSubCommand) {
             case "say": await subCommandSay(interaction); break;
             case "aviso_footer": await subCommandAvisoFooter(interaction); break;
             case "timeouts": await subCommandTimeouts(interaction); break;
@@ -234,29 +234,29 @@ export = {
         async function subCommandSay(interaction: ChatInputCommandInteraction): Promise<void> {
             const msg: string = interaction.options.getString('msg', true);
             const textChannel = client.channels.cache.get(config().channels.textHorarios) as TextChannel;
-    
+
             if (!client || !textChannel) return;
-    
+
             await textChannel.send({ content: msg.replace(/\\n/g, '\n') });
-            await interaction.reply({ 
-                content: `Mensagem ${codeBlock(msg)} foi enviada com sucesso no canal ${bold(textChannel.name)}`, 
-                ephemeral: true 
+            await interaction.reply({
+                content: `Mensagem ${codeBlock(msg)} foi enviada com sucesso no canal ${bold(textChannel.name)}`,
+                ephemeral: true
             });
         }
-    
+
         async function subCommandAvisoFooter(interaction: ChatInputCommandInteraction): Promise<void> {
             const msgFooter: string = interaction.options.getString('msg_footer') || '';
             const textChannel = client.channels.cache.get(config().channels.textHorarios) as TextChannel;
-    
+
             config().mu.avisoFooter = msgFooter.replace(/\\n/g, '\u200B\n');
             await sincronizarConfigsBot();
-    
+
             const idLastMessageBoss: string = config().geral.idLastMessageBoss;
-    
+
             if (idLastMessageBoss) {
                 const listaBoss: Boss[] = ListBossSingleton.getInstance().boss;
                 if (listaBoss.length === 0) return;
-    
+
                 await textChannel.messages.fetch(idLastMessageBoss)
                     .then(async (m: Message) => {
                         const buttons: ButtonBuilder[] = getButtonsTabela();
@@ -266,52 +266,52 @@ export = {
                     })
                     .catch(e => console.log(e));
             }
-    
+
             await interaction.reply({
                 content: `Aviso footer foi atualizado com sucesso para "${msgFooter}"`,
                 ephemeral: true
             });
         }
-    
+
         async function subCommandTimeouts(interaction: ChatInputCommandInteraction): Promise<void> {
             const keysTimeouts: string[] = Array.from(TimeoutSingleton.getInstance().timeouts.keys());
             let strTimeouts: string = '';
-            
+
             keysTimeouts.forEach((key: string, index: number) => strTimeouts += `\n${bold(index + 1 + '')} - ${key}`)
-    
+
             const embedTimeouts = new EmbedBuilder()
                 .setTitle("Timeouts de avisos ativos")
                 .setColor("White")
                 .setDescription(strTimeouts || 'Sem avisos ativos no momento.')
                 .setTimestamp();
-    
-            await interaction.reply({ 
+
+            await interaction.reply({
                 embeds: [embedTimeouts],
-                ephemeral: true 
+                ephemeral: true
             });
         }
-    
+
         async function subCommandRefresh(interaction: ChatInputCommandInteraction): Promise<void> {
             await carregarConfiguracoes();
             await mostrarHorarios(mainTextChannel());
-            await interaction.reply({ 
+            await interaction.reply({
                 content: "As configurações mais atualizadas do banco de dados foram carregadas",
-                ephemeral: true 
+                ephemeral: true
             });
         }
 
         async function subCommandApagarMsgs(interaction: ChatInputCommandInteraction): Promise<InteractionResponse<boolean> | undefined> {
 
             const quantidade: number = interaction.options.getInteger('qtd_msgs', true);
-        
+
             if (isNaN(quantidade) || quantidade < 0 || quantidade > 100) {
                 return await interaction.reply("Informe uma quantidade entre 0 e 100");
             }
-            
+
             if (!(interaction.channel instanceof TextChannel)) {
                 return await interaction.reply("Tipo de canal não válido");
             }
-    
+
             await interaction.channel.bulkDelete(quantidade, true)
                 .then((x) => interaction.reply({ content: `${x.size} mensagens foram deletadas com sucesso`, ephemeral: true }))
                 .catch(() => interaction.reply({ content: `Não foi possível deletar as mensagens`, ephemeral: true }));
@@ -362,7 +362,7 @@ export = {
             for (const guildId of guildsIds) {
                 const guild: Guild = await client.guilds.fetch(guildId);
                 const ownerGuild: User = await client.users.fetch(guild.ownerId);
-                
+
                 guilds.push({
                     nomeGuild: guild.name,
                     idGuild: guild.id,
@@ -377,12 +377,12 @@ export = {
 
             const embed: EmbedBuilder = getEmbedServidoresBot(guilds);
 
-            await interaction.reply({ 
+            await interaction.reply({
                 embeds: [embed],
-                ephemeral: true 
+                ephemeral: true
             });
         }
-        
+
         async function subCommandBotoes(interaction: ChatInputCommandInteraction): Promise<void> {
             const idBotao: string = interaction.options.getString('id_botao', true);
             const acaoBotao: string = interaction.options.getString('acao_botao', true);
@@ -393,7 +393,7 @@ export = {
             await mostrarHorarios(mainTextChannel());
             await interaction.reply({
                 content: 'Botão atualizado com sucesso!',
-                ephemeral: true 
+                ephemeral: true
             });
         }
 

@@ -2,14 +2,14 @@ import amqplib from 'amqplib';
 import { config } from '../../config/get-configs';
 
 class ClientRabbitMQ {
-    private connection!: amqplib.Connection;
+    private connection!: amqplib.ChannelModel;
     private channel!: amqplib.Channel;
     private isReady: boolean = false;
     private nameExchange!: string;
 
     private async setup(): Promise<void> {
         this.connection = await amqplib.connect(config().rabbitmq.url);
-        this.channel =  await this.connection.createChannel();
+        this.channel = await this.connection.createChannel();
         this.nameExchange = config().rabbitmq.nameExchange;
 
         await this.channel.assertExchange(this.nameExchange, 'topic', { durable: true });
@@ -44,7 +44,7 @@ class ClientRabbitMQ {
 
             await this.channel.assertQueue(queue);
             await this.channel.bindQueue(queue, this.nameExchange, rountingKey);
-        
+
             await this.channel.consume(queue, callback, { noAck: true });
 
             console.log('Loaded Consumer RabbitMQ');
