@@ -18,7 +18,10 @@ export = {
             await checkExitMainVoiceChannel(oldState, newState);
         }
 
-        await checkUserMute(oldState, newState);
+        if (config().cargos.headset) {
+            await checkUserMute(oldState, newState);
+        }
+
         await checkUserTimeConnection(oldState, newState);
     }
 }
