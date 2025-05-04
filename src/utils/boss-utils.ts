@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import moment, { Moment } from "moment";
-import { Boss } from "../models/boss";
-import { sleep, tracos } from "./geral-utils";
-import { config } from '../config/get-configs';
 import { bold } from "@discordjs/builders";
-import { dataNowMoment, diffDatas } from "./data-utils";
+import { ActivityType } from "discord.js";
+import moment, { Moment } from "moment";
+import { config } from '../config/get-configs';
+import { client } from "../index";
+import { Boss } from "../models/boss";
 import { SalaBoss } from "../models/sala-boss";
 import { ListBossSingleton } from "../models/singleton/list-boss-singleton";
-import { client } from "../index";
-import { ActivityType } from "discord.js";
+import { dataNowMoment, diffDatas } from "./data-utils";
+import { sleep, tracos } from "./geral-utils";
 
 const formatBoss = (boss: Boss, somenteAbertos?: boolean): string => {
     let infoBoss: string = tracos(50) + '\n';
@@ -33,7 +33,7 @@ const formatSalaBoss = (bossSalas: SalaBoss[]) => {
     bossSalas.forEach((salaBoss: SalaBoss) => {
         infoSala += `${bold(`${salaBoss.nomeBoss}`)}: ${formatLinhaInfo(salaBoss.horario)}\n`;
     });
-    
+
     return infoSala;
 }
 
@@ -47,7 +47,7 @@ const formatLinhaInfo = (horario: Moment): string => {
 
 const isBossAberto = (horario: Moment): boolean => {
     if (!horario || !horario.isValid()) return false;
-    
+
     const dataAtual = dataNowMoment();
     const dataNascimentoBossInicio = moment(horario).add(config().mu.horaBossInicial, 'hours');
 
@@ -98,16 +98,16 @@ const previsaoParaFechar = (horario: Moment): Moment => {
 const sortBossPorHorario = (salas: Map<number, Moment>, isAbrir: boolean): Map<number, Moment> => {
     return new Map<number, Moment>(
         [...salas.entries()]
-        .filter((x: [number, Moment]) => isAbrir ? vaiAbrirBoss(x[1]) : vaiFecharBoss(x[1]))
-        .sort((a: [number, Moment], b: [number, Moment]) => {
-            if (a[1].isAfter(b[1])) {
-                return 1;
-            }
-            if (a[1].isBefore(b[1])) {
-                return -1;
-            }
-            return 0;
-        })
+            .filter((x: [number, Moment]) => isAbrir ? vaiAbrirBoss(x[1]) : vaiFecharBoss(x[1]))
+            .sort((a: [number, Moment], b: [number, Moment]) => {
+                if (a[1].isAfter(b[1])) {
+                    return 1;
+                }
+                if (a[1].isBefore(b[1])) {
+                    return -1;
+                }
+                return 0;
+            })
     );
 }
 
@@ -122,18 +122,18 @@ const atualizarStatusBot = async (): Promise<void> => {
     client.user?.setPresence({ activities: [{ name: `${contadorBossAbertos} Boss Abertos`, type: ActivityType.Playing }], status: 'idle' });
 }
 
-export { 
-    formatBoss, 
-    formatSalaBoss, 
-    formatLinhaInfo, 
-    isBossAberto, 
-    isBossVencido, 
-    previsaoBoss, 
-    calcularHorarioRestanteBoss, 
-    vaiAbrirBoss, 
-    vaiFecharBoss, 
-    previsaoParaAbrir,
-    previsaoParaFechar,
-    sortBossPorHorario,
-    atualizarStatusBot
+const consultarSalaPadrao = (): string => {
+    const salasBoss: number[] = config().mu.salasPermitidas;
+
+    return salasBoss.length === 1 ? salasBoss[0].toString() : "";
 }
+
+export {
+    atualizarStatusBot, calcularHorarioRestanteBoss, consultarSalaPadrao, formatBoss, formatLinhaInfo, formatSalaBoss, isBossAberto,
+    isBossVencido,
+    previsaoBoss, previsaoParaAbrir,
+    previsaoParaFechar,
+    sortBossPorHorario, vaiAbrirBoss,
+    vaiFecharBoss
+};
+

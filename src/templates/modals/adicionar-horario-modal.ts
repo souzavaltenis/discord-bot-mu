@@ -1,16 +1,17 @@
-import { ActionRowBuilder, ModalBuilder, TextInputBuilder, ModalSubmitInteraction, EmbedBuilder, TextInputStyle, ModalActionRowComponentBuilder, GuildMember } from 'discord.js';
-import { Ids } from '../../models/ids';
-import { adicionarAnotacaoHorario, adicionarHorarioBoss, isBossAtivo } from '../../db/db';
-import { mostrarHorarios } from '../messages/tabela-horario-boss';
-import { config } from '../../config/get-configs';
-import { dataNowMoment, dataNowString, distanceDatasInMinutes, momentToString, stringToMoment } from '../../utils/data-utils';
 import { bold } from '@discordjs/builders';
+import { ActionRowBuilder, EmbedBuilder, GuildMember, ModalActionRowComponentBuilder, ModalBuilder, ModalSubmitInteraction, TextInputBuilder, TextInputStyle } from 'discord.js';
 import { Moment } from 'moment';
-import { getNickMember } from '../../utils/geral-utils';
+import { config } from '../../config/get-configs';
+import { adicionarAnotacaoHorario, adicionarHorarioBoss, isBossAtivo } from '../../db/db';
+import { Ids } from '../../models/ids';
 import { IBossInfoAdd } from '../../models/interface/boss-info-add';
-import { getEmbedAddBoss } from '../embeds/adicionar-boss-embed';
 import { usuariosSingleton } from '../../models/singleton/usuarios-singleton';
+import { consultarSalaPadrao } from '../../utils/boss-utils';
+import { dataNowMoment, dataNowString, distanceDatasInMinutes, momentToString, stringToMoment } from '../../utils/data-utils';
+import { getNickMember } from '../../utils/geral-utils';
 import { sendLogErroInput } from '../../utils/logs-utils';
+import { getEmbedAddBoss } from '../embeds/adicionar-boss-embed';
+import { mostrarHorarios } from '../messages/tabela-horario-boss';
 
 export class AdicionarHorarioModal {
 
@@ -27,7 +28,7 @@ export class AdicionarHorarioModal {
             .setMaxLength(20)
             .setRequired(true)
             .setStyle(TextInputStyle.Short);
-        
+
         const inputSalaBoss = new TextInputBuilder()
             .setCustomId(Ids.INPUT_SALA_BOSS)
             .setLabel("Qual sala?")
@@ -56,12 +57,22 @@ export class AdicionarHorarioModal {
 
         modalHorarioBoss.addComponents(
             new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(inputNomeBoss),
-            new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(inputSalaBoss),
+            new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(this.verificarInputSala(inputSalaBoss)),
             new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(inputHorarioBoss),
             new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(inputPerguntaOntem)
         );
 
         return modalHorarioBoss;
+    }
+
+    verificarInputSala(inputSala: TextInputBuilder): TextInputBuilder {
+        const salaPadrao: string = consultarSalaPadrao();
+
+        if (salaPadrao) {
+            inputSala.setValue(salaPadrao);
+        }
+
+        return inputSala;
     }
 
     async action(interaction: ModalSubmitInteraction) {
@@ -80,16 +91,16 @@ export class AdicionarHorarioModal {
         const valoresHell: string[] = config().geral.valoresNomeBoss.hell;
         const valoresRed: string[] = config().geral.valoresNomeBoss.red;
         const valoresHydra: string[] = config().geral.valoresNomeBoss.hydra;
-        
+
         switch (true) {
-            case valoresRei.includes(textInputNomeBoss):    nomeDocBoss = config().documents.rei;       break;
-            case valoresRelics.includes(textInputNomeBoss): nomeDocBoss = config().documents.relics;    break;
-            case valoresFenix.includes(textInputNomeBoss):  nomeDocBoss = config().documents.fenix;     break;
-            case valoresDbk.includes(textInputNomeBoss):    nomeDocBoss = config().documents.deathBeam; break;
-            case valoresGeno.includes(textInputNomeBoss):   nomeDocBoss = config().documents.geno;      break;
-            case valoresHell.includes(textInputNomeBoss):   nomeDocBoss = config().documents.hell;      break;
-            case valoresRed.includes(textInputNomeBoss):    nomeDocBoss = config().documents.red;       break;
-            case valoresHydra.includes(textInputNomeBoss):  nomeDocBoss = config().documents.hydra;     break;
+            case valoresRei.includes(textInputNomeBoss): nomeDocBoss = config().documents.rei; break;
+            case valoresRelics.includes(textInputNomeBoss): nomeDocBoss = config().documents.relics; break;
+            case valoresFenix.includes(textInputNomeBoss): nomeDocBoss = config().documents.fenix; break;
+            case valoresDbk.includes(textInputNomeBoss): nomeDocBoss = config().documents.deathBeam; break;
+            case valoresGeno.includes(textInputNomeBoss): nomeDocBoss = config().documents.geno; break;
+            case valoresHell.includes(textInputNomeBoss): nomeDocBoss = config().documents.hell; break;
+            case valoresRed.includes(textInputNomeBoss): nomeDocBoss = config().documents.red; break;
+            case valoresHydra.includes(textInputNomeBoss): nomeDocBoss = config().documents.hydra; break;
         }
 
         if (!nomeDocBoss) {
@@ -113,7 +124,7 @@ export class AdicionarHorarioModal {
         }
 
         const textInputSalaBoss: string = interaction.fields.getTextInputValue(Ids.INPUT_SALA_BOSS).replace(/\D/g, '');
-        
+
         const salaBoss: number = parseInt(textInputSalaBoss);
         const salasConhecidas: number[] = config().mu.salasPermitidas.sort((a: number, b: number) => a - b);
 
@@ -157,7 +168,7 @@ export class AdicionarHorarioModal {
 
         const bossInfo = {
             nomeDocBoss: nomeDocBoss,
-            salaBoss: salaBoss+'',
+            salaBoss: salaBoss + '',
             horarioInformado: momentToString(horarioInformado),
             timestampAcao: dataNowMoment().valueOf()
         } as IBossInfoAdd;
@@ -167,7 +178,7 @@ export class AdicionarHorarioModal {
 
             const quantidadeAnotacoesUsuario = usuariosSingleton.usuarios.find(u => u.id === interaction.user.id)?.timestampsAnotacoes?.length || 0;
             const embedAddBoss: EmbedBuilder = getEmbedAddBoss(nomeDocBoss, horarioInformado, salaBoss, getNickMember(interaction), quantidadeAnotacoesUsuario);
-            
+
             await interaction.reply({ embeds: [embedAddBoss] });
             await mostrarHorarios(interaction.channel);
         });
