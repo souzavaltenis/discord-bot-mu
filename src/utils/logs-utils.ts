@@ -1,12 +1,14 @@
 import { Interaction } from "discord.js";
+import { name as nomeProjeto, version as versaoProjeto } from '../../package.json';
 import { config } from "../config/get-configs";
-import { clientRabbitMQ } from "../services/rabbitmq/client-rabbitmq";
-import { IParamsLogsGeral } from "../models/interface/params-logs-geral";
-import { ILogsGeral } from "../models/interface/logs-geral";
 import { TypeLog } from "../models/enum/type-log";
-import { dataNowMoment } from "./data-utils";
-import { ILogsErrosInput } from "../models/interface/logs-erros-input";
 import { ErrorGeral } from "../models/error-geral";
+import { ILogsErrosInput } from "../models/interface/logs-erros-input";
+import { ILogsGeral } from "../models/interface/logs-geral";
+import { ILogsHealth } from "../models/interface/logs-health";
+import { IParamsLogsGeral } from "../models/interface/params-logs-geral";
+import { clientRabbitMQ } from "../services/rabbitmq/client-rabbitmq";
+import { dataNowMoment } from "./data-utils";
 
 const sendLogErroApp = (errorGeral: ErrorGeral): void => {
     clientRabbitMQ.produceMessage(config().rabbitmq.routingKeys.errosApp, JSON.stringify(errorGeral));
@@ -20,6 +22,18 @@ const sendLogGeral = (params?: IParamsLogsGeral): void => {
     clientRabbitMQ.produceMessage(config().rabbitmq.routingKeys.logsGeral, getLogsGeralString(params));
 }
 
+const sendLogHealth = (): void => {
+    const health: ILogsHealth = {
+        project: nomeProjeto,
+        version: versaoProjeto,
+        status: 'UP',
+        uptime: Math.floor(process.uptime()),
+        timestamp: Date.now()
+    };
+
+    clientRabbitMQ.produceMessage(config().rabbitmq.routingKeys.logsHealth, JSON.stringify(health));
+}
+
 const getLogsErrosInputString = (interaction: Interaction, msgErroBoss: string): string => {
     const logInputErro = {
         userId: interaction.user.id,
@@ -29,7 +43,7 @@ const getLogsErrosInputString = (interaction: Interaction, msgErroBoss: string):
         guildName: interaction.guild?.name,
         timestamp: interaction.createdTimestamp,
     } as ILogsErrosInput;
-    
+
     return JSON.stringify(logInputErro);
 }
 
@@ -51,7 +65,7 @@ const getLogsGeralString = (params?: IParamsLogsGeral): string => {
             timestamp: cmdInteraction.createdTimestamp
         } as ILogsGeral;
 
-    // On Ready
+        // On Ready
     } else if (client) {
         log = {
             type: TypeLog.ON_READY,
@@ -63,7 +77,7 @@ const getLogsGeralString = (params?: IParamsLogsGeral): string => {
             timestamp: dataNowMoment().valueOf()
         } as ILogsGeral;
 
-    // On Button Click
+        // On Button Click
     } else if (msgInteraction) {
         log = {
             type: TypeLog.ON_BUTTON_CLICK,
@@ -75,7 +89,7 @@ const getLogsGeralString = (params?: IParamsLogsGeral): string => {
             timestamp: msgInteraction.createdTimestamp
         } as ILogsGeral;
 
-    // On Guild Create
+        // On Guild Create
     } else if (guild) {
         log = {
             type: TypeLog.ON_GUILD_CREATE,
@@ -95,4 +109,5 @@ export {
     sendLogErroApp,
     sendLogErroInput,
     sendLogGeral,
-}
+    sendLogHealth
+};

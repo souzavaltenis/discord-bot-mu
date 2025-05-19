@@ -8,4 +8,5 @@ export interface IRabbitMQRoutingKeys {
     errosApp: string;
     logsErrosInput: string;
     logsGeral: string;
+    logsHealth: string;
 }
