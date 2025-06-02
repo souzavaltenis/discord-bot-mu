@@ -115,7 +115,7 @@ export class AdicionarHorarioModal {
         const bossAtivo: boolean = await isBossAtivo(nomeDocBoss);
 
         if (!bossAtivo) {
-            const msgErroBoss: string = `${interaction.user} Boss (${bold(textInputNomeBoss)}) está desativado!`;
+            const msgErroBoss: string = `${interaction.user} Boss (${bold(textInputNomeBoss)}) está desativado no bot!`;
             sendLogErroInput(interaction, msgErroBoss);
             return await interaction.reply({
                 content: msgErroBoss,

@@ -430,7 +430,7 @@ export = {
             //     content: `[${nomeArquivo}](${linkDownload})`
             // });
 
-            interaction.reply({
+            await interaction.reply({
                 ephemeral: true,
                 content: 'Comando desativado.'
             });
