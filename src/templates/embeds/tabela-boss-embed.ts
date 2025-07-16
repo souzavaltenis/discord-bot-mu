@@ -1,17 +1,19 @@
 import { APIEmbedField, bold, EmbedBuilder } from "discord.js";
 import { config } from "../../config/get-configs";
 import { Boss } from "../../models/boss";
-import { formatBoss } from "../../utils/boss-utils";
+import { consultarSalaPadrao, formatBoss } from "../../utils/boss-utils";
 import { timestampToMoment } from "../../utils/data-utils";
 import { textoFooter } from "../../utils/geral-utils";
 
 const getEmbedTabelaBoss = (listaBoss: Boss[], timestampBackup?: number): EmbedBuilder => {
-    const fieldsBoss: APIEmbedField[] = listaBoss.map((b => { 
-        return { name: b.nome, value: formatBoss(b) } as APIEmbedField
+    const isOneSala: boolean = consultarSalaPadrao() !== '';
+
+    const fieldsBoss: APIEmbedField[] = listaBoss.map((b => {
+        return { name: b.nome, value: formatBoss(b) + (isOneSala ? '\u200B' : '') } as APIEmbedField
     }));
 
     return timestampBackup
-        ?  new EmbedBuilder()
+        ? new EmbedBuilder()
             .setColor("DarkerGrey")
             .addFields([
                 ...fieldsBoss,
@@ -26,4 +28,4 @@ const getEmbedTabelaBoss = (listaBoss: Boss[], timestampBackup?: number): EmbedB
             .setTimestamp();
 }
 
-export { getEmbedTabelaBoss }
+export { getEmbedTabelaBoss };
