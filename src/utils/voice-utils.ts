@@ -6,25 +6,33 @@ import { geralSingleton } from "../models/singleton/geral-singleton";
 import { logInOutTextChannel } from "./channels-utils";
 import { dataNowString, formatTimestamp } from "./data-utils";
 import { getNickGuildMember } from "./geral-utils";
+import { getEmbedAlertaMembroMutado } from "../templates/embeds/alerta-membro-mutado";
 
 async function checkUserMute(oldState: VoiceState, newState: VoiceState): Promise<void> {
-    // No action if member has headset role or not exists member/channel on newState
-    if (newState.member?.roles.cache.has(config().cargos.headset) || !newState.member || !newState.channelId) {
+    const hasRoleHeadset: boolean = newState.member?.roles.cache.has(config().cargos.headset) || false;
+
+    const isMutedAudio: boolean = newState.selfDeaf || newState.selfDeaf || false;
+    const isMutedMicrophone: boolean = newState.selfMute || newState.selfMute || false;
+    const isMuted = isMutedAudio || isMutedMicrophone;
+
+    const isNewChannelAfk: boolean = newState.channelId === config().channels.voiceAfk;
+    const isOldChannelAfk: boolean = oldState.channelId === config().channels.voiceAfk;
+
+    // Move member to horarios voice channel if unmute audio
+    if ((!isMuted || (!isMutedAudio && hasRoleHeadset)) && isOldChannelAfk) {
+        await newState.member?.voice.setChannel(config().channels.voiceHorarios);
         return;
     }
 
-    const isMuted: boolean = newState.selfDeaf || newState.selfDeaf || false;
-    const isNewChannelAfk: boolean = newState.channelId === config().channels.voiceAfk;
-    const isOldChannelAfk: boolean = oldState.channelId === config().channels.voiceAfk;
+    // No action if member has headset role and muted voice or not exists member/channel on newState
+    if ((hasRoleHeadset && (isMutedMicrophone && !isMutedAudio)) || !newState.member || !newState.channelId) {
+        return;
+    }
 
     // Move member to afk voice channel if mute audio
     if (isMuted && !isNewChannelAfk) {
         await newState.member?.voice.setChannel(config().channels.voiceAfk);
-    }
-
-    // Move member to horarios voice channel if unmute audio
-    if (!isMuted && isOldChannelAfk) {
-        await newState.member?.voice.setChannel(config().channels.voiceHorarios);
+        await newState.member?.send({ embeds: [getEmbedAlertaMembroMutado()] });
     }
 }
 
