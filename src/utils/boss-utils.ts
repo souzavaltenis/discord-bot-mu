@@ -17,7 +17,7 @@ const formatBoss = (boss: Boss, somenteAbertos?: boolean): string => {
     boss.salas.forEach((horario: Moment, sala: number) => {
         if (somenteAbertos && (!isBossAberto(horario) || isBossVencido(horario))) return;
         haBossAbertos = true;
-        infoBoss += `${bold(`Sala ${sala}`)}: ${formatLinhaInfo(horario)}\n`;
+        infoBoss += `${bold(`Sala ${sala}`)}: ${formatLinhaInfo(horario, boss.vivo.get(sala))}\n`;
     });
 
     if (somenteAbertos && !haBossAbertos) {
@@ -37,12 +37,19 @@ const formatSalaBoss = (bossSalas: SalaBoss[]) => {
     return infoSala;
 }
 
-const formatLinhaInfo = (horario: Moment): string => {
+const bossEstaVivo = (horarioMorte: Moment, vivo?: Moment): boolean => {
+    return !!vivo && vivo.isValid() && vivo.isAfter(horarioMorte);
+}
+
+const formatLinhaInfo = (horario: Moment, vivo?: Moment): string => {
     const previsao: string = previsaoBoss(horario);
     const bossVencido: boolean = isBossVencido(horario);
     const bossAberto: boolean = isBossAberto(horario);
     const linhaInfoSala: string = `${horario.isValid() ? horario.format('HH:mm (DD/MM)') : ''} ${previsao}`;
-    return `${linhaInfoSala} ${bossVencido ? '❌' : bossAberto ? '✅' : '💤'}`;
+    const icone: string = bossEstaVivo(horario, vivo)
+        ? '🗡️'
+        : (bossVencido ? '❌' : bossAberto ? '✅' : '💤');
+    return `${linhaInfoSala} ${icone}`;
 }
 
 const isBossAberto = (horario: Moment): boolean => {

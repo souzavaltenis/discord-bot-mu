@@ -23,7 +23,19 @@ const bossConverter = {
         Object.keys(data.salas).forEach(key => {
             salas.set(parseInt(key), stringToMoment(data.salas[key]))
         });
-        return new Boss(data.id, data.nome, salas, data.ativo);
+
+        const vivo = new Map<number, Moment>();
+        if (data.vivo && typeof data.vivo === 'object') {
+            Object.keys(data.vivo).forEach(key => {
+                const raw = data.vivo[key];
+                if (typeof raw === 'string' && raw) {
+                    const m = stringToMoment(raw);
+                    if (m.isValid()) vivo.set(parseInt(key), m);
+                }
+            });
+        }
+
+        return new Boss(data.id, data.nome, salas, data.ativo, vivo);
     }
 };
 

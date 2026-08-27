@@ -6,12 +6,14 @@ export class Boss {
     nome: string;
     salas: Map<number, Moment>;
     ativo: boolean;
-    
-    constructor(id: number, nome: string, salas: Map<number, Moment>, ativo: boolean) {
+    vivo: Map<number, Moment>;
+
+    constructor(id: number, nome: string, salas: Map<number, Moment>, ativo: boolean, vivo: Map<number, Moment> = new Map()) {
         this.id = id;
         this.nome = nome;
         this.salas = salas;
         this.ativo = ativo;
+        this.vivo = vivo;
     }
 
     toString(): string {

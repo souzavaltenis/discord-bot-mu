@@ -18,7 +18,7 @@ async function buildDockerImage(): Promise<string> {
     const nameImage: string = `${nomeProjeto}:${versaoProjeto}`;
     const pathDockerfile: string = path.join(process.cwd(), 'Dockerfile');
 
-    const commandBuildImage: string = `docker build -t ${nameImage} -f ${pathDockerfile} .`;
+    const commandBuildImage: string = `docker build --platform linux/arm64 -t ${nameImage} -f ${pathDockerfile} .`;
 
     console.log(`- gerando imagem docker: ${nameImage}`);
 
